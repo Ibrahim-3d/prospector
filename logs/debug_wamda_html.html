@@ -1,0 +1,1041 @@
+<html class="no-js" lang="en"><head><meta name="description" property="og:description" content="Wamda is a platform of programs and networks that aims to accelerate entrepreneurship ecosystems across MENA."><meta name="image" property="og:image" content="https://www.wamda.com/build/img/wamda-fb.png?v=1"><meta name="og:site_name" content="Wamda"><meta name="title" property="og:title" content="Inspiring and connecting entrepreneurs | Wamda.com"><meta name="og:url" content="https://www.wamda.com/"><meta name="og:type" content="website"><meta property="fb:pages" content=""><meta name="fb:app_id" content=""><meta name="google-site-verification" content=""><title>Wamda</title><meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><link href="/css/app-ltr-2019.min.css" rel="stylesheet"><link rel="icon" href="https://www.wamda.com/build/img/favicon.ico"><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.css"><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.css"><script src="https://apis.google.com/js/platform.js" async="" defer gapi_processed="true"></script><style>
+        /* TODO: move to scss file */
+        /* share plugin custom styling */
+        .a2a_svg.a2a_s__default {
+            background-color: #0B9F8E !important;
+            width: 25px;
+            height: 25px;
+            border-radius: 2px;
+            margin-right: 5px;
+        }
+        /* Author Page */
+        .c-hero--author__avatar {
+            border-radius: 50%;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.25);
+        }
+        /* Single Article/Post Page */
+        .c-article__video {
+          height: 400px;
+          margin-bottom: 20px;
+        }
+        .c-article.c-article--podcast iframe {
+          min-height: 100px;
+        }
+        .c-article .edit-button {
+          padding: 0.6em 1.7em;
+        }
+        .s-content ul, .s-content ol {
+          list-style: disc;
+          padding: 10px;
+          margin: 16px;
+        }
+        .s-content ol {
+          list-style: decimal;
+        }
+        .s-content table, .s-content td {
+          border: 1px solid #333;
+        }
+        .s-content table {
+          width: 100%;
+        }
+        .s-content td {
+          padding: 5px 10px;
+        }
+        .c-article__meta {
+          margin-top: 10px;
+        }
+        /* Alert Messages */
+        .alert {
+          background: #eee;
+          padding: 15px;
+          margin: 20px 0;
+          border-radius: 8px;
+          line-height: 1.4rem;
+          position: relative;
+          padding-right: 50px;
+        }
+        .alert.alert-danger {
+          background: #ffe0e0;
+          color: #8d3f3f;
+        }
+        .alert .close {
+          position: absolute;
+          right: 0;
+          top: 0;
+          margin: 10px;
+          background: rgba(0, 0, 0, 0);
+          border: none;
+          display: block;
+          width: 30px;
+          text-align: center;
+          height: 30px;
+          font-size: 18px;
+          font-weight: 600;
+          cursor: pointer;
+        }
+        .alert-danger .close {
+          color: #8d3f3f;
+        }
+        .alert.alert-success {
+          background: #e7fff2;
+          color: #1f6531;
+        }
+        .alert-success .close {
+          color: #1f6531;
+        }
+
+        /* Select Dropdown */
+        select.inline {
+          max-width: 120px;
+        }
+        /* Legal Page */
+        .faq__main.normal-ul ul {
+          font-size: 1em;
+          line-height: 1.45;
+          color: #676A6C;
+          list-style: initial;
+          margin: 30px 25px;
+        }
+        /* Homepage */
+        .c-media {
+          position: relative;
+        }
+        .c-media .c-media__title a:after {
+          cursor: pointer;
+          content: "";
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+        }
+        .c-list.c-list--page {
+          display: none;
+        }
+        .c-list.c-list--page.active {
+          display: block;
+        }
+        .c-media-grid.c-media-grid--page {
+          display: none;
+        }
+        .c-media-grid.c-media-grid--page.active {
+          display: grid;
+        }
+        /* Partner Page */
+        .c-partner__website {
+          background: url(/img/circle-arrow-right.svg) right 10px center/24px no-repeat;
+        }
+        .c-partner__desc, .c-partner__quote {
+          word-break: break-word;
+        }
+        .c-partner__founders img {
+          height: 130px;
+          margin-bottom: 10px;
+        }
+        /* Media/All Articles Page */
+        .filters-form .c-button {
+          padding: 10px 16px;
+          margin-top: 2px;
+          min-width: 120px;
+        }
+        /* Wamda Capital Page */
+        .companies-list img {
+          max-height: 80px;
+          max-width: 80%;
+        }
+        /* Wamdax Page */
+        .wamdax-people-list img {
+          width: 100%;
+          height: 116px;
+          object-fit: cover;
+          object-position: center;
+        }
+        .c-faqs-nested__title + div {
+          display: none;
+        }
+        .c-faqs-nested__title.is-active + div {
+          display: block;
+          transform: translateY(20px);
+          margin-bottom: 40px;
+        }
+        .c-faqs-nested__answer {
+          max-width: 800px;
+          padding-left: 10px;
+          padding-top: 10px;
+        }
+        .c-faqs-nested__answer p {
+          margin: 5px 0 10px;
+          line-height: 1.6rem;
+        }
+        @media (min-width: 768px) {
+          .wamdax-people-list--long {
+                max-height: initial !important;
+          }
+          .wamdax-people-list--long li.show-more {
+            display: none;
+          }
+          .wamdax-people-list--long:after {
+            display: none !important;
+          }
+        }
+        .wamdax-people-list--long {
+          position: relative;
+          max-height: 520px;
+          overflow: hidden;
+        }
+        .wamdax-people-list--long:after {
+          content: '';
+          display: block;
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 70px;
+          box-shadow: inset 0 -50px 35px #fff;
+        }
+        .wamdax-people-list--long.open {
+          max-height: initial;
+          padding-bottom: 70px;
+        }
+        .wamdax-people-list--long li.show-more {
+          position: absolute;
+          bottom: -30px;
+          width: 100%;
+          text-align: center;
+          z-index: 1;
+          color: #0b9f8e;
+          font-weight: 700;
+          cursor: pointer;
+        }
+        .wamdax-people-list--long li.show-more .less{
+          display: none;
+        }
+        .wamdax-people-list--long.open li.show-more .less{
+          display: inline;
+        }
+        .wamdax-people-list--long.open li.show-more .more{
+          display: none;
+        }
+        .perk-partners-list a {
+          display: flex;
+          height: 100%;
+          align-items: center;
+          justify-content: center;
+        }
+        .perk-partners-list img {
+          max-height: 70px;
+          max-width: 170px;
+        }
+        /* Search Modal */
+        .c-search__container {
+          width: 1038px;
+          max-width: 100%;
+        }
+        .c-search-popup .o-wrapper {
+          max-width: 100%;
+        }
+        .c-search__results .loader {
+          margin: 100px 0;
+          text-align: center;
+        }
+        .c-search__results .loader img {
+          width: 60px;
+        }
+        /* Partner Programmes Page */
+        .c-brands img {
+          height: 60px;
+          width: auto !important;
+        }
+      </style><script async="" src="https://static.hotjar.com/c/hotjar-1776118.js?sv=6"></script><script async="" src="https://script.hotjar.com/modules.ddd41caee2adfc4aedb8.js" charset="utf-8"></script><script src="https://script.hotjar.com/browser-perf.8417c6bba72228fa2e29.js"></script></head><body>
+      
+      <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-JBQQ70Q2TJ"></script><script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-JBQQ70Q2TJ');
+      </script><div id="fb-root"></div>
+      
+      
+      
+      <script>
+        /**
+         * Function that tracks a click on an outbound link in Analytics.
+         * This function takes a valid URL string as an argument, and uses that URL string
+         * as the event label. Setting the transport method to 'beacon' lets the hit be sent
+         * using 'navigator.sendBeacon' in browser that support it.
+         */
+        var trackOutboundLink = function (url) {
+          ga('send', 'event', 'outbound', 'click', url, {
+            'transport': 'beacon',
+            'hitCallback': function () {
+              document.location = url;
+            }
+          });
+        }
+      </script><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewbox="0 0 32 32" style="display: none;"><g id="icon-facebook"><path d="M28.3 3H4.5C3.7 3 3 3.7 3 4.5v23.8c0 .8.7 1.5 1.5 1.5h12.8V19.4h-3.5v-4h3.5v-3c0-3.5 2.1-5.3 5.2-5.3 1.5 0 2.7.1 3.1.2v3.6h-2.1c-1.7 0-2 .8-2 2v2.6h4l-.5 4h-3.5v10.4h6.8c.8 0 1.5-.7 1.5-1.5V4.5c-.1-.8-.7-1.5-1.5-1.5z"></path></g><g id="icon-twitter"><path d="M29.5 7.6c-1 .4-2 .7-3.1.9 1.1-.7 2-1.7 2.4-3-1.1.6-2.2 1.1-3.5 1.3-1-1.1-2.4-1.7-4-1.7-3 0-5.5 2.4-5.5 5.5 0 .4 0 .8.1 1.2-4.4-.3-8.4-2.5-11.1-5.8-.5.8-.8 1.7-.8 2.7 0 1.9 1 3.6 2.4 4.5-.9 0-1.7-.3-2.5-.7v.1c0 2.6 1.9 4.8 4.4 5.3-.5.1-.9.2-1.4.2-.4 0-.7 0-1-.1.7 2.2 2.7 3.7 5.1 3.8-1.9 1.5-4.2 2.3-6.8 2.3-.4 0-.9 0-1.3-.1 2.4 1.5 5.3 2.5 8.4 2.5 10 0 15.5-8.3 15.5-15.5v-.7c1.1-.7 2-1.7 2.7-2.7z"></path></g><g id="icon-instagram"><path class="st1" d="M21.9,2.8H10.1c-4,0-7.3,3.3-7.3,7.3v11.8c0,4,3.3,7.3,7.3,7.3h11.8c4,0,7.3-3.3,7.3-7.3V10.1
+		C29.2,6.1,25.9,2.8,21.9,2.8z M26.9,21.9c0,2.7-2.2,4.9-4.9,4.9H10.1c-2.7,0-4.9-2.2-4.9-4.9V10.1c0-2.7,2.2-4.9,4.9-4.9h11.8
+		c2.7,0,4.9,2.2,4.9,4.9L26.9,21.9L26.9,21.9z"></path><path class="st1" d="M16,9.2c-3.8,0-6.8,3.1-6.8,6.8c0,3.8,3.1,6.8,6.8,6.8s6.8-3.1,6.8-6.8C22.8,12.2,19.8,9.2,16,9.2z M16,20.5
+		c-2.5,0-4.5-2-4.5-4.5c0-2.5,2-4.5,4.5-4.5s4.5,2,4.5,4.5C20.5,18.5,18.5,20.5,16,20.5z"></path><path class="st1" d="M23.1,7.2c-0.5,0-0.9,0.2-1.2,0.5c-0.3,0.3-0.5,0.8-0.5,1.2c0,0.5,0.2,0.9,0.5,1.2c0.3,0.3,0.8,0.5,1.2,0.5
+		c0.5,0,0.9-0.2,1.2-0.5c0.3-0.3,0.5-0.8,0.5-1.2c0-0.5-0.2-0.9-0.5-1.2C24,7.4,23.5,7.2,23.1,7.2z"></path></g><g id="icon-linkedin"><path d="M28 3H5c-1.1 0-2 .9-2 1.9V28c0 1.1.9 2 2 2h23c1.1 0 2-.9 2-1.9V4.9c0-1-.9-1.9-2-1.9zM11.2 25.6H7.1V13.4h4.1v12.2zM9.1 11.7c-1.4 0-2.3-.9-2.3-2.1 0-1.2.9-2.1 2.3-2.1s2.3.9 2.3 2.1c.1 1.2-.8 2.1-2.3 2.1zm16.8 13.9h-4.1v-6.5c0-1.6-.6-2.8-2.1-2.8-1.1 0-1.8.8-2.1 1.5-.1.3-.1.6-.1 1v6.8h-4.1s.1-11 0-12.2h4.1v1.7c.5-.8 1.5-2 3.7-2 2.7 0 4.7 1.7 4.7 5.5v7zm-8.4-10.4z"></path></g><g id="icon-youtube"><path d="M27.2 3H5.8C4.2 3 3 4.2 3 5.8v21.5C3 28.8 4.2 30 5.8 30h21.5c1.5 0 2.8-1.2 2.8-2.8V5.8C30 4.2 28.8 3 27.2 3zm-8.6 4.6h1.3v4.1c0 .8 0 .8.1.9 0 .1.1.4.4.4.3 0 .4-.3.4-.4v-5h1.3v6.2h-1.3v-.3l-.4-.2c-.1.2-.2.4-.4.5-.1.1-.3.2-.5.2s-.4 0-.6-.1c-.1-.1-.2-.2-.3-.4-.1-.2-.1-.3-.1-.5V7.6h.1zM14 10.1c0-.6 0-1.1.1-1.5.1-.3.3-.6.5-.8.3-.2.6-.3 1-.3s.7.1.9.2c.2.1.4.3.6.5l.3.6c.1.2.1.6.1 1.1V11c0 .6 0 1.1-.1 1.4 0 .3-.1.5-.3.8-.1.2-.3.4-.6.5-.2.1-.5.2-.8.2-.4 0-.7-.1-.9-.2-.2-.1-.4-.2-.5-.4-.1-.2-.2-.4-.3-.7v-2.5zm-3.1-4.8L12 8.8c.2-.9.5-2.1.8-3.4h1l-1.2 4.9v3.5h-1.1v-3.5l-1.6-5h1zm15.5 19.3c-.2 1.5-1.5 2.8-3.1 2.9-4.5.2-9.1.2-13.6 0-1.5-.1-2.9-1.4-3.1-2.9-.2-2.5-.2-4.9 0-7.3.2-1.5 1.5-2.8 3.1-2.9 4.5-.2 9.1-.2 13.6 0 1.5.1 2.9 1.4 3.1 2.9.2 2.4.2 4.8 0 7.3zM15.8 13.2c.2 0 .3-.1.4-.3 0-.1.1-.3.1-.7V9.4c0-.5 0-.7-.1-.8-.1-.2-.2-.3-.4-.3s-.3.1-.4.3c0 .1-.1.3-.1.8V12c0 .5 0 .7.1.8 0 .2.2.4.4.4zm-7.4 4.6h1.3V25H11v-7.2h1.3v-1.4H8.4v1.4zm6.3 4.7v1c0 .2-.2.3-.4.3s-.4-.1-.4-.3v-5.1h-1.3v5.7c0 .2.1.4.1.5.1.1.2.3.3.4.1.1.3.1.5.1s.3 0 .5-.1c.1-.1.3-.2.4-.4l.4.1v.4H16v-6.5h-1.3v3.9zm5.7-3.7l-.3-.3c-.1-.1-.3-.1-.5-.1s-.3 0-.5.1c-.1.1-.3.2-.4.4l-.4.6V16.4H17V25h1.2l.1-.4.1-.5.3.5c.1.2.3.4.4.5.1.1.3.1.4.1.2 0 .4-.1.6-.2.2-.2.3-.4.3-.6.1-.3.1-.6.1-.6v-3.4s.1-.3 0-1c0-.3 0-.5-.1-.6zm-1.1 3.8c0 .6 0 .8-.1.9-.1.2-.2.3-.4.3s-.3-.1-.4-.3c0-.1-.1-.3-.1-.8V21c0-.6 0-.8.1-.8.1-.2.2-.3.4-.3s.4.1.4.3c0 .1.1.3.1.8v1.6zm3.5-.7H25v-.7c0-.6-.1-1.4-.2-1.7-.1-.3-.3-.6-.6-.8-.3-.2-.6-.3-1.1-.3-.3 0-.7.1-.9.2s-.4.4-.6.7c-.1.3-.2.8-.2 1.6v2c0 .3 0 .6.1.9.1.2.2.5.3.7.1.2.3.3.6.5.2.1.5.2.9.2.3 0 .6-.1.8-.2.2-.1.4-.3.5-.5.1-.2.2-.5.3-.7 0-.2.1-.5.1-.9v-.3h-1.2v.7c0 .4 0 .6-.1.8-.1.2-.2.3-.5.3-.2 0-.3-.1-.4-.3 0-.1-.1-.2-.1-.7v-1.2l.1-.3zm0-.9v-.7c0-.5 0-.5.1-.5.1-.2.2-.3.4-.3s.3.1.4.3c0 .1.1 0 .1.5V21.2h-1V21z"></path></g></svg><header class="c-header" role="header"><div class="c-header__wrapper">
+        <ul class="c-header__links"><li><a href="https://www.wamda.com/about" class="">About</a></li>
+            <li><a href="https://www.wamda.com/contact/contact-us" class="">Contact</a></li>
+        </ul><a href="https://www.wamda.com" class="c-header__logo"><img src="/img/wamda-logo@2x.png" alt="Wamda"></a>
+        <a href="javascript:;" class="c-button c-header__subscribe" data-toggle="modal" data-target="c-newsletter-popup">Subscribe</a>
+    </div>
+    <div class="c-header__bar">
+        <div class="c-search">
+            <button class="c-search__toggle" data-toggle="modal" data-target="c-search-popup"><span class="sr-only">toggle search</span></button>
+            <form action="">
+                <label for="search">Search</label>
+                <input type="text" name="" id="search"></form>
+        </div>
+                <div class="nav-wrapper">
+            <button class="nav__toggle">Menu</button>
+            <ul class="c-nav"><li class="c-nav__item ">
+                    <a href="https://www.wamda.com/media">Thought Leadership</a>
+                </li>
+                <li class="c-nav__item "><a href="https://www.wamda.com/research">Research</a></li>
+                <li class="c-nav__item "><a href="https://www.wamda.com/events">Events</a></li>
+                
+                <li class="c-nav__item "><a href="https://wamdacapital.com/" target="_blank">Wamda Capital</a></li>
+                <li class="c-nav__item  last"><a href="https://www.wamda.com/partners-projects">Partner projects</a></li>
+                <li class="c-nav__item  mobile-only"><a href="https://www.wamda.com/about" class="">About</a></li>
+                <li class="c-nav__item mobile-only"><a href="https://www.wamda.com/contact/contact-us" class="">Contact</a></li>
+                                <li class="c-nav__item mobile-only"><a href="https://www.wamda.com/ar" class="u-brand ar">عربي</a></li>
+                            </ul></div>
+                <a href="https://www.wamda.com/ar" class="u-brand">عربي</a>
+            </div>
+    
+</header><div class="o-wrapper u-push-top-large">
+        <h2>Thought Leadership</h2>
+    <p class="u-push-bottom-large">Wamda's features, opinions, and podcasts</p>
+        
+    <div class="o-grid o-grid--1-4 u-push-bottom-large">
+                        <article class="c-media 
+             c-media--stacked                 "><div class="c-media__thumb-wrapper">
+        <div class="c-media__thumb">
+                        <img src="https://cdn.wamda.com/thumbnails/4bbedf22c6ed52f.jpg" alt="Foras AI raises stake in Beban to support Egypt market entry"></div>
+        
+            </div>
+    <div class="c-media__content">
+                <span class="c-tag">
+            <a href="https://www.wamda.com/country/bahrain">Bahrain</a>
+        </span>
+                <h2 class="c-media__title"><a href="https://www.wamda.com/2026/02/foras-ai-raises-stake-beban-support-egypt-market-entry">Foras AI raises stake in Beban to support Egypt market entry</a></h2>
+                <p class="c-media__teaser">
+	Bahrain-based equity crowdfunding platform Beban is preparing to launch operations in Egypt, supported by an increased investment from...</p>
+                        <p class="c-media__footer">
+                        <a href="https://www.wamda.com/author/newsnews">
+                <strong>News</strong> 
+                            </a>
+                        • <time>24 February, 2026</time></p>
+                        <p class="tags-list">
+                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Foras">Foras</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Beban">Beban</a></span>
+                                    </p>
+            </div>
+</article><article class="c-media 
+             c-media--stacked                 "><div class="c-media__thumb-wrapper">
+        <div class="c-media__thumb">
+                        <img src="https://cdn.wamda.com/thumbnails/a36337a8ea0bbef.jpg" alt="Riyadh Valley Company launches KSU venture fund with SparkLabs"></div>
+        
+            </div>
+    <div class="c-media__content">
+                <span class="c-tag">
+            <a href="https://www.wamda.com/country/saudi-arabia">Saudi Arabia</a>
+        </span>
+                <h2 class="c-media__title"><a href="https://www.wamda.com/2026/02/riyadh-valley-company-launches-ksu-venture-fund-sparklabs">Riyadh Valley Company launches KSU venture fund with SparkLabs</a></h2>
+                <p class="c-media__teaser">Press release:
+
+Riyadh Valley Company Launches King Saud University Venture Fund in Partnership with SparkLabs Riyadh Valley...</p>
+                        <p class="c-media__footer">
+                        <a href="https://www.wamda.com/author/newsnews">
+                <strong>News</strong> 
+                            </a>
+                        • <time>24 February, 2026</time></p>
+                        <p class="tags-list">
+                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Riyadh%20Valley%20Company">Riyadh Valley Company</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/King%20Saud%20University">King Saud University</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/SparkLabs">SparkLabs</a></span>
+                                    </p>
+            </div>
+</article><article class="c-media 
+             c-media--stacked                 "><div class="c-media__thumb-wrapper">
+        <div class="c-media__thumb">
+                        <img src="https://cdn.wamda.com/thumbnails/f79a5a66c882f41.jpg" alt="MoneyHash expands into Iraq with Wayl alliance"></div>
+        
+            </div>
+    <div class="c-media__content">
+                <span class="c-tag">
+            <a href="https://www.wamda.com/country/iraq">Iraq</a>
+        </span>
+                <h2 class="c-media__title"><a href="https://www.wamda.com/2026/02/moneyhash-expands-iraq-wayl-alliance">MoneyHash expands into Iraq with Wayl alliance</a></h2>
+                <p class="c-media__teaser">
+	US-based Egyptian fintech MoneyHash has partnered with Iraqi fintech Wayl to support its expansion into Iraq.
+	Through the...</p>
+                        <p class="c-media__footer">
+                        <a href="https://www.wamda.com/author/newsnews">
+                <strong>News</strong> 
+                            </a>
+                        • <time>24 February, 2026</time></p>
+                        <p class="tags-list">
+                                            <span class="c-tag"><a href="https://www.wamda.com/tag/MoneyHash">MoneyHash</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Wayl">Wayl</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Fintech">Fintech</a></span>
+                                    </p>
+            </div>
+</article><article class="c-media 
+             c-media--stacked                 "><div class="c-media__thumb-wrapper">
+        <div class="c-media__thumb">
+                        <img src="https://cdn.wamda.com/thumbnails/1e11188231e3177.jpg" alt="$100M Presight–Shorooq AI Fund backs five frontier AI companies in first quarter"></div>
+        
+            </div>
+    <div class="c-media__content">
+                <span class="c-tag">
+            <a href="https://www.wamda.com/country/uae">U.A.E</a>
+        </span>
+                <h2 class="c-media__title"><a href="https://www.wamda.com/2026/02/100m-presight-shorooq-ai-fund-backs-frontier-ai-companies-quarter">$100M Presight–Shorooq AI Fund backs five frontier AI companies in first quarter</a></h2>
+                <p class="c-media__teaser">
+	The Presight–Shorooq Fund I, a $100 million global AI fund launched in September 2025, has deployed capital into five AI startups...</p>
+                        <p class="c-media__footer">
+                        <a href="https://www.wamda.com/author/newsnews">
+                <strong>News</strong> 
+                            </a>
+                        • <time>24 February, 2026</time></p>
+                        <p class="tags-list">
+                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Shorooq">Shorooq</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Presight-Shorooq%20Fund%20I">Presight-Shorooq Fund I</a></span>
+                                    </p>
+            </div>
+</article><article class="c-media 
+             c-media--stacked                 "><div class="c-media__thumb-wrapper">
+        <div class="c-media__thumb">
+                        <img src="https://cdn.wamda.com/thumbnails/9982daf7ef66d2c.jpg" alt="Immensa secures DFDF backing to expand digital supply chain platform"></div>
+        
+            </div>
+    <div class="c-media__content">
+                <span class="c-tag">
+            <a href="https://www.wamda.com/country/uae">U.A.E</a>
+        </span>
+                <h2 class="c-media__title"><a href="https://www.wamda.com/2026/02/immensa-secures-dfdf-backing-expand-digital-supply-chain-platform">Immensa secures DFDF backing to expand digital supply chain platform</a></h2>
+                <p class="c-media__teaser">
+	KSA-headquartered deeptech company Immensa has secured investment from Dubai Future District Fund (DFDF), alongside Global Ventures...</p>
+                        <p class="c-media__footer">
+                        <a href="https://www.wamda.com/author/newsnews">
+                <strong>News</strong> 
+                            </a>
+                        • <time>23 February, 2026</time></p>
+                        <p class="tags-list">
+                                            <span class="c-tag"><a href="https://www.wamda.com/tag/immensa">immensa</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/DFDF">DFDF</a></span>
+                                    </p>
+            </div>
+</article><article class="c-media 
+             c-media--stacked                 "><div class="c-media__thumb-wrapper">
+        <div class="c-media__thumb">
+                        <img src="https://cdn.wamda.com/thumbnails/dc2a19f87e09f27.jpg" alt="Beltone Holding launches growth-stage private equity platform"></div>
+        
+            </div>
+    <div class="c-media__content">
+                <span class="c-tag">
+            <a href="https://www.wamda.com/country/egypt">Egypt</a>
+        </span>
+                <h2 class="c-media__title"><a href="https://www.wamda.com/2026/02/beltone-holding-launches-growth-stage-private-equity-platform">Beltone Holding launches growth-stage private equity platform</a></h2>
+                <p class="c-media__teaser">
+	Egypt-based Beltone Holding has launched its Private Equity platform, expanding its multi-stage investment strategy alongside Beltone...</p>
+                        <p class="c-media__footer">
+                        <a href="https://www.wamda.com/author/newsnews">
+                <strong>News</strong> 
+                            </a>
+                        • <time>23 February, 2026</time></p>
+                        <p class="tags-list">
+                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Beltone%20Holding">Beltone Holding</a></span>
+                                    </p>
+            </div>
+</article><article class="c-media 
+             c-media--stacked                 "><div class="c-media__thumb-wrapper">
+        <div class="c-media__thumb">
+                        <img src="https://cdn.wamda.com/thumbnails/23e384947ecc704.jpg" alt="UAE’s Takeem secures backing from Second Century Ventures through REACH Middle East"></div>
+        
+            </div>
+    <div class="c-media__content">
+                <span class="c-tag">
+            <a href="https://www.wamda.com/country/uae">U.A.E</a>
+        </span>
+                <h2 class="c-media__title"><a href="https://www.wamda.com/2026/02/uae-takeem-secures-backing-second-century-ventures-reach-middle-east">UAE’s Takeem secures backing from Second Century Ventures through REACH Middle East</a></h2>
+                <p class="c-media__teaser">
+	UAE-based proptech Takeem has secured investment from REACH Middle East, an accelerator backed by Second Century Ventures, the...</p>
+                        <p class="c-media__footer">
+                        <a href="https://www.wamda.com/author/newsnews">
+                <strong>News</strong> 
+                            </a>
+                        • <time>23 February, 2026</time></p>
+                        <p class="tags-list">
+                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Second%20Century%20Ventures">Second Century Ventures</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Takeem">Takeem</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Proptech">Proptech</a></span>
+                                    </p>
+            </div>
+</article><article class="c-media 
+             c-media--stacked                 "><div class="c-media__thumb-wrapper">
+        <div class="c-media__thumb">
+                        <img src="https://cdn.wamda.com/thumbnails/381a42e40def3f3.jpg" alt="WafR secures $4 million seed to expand last-mile financial services in Morocco"></div>
+        
+            </div>
+    <div class="c-media__content">
+                <span class="c-tag">
+            <a href="https://www.wamda.com/country/morocco">Morocco</a>
+        </span>
+                <h2 class="c-media__title"><a href="https://www.wamda.com/2026/02/wafr-secures-4-million-seed-expand-mile-financial-services-morocco">WafR secures $4 million seed to expand last-mile financial services in Morocco</a></h2>
+                <p class="c-media__teaser">
+	Morocco-based fintech WafR has closed $4 million in an oversubscribed seed round, co-led by LoftyInc Capital, Attijariwafa...</p>
+                        <p class="c-media__footer">
+                        <a href="https://www.wamda.com/author/newsnews">
+                <strong>News</strong> 
+                            </a>
+                        • <time>23 February, 2026</time></p>
+                        <p class="tags-list">
+                                            <span class="c-tag"><a href="https://www.wamda.com/tag/WafR">WafR</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Fintech">Fintech</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/LoftyInc%20Capital">LoftyInc Capital</a></span>
+                                    </p>
+            </div>
+</article><article class="c-media 
+             c-media--stacked                 "><div class="c-media__thumb-wrapper">
+        <div class="c-media__thumb">
+                        <img src="https://cdn.wamda.com/thumbnails/6c673d7ca13aefa.jpg" alt="HUMAIN takes significant minority stake in xAI through $3 billion Series E"></div>
+        
+            </div>
+    <div class="c-media__content">
+                <span class="c-tag">
+            <a href="https://www.wamda.com/country/saudi-arabia">Saudi Arabia</a>
+        </span>
+                <h2 class="c-media__title"><a href="https://www.wamda.com/2026/02/humain-takes-significant-minority-stake-xai-3-billion-series-e">HUMAIN takes significant minority stake in xAI through $3 billion Series E</a></h2>
+                <p class="c-media__teaser">
+	Saudi Arabia’s HUMAIN has invested $3 billion in xAI’s Series E round, shortly before the artificial intelligence...</p>
+                        <p class="c-media__footer">
+                        <a href="https://www.wamda.com/author/newsnews">
+                <strong>News</strong> 
+                            </a>
+                        • <time>19 February, 2026</time></p>
+                        <p class="tags-list">
+                                            <span class="c-tag"><a href="https://www.wamda.com/tag/xAI">xAI</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Humain">Humain</a></span>
+                                    </p>
+            </div>
+</article><article class="c-media 
+             c-media--stacked                 "><div class="c-media__thumb-wrapper">
+        <div class="c-media__thumb">
+                        <img src="https://cdn.wamda.com/thumbnails/cb102545b3e7ca9.jpg" alt="Moroccan regtech Charikaty raises $150K on national investment show"></div>
+        
+            </div>
+    <div class="c-media__content">
+                <span class="c-tag">
+            <a href="https://www.wamda.com/country/morocco">Morocco</a>
+        </span>
+                <h2 class="c-media__title"><a href="https://www.wamda.com/2026/02/moroccan-regtech-charikaty-raises-150k-national-investment">Moroccan regtech Charikaty raises $150K on national investment show</a></h2>
+                <p class="c-media__teaser">
+	Morocco-based regtech startup Charikaty has raised $150,000 (MAD 1.5 million) during Season 3 of “Qui Veut Investir Dans Mon...</p>
+                        <p class="c-media__footer">
+                        <a href="https://www.wamda.com/author/newsnews">
+                <strong>News</strong> 
+                            </a>
+                        • <time>18 February, 2026</time></p>
+                        <p class="tags-list">
+                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Charikaty">Charikaty</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/regtech">regtech</a></span>
+                                    </p>
+            </div>
+</article><article class="c-media 
+             c-media--stacked                 "><div class="c-media__thumb-wrapper">
+        <div class="c-media__thumb">
+                        <img src="https://cdn.wamda.com/thumbnails/a10df6093cd300f.jpg" alt="Dawar acquires stake in BekyaPay to digitize Egypt’s recycling “first mile”"></div>
+        
+            </div>
+    <div class="c-media__content">
+                <span class="c-tag">
+            <a href="https://www.wamda.com/country/egypt">Egypt</a>
+        </span>
+                <h2 class="c-media__title"><a href="https://www.wamda.com/2026/02/dawar-acquires-stake-bekyapay-digitize-egypt-recycling-first-mile">Dawar acquires stake in BekyaPay to digitize Egypt’s recycling “first mile”</a></h2>
+                <p class="c-media__teaser">
+	Egypt-based circular economy platform Dawar has acquired a strategic stake in consumer recycling app BekyaPay, extending its digital...</p>
+                        <p class="c-media__footer">
+                        <a href="https://www.wamda.com/author/newsnews">
+                <strong>News</strong> 
+                            </a>
+                        • <time>18 February, 2026</time></p>
+                        <p class="tags-list">
+                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Dawar">Dawar</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/BekyaPay">BekyaPay</a></span>
+                                    </p>
+            </div>
+</article><article class="c-media 
+             c-media--stacked                 "><div class="c-media__thumb-wrapper">
+        <div class="c-media__thumb">
+                        <img src="https://cdn.wamda.com/thumbnails/3ece6ac3cda16e1.jpg" alt="Origen attracts $50 million strategic investment from Bluefive Capital"></div>
+        
+            </div>
+    <div class="c-media__content">
+                <span class="c-tag">
+            <a href="https://www.wamda.com/country/uae">U.A.E</a>
+        </span>
+                <h2 class="c-media__title"><a href="https://www.wamda.com/2026/02/origen-attracts-50-million-strategic-investment-bluefive-capital">Origen attracts $50 million strategic investment from Bluefive Capital</a></h2>
+                <p class="c-media__teaser">
+	UAE-based AI tech company Origen has raised a $50 million strategic investment from Bluefive Capital to accelerate the deployment of...</p>
+                        <p class="c-media__footer">
+                        <a href="https://www.wamda.com/author/newsnews">
+                <strong>News</strong> 
+                            </a>
+                        • <time>18 February, 2026</time></p>
+                        <p class="tags-list">
+                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Origen">Origen</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/BlueFive%20Capital">BlueFive Capital</a></span>
+                                    </p>
+            </div>
+</article><article class="c-media 
+             c-media--stacked                 "><div class="c-media__thumb-wrapper">
+        <div class="c-media__thumb">
+                        <img src="https://cdn.wamda.com/thumbnails/f52a88fffa847a4.jpg" alt="IFC commits $150 million to boost Egypt’s green finance sector"></div>
+        
+            </div>
+    <div class="c-media__content">
+                <span class="c-tag">
+            <a href="https://www.wamda.com/country/egypt">Egypt</a>
+        </span>
+                <h2 class="c-media__title"><a href="https://www.wamda.com/2026/02/ifc-commits-150-million-boost-egypt-green-finance-sector">IFC commits $150 million to boost Egypt’s green finance sector</a></h2>
+                <p class="c-media__teaser">
+	The International Finance Corporation (IFC) has announced five new projects in Egypt aimed at supporting climate finance, healthcare,...</p>
+                        <p class="c-media__footer">
+                        <a href="https://www.wamda.com/author/newsnews">
+                <strong>News</strong> 
+                            </a>
+                        • <time>18 February, 2026</time></p>
+                        <p class="tags-list">
+                                            <span class="c-tag"><a href="https://www.wamda.com/tag/ifc">ifc</a></span>
+                                    </p>
+            </div>
+</article><article class="c-media 
+             c-media--stacked                 "><div class="c-media__thumb-wrapper">
+        <div class="c-media__thumb">
+                        <img src="https://cdn.wamda.com/thumbnails/a480911fc17d093.jpg" alt="Saudi AI startup Deep.SA brings Vision Ventures into pre-seed round"></div>
+        
+            </div>
+    <div class="c-media__content">
+                <span class="c-tag">
+            <a href="https://www.wamda.com/country/saudi-arabia">Saudi Arabia</a>
+        </span>
+                <h2 class="c-media__title"><a href="https://www.wamda.com/2026/02/saudi-ai-startup-deepsa-brings-vision-ventures-pre-seed-round">Saudi AI startup Deep.SA brings Vision Ventures into pre-seed round</a></h2>
+                <p class="c-media__teaser">
+	Saudi AI startup Deep.SA has announced the participation of Vision Ventures in its pre-seed round, extending a previously raised...</p>
+                        <p class="c-media__footer">
+                        <a href="https://www.wamda.com/author/newsnews">
+                <strong>News</strong> 
+                            </a>
+                        • <time>18 February, 2026</time></p>
+                        <p class="tags-list">
+                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Deep.SA">Deep.SA</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Vision%20ventures">Vision ventures</a></span>
+                                    </p>
+            </div>
+</article><article class="c-media 
+             c-media--stacked                 "><div class="c-media__thumb-wrapper">
+        <div class="c-media__thumb">
+                        <img src="https://cdn.wamda.com/thumbnails/4ecbb0f32d56b4a.jpg" alt="Flextock targets e-commerce bottlenecks with $12.6 million Series A"></div>
+        
+            </div>
+    <div class="c-media__content">
+                <span class="c-tag">
+            <a href="https://www.wamda.com/country/egypt">Egypt</a>
+        </span>
+                <h2 class="c-media__title"><a href="https://www.wamda.com/2026/02/flextock-targets-e-commerce-bottlenecks-12-6-million-series-a">Flextock targets e-commerce bottlenecks with $12.6 million Series A</a></h2>
+                <p class="c-media__teaser">
+	Egypt-based e-commerce infrastructure startup Flextock has raised $12.6 million in a Series A round led by TLcom Capital, with...</p>
+                        <p class="c-media__footer">
+                        <a href="https://www.wamda.com/author/newsnews">
+                <strong>News</strong> 
+                            </a>
+                        • <time>17 February, 2026</time></p>
+                        <p class="tags-list">
+                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Flextock">Flextock</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/TLcom%20Capital">TLcom Capital</a></span>
+                                    </p>
+            </div>
+</article><article class="c-media 
+             c-media--stacked                 "><div class="c-media__thumb-wrapper">
+        <div class="c-media__thumb">
+                        <img src="https://cdn.wamda.com/thumbnails/aa13718563f7cf2.jpg" alt="Stake closes $31 million Series B led by Emirates NBD"></div>
+        
+            </div>
+    <div class="c-media__content">
+                <span class="c-tag">
+            <a href="https://www.wamda.com/country/uae">U.A.E</a>
+        </span>
+                <h2 class="c-media__title"><a href="https://www.wamda.com/2026/02/stake-closes-31-million-series-b-led-emirates-nbd">Stake closes $31 million Series B led by Emirates NBD</a></h2>
+                <p class="c-media__teaser">
+	UAE-based proptech platform Stake has raised $31 million in an oversubscribed Series B round led by Emirates NBD, with participation...</p>
+                        <p class="c-media__footer">
+                        <a href="https://www.wamda.com/author/newsnews">
+                <strong>News</strong> 
+                            </a>
+                        • <time>17 February, 2026</time></p>
+                        <p class="tags-list">
+                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Stake">Stake</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Emirates%20NBD">Emirates NBD</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Proptech">Proptech</a></span>
+                                    </p>
+            </div>
+</article><article class="c-media 
+             c-media--stacked                 "><div class="c-media__thumb-wrapper">
+        <div class="c-media__thumb">
+                        <img src="https://cdn.wamda.com/thumbnails/882d381f3585528.jpg" alt="Breadfast moves closer to IPO with $50 million pre-Series C round"></div>
+        
+            </div>
+    <div class="c-media__content">
+                <span class="c-tag">
+            <a href="https://www.wamda.com/country/egypt">Egypt</a>
+        </span>
+                <h2 class="c-media__title"><a href="https://www.wamda.com/2026/02/breadfast-moves-closer-ipo-50-million-pre-series-c-round">Breadfast moves closer to IPO with $50 million pre-Series C round</a></h2>
+                <p class="c-media__teaser">
+	Egypt-based e-commerce platform Breadfast has raised $50 million in a pre-Series C round backed by Mubadala Investment Co., a Saudi...</p>
+                        <p class="c-media__footer">
+                        <a href="https://www.wamda.com/author/newsnews">
+                <strong>News</strong> 
+                            </a>
+                        • <time>16 February, 2026</time></p>
+                        <p class="tags-list">
+                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Breadfast">Breadfast</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Mubadala">Mubadala</a></span>
+                                    </p>
+            </div>
+</article><article class="c-media 
+             c-media--stacked                 "><div class="c-media__thumb-wrapper">
+        <div class="c-media__thumb">
+                        <img src="https://cdn.wamda.com/thumbnails/6f852916f4384d8.jpg" alt="Saudi cybersecurity startup Solidrange raises $2.4 million Seed round"></div>
+        
+            </div>
+    <div class="c-media__content">
+                <span class="c-tag">
+            <a href="https://www.wamda.com/country/saudi-arabia">Saudi Arabia</a>
+        </span>
+                <h2 class="c-media__title"><a href="https://www.wamda.com/2026/02/saudi-cybersecurity-startup-solidrange-raises-2-4-million-seed-round">Saudi cybersecurity startup Solidrange raises $2.4 million Seed round</a></h2>
+                <p class="c-media__teaser">
+	Saudi Arabia-based cybersecurity startup Solidrange has raised $2.4 million in a seed round led by Sharaka Capital, with participation...</p>
+                        <p class="c-media__footer">
+                        <a href="https://www.wamda.com/author/newsnews">
+                <strong>News</strong> 
+                            </a>
+                        • <time>16 February, 2026</time></p>
+                        <p class="tags-list">
+                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Solidrange">Solidrange</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Sharaka%20Capital">Sharaka Capital</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Sadu%20Capital">Sadu Capital</a></span>
+                                                                                            </p>
+            </div>
+</article><article class="c-media 
+             c-media--stacked                 "><div class="c-media__thumb-wrapper">
+        <div class="c-media__thumb">
+                        <img src="https://cdn.wamda.com/thumbnails/30b44f2a93b1cf2.jpg" alt="Saudi BNPL Madfu closes $25.5 million pre-Series A"></div>
+        
+            </div>
+    <div class="c-media__content">
+                <span class="c-tag">
+            <a href="https://www.wamda.com/country/saudi-arabia">Saudi Arabia</a>
+        </span>
+                <h2 class="c-media__title"><a href="https://www.wamda.com/2026/02/saudi-bnpl-madfu-closes-25-5-million-pre-series-a">Saudi BNPL Madfu closes $25.5 million pre-Series A</a></h2>
+                <p class="c-media__teaser">
+	Saudi Arabia-based fintech startup Madfu has raised $25.5 million (SAR 95 million) in a pre-Series A round led by Afaq Capital,...</p>
+                        <p class="c-media__footer">
+                        <a href="https://www.wamda.com/author/newsnews">
+                <strong>News</strong> 
+                            </a>
+                        • <time>16 February, 2026</time></p>
+                        <p class="tags-list">
+                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Madfu">Madfu</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/BNPL">BNPL</a></span>
+                                    </p>
+            </div>
+</article><article class="c-media 
+             c-media--stacked                 "><div class="c-media__thumb-wrapper">
+        <div class="c-media__thumb">
+                        <img src="https://cdn.wamda.com/thumbnails/4ff4ba0e220df5b.jpg" alt="ZIWO raises strategic debt investment from Amplify Growth Fund"></div>
+        
+            </div>
+    <div class="c-media__content">
+                <span class="c-tag">
+            <a href="https://www.wamda.com/country/uae">U.A.E</a>
+        </span>
+                <h2 class="c-media__title"><a href="https://www.wamda.com/2026/02/ziwo-raises-strategic-debt-investment-amplify-growth-fund">ZIWO raises strategic debt investment from Amplify Growth Fund</a></h2>
+                <p class="c-media__teaser">
+	UAE-based AI contact centre platform ZIWO has secured a strategic growth credit investment from Ajeej Capital’s Amplify Growth...</p>
+                        <p class="c-media__footer">
+                        <a href="https://www.wamda.com/author/newsnews">
+                <strong>News</strong> 
+                            </a>
+                        • <time>16 February, 2026</time></p>
+                        <p class="tags-list">
+                                            <span class="c-tag"><a href="https://www.wamda.com/tag/ZIWO">ZIWO</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Amplify%20Growth%20Fund">Amplify Growth Fund</a></span>
+                                    </p>
+            </div>
+</article><article class="c-media 
+             c-media--stacked                 "><div class="c-media__thumb-wrapper">
+        <div class="c-media__thumb">
+                        <img src="https://cdn.wamda.com/thumbnails/9c9e553236a6cff.jpg" alt="Saudi fintech CASHIN raises $16 million Series A led by Impact46"></div>
+        
+            </div>
+    <div class="c-media__content">
+                <span class="c-tag">
+            <a href="https://www.wamda.com/country/saudi-arabia">Saudi Arabia</a>
+        </span>
+                <h2 class="c-media__title"><a href="https://www.wamda.com/2026/02/saudi-fintech-cashin-raises-16-million-series-a-led-impact46">Saudi fintech CASHIN raises $16 million Series A led by Impact46</a></h2>
+                <p class="c-media__teaser">
+	Saudi Arabia-based fintech CASHIN has raised $16 million (SAR 60 million) in a Series A round led by Impact46.
+	Founded in 2021 by...</p>
+                        <p class="c-media__footer">
+                        <a href="https://www.wamda.com/author/newsnews">
+                <strong>News</strong> 
+                            </a>
+                        • <time>16 February, 2026</time></p>
+                        <p class="tags-list">
+                                            <span class="c-tag"><a href="https://www.wamda.com/tag/CashIn">CashIn</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Fintech">Fintech</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Impact46">Impact46</a></span>
+                                    </p>
+            </div>
+</article><article class="c-media 
+             c-media--stacked                 "><div class="c-media__thumb-wrapper">
+        <div class="c-media__thumb">
+                        <img src="https://cdn.wamda.com/thumbnails/550e5fad0fc90b3.jpg" alt="Singapore's Ascentium acquires Clara to expand footprint in UAE"></div>
+        
+            </div>
+    <div class="c-media__content">
+                <span class="c-tag">
+            <a href="https://www.wamda.com/country/uae">U.A.E</a>
+        </span>
+                <h2 class="c-media__title"><a href="https://www.wamda.com/2026/02/singapore-ascentium-acquires-clara-expand-footprint-uae">Singapore's Ascentium acquires Clara to expand footprint in UAE</a></h2>
+                <p class="c-media__teaser">
+	Singapore-based business services platform Ascentium has acquired Clara, a UAE-based regtech and corporate service provider, for an...</p>
+                        <p class="c-media__footer">
+                        <a href="https://www.wamda.com/author/newsnews">
+                <strong>News</strong> 
+                            </a>
+                        • <time>12 February, 2026</time></p>
+                        <p class="tags-list">
+                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Clara">Clara</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Ascentium">Ascentium</a></span>
+                                    </p>
+            </div>
+</article><article class="c-media 
+             c-media--stacked                 "><div class="c-media__thumb-wrapper">
+        <div class="c-media__thumb">
+                        <img src="https://cdn.wamda.com/thumbnails/6a8e0c3eecb02ab.jpg" alt="XSquare attracts new investment to automate B2B finance infrastructure"></div>
+        
+            </div>
+    <div class="c-media__content">
+                <span class="c-tag">
+            <a href="https://www.wamda.com/country/uae">U.A.E</a>
+        </span>
+                <h2 class="c-media__title"><a href="https://www.wamda.com/2026/02/xsquare-attracts-new-investment-automate-b2b-finance-infrastructure">XSquare attracts new investment to automate B2B finance infrastructure</a></h2>
+                <p class="c-media__teaser">
+	UAE-based B2B fintech XSquare has raised a funding round from AngelSpark, value undisclosed.
+	Founded in 2023 by ...</p>
+                        <p class="c-media__footer">
+                        <a href="https://www.wamda.com/author/newsnews">
+                <strong>News</strong> 
+                            </a>
+                        • <time>12 February, 2026</time></p>
+                        <p class="tags-list">
+                                            <span class="c-tag"><a href="https://www.wamda.com/tag/XSquare">XSquare</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/AngelSpark">AngelSpark</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Fintech">Fintech</a></span>
+                                    </p>
+            </div>
+</article><article class="c-media 
+             c-media--stacked                 "><div class="c-media__thumb-wrapper">
+        <div class="c-media__thumb">
+                        <img src="https://cdn.wamda.com/thumbnails/bebc9ac18cb50a9.jpg" alt="QuicKart secures $1.5 million to expand fresh commerce across the UAE"></div>
+        
+            </div>
+    <div class="c-media__content">
+                <span class="c-tag">
+            <a href="https://www.wamda.com/country/uae">U.A.E</a>
+        </span>
+                <h2 class="c-media__title"><a href="https://www.wamda.com/2026/02/quickart-secures-1-5-million-expand-fresh-commerce-uae">QuicKart secures $1.5 million to expand fresh commerce across the UAE</a></h2>
+                <p class="c-media__teaser">
+	UAE-based fresh commerce platform QuicKart has raised $1.5 million in a seed round led by Orbit Ventures, with participation from angel...</p>
+                        <p class="c-media__footer">
+                        <a href="https://www.wamda.com/author/newsnews">
+                <strong>News</strong> 
+                            </a>
+                        • <time>12 February, 2026</time></p>
+                        <p class="tags-list">
+                                            <span class="c-tag"><a href="https://www.wamda.com/tag/QuicKart">QuicKart</a></span>
+                                                            <span class="c-tag"><a href="https://www.wamda.com/tag/Orbit%20Ventures">Orbit Ventures</a></span>
+                                    </p>
+            </div>
+</article></div>
+
+    <div class="u-push-bottom-large u-push-top-large">
+    <ul class="c-pagination u-push-bottom-large u-push-top-large"><li class="c-pagination__item prev  disabled">
+        <a href="javascript:;">Previous</a>
+    </li>
+                        <li class="c-pagination__item  active">
+            <a href="https://www.wamda.com/news?page=1">1</a>
+        </li>
+                                        <li class="c-pagination__item ">
+            <a href="https://www.wamda.com/news?page=2">2</a>
+        </li>
+                                        <li class="c-pagination__item ">
+            <a href="https://www.wamda.com/news?page=3">3</a>
+        </li>
+                                        <li class="c-pagination__item disabled">
+                ...
+                </li>
+                            <li class="c-pagination__item ">
+            <a href="https://www.wamda.com/news?page=147">147</a>
+        </li>
+        
+    
+    <li class="c-pagination__item next ">
+        <a href="https://www.wamda.com/news?page=2" aria-label="Next">
+            Next
+        </a>
+    </li>
+</ul></div>
+
+    </div>
+
+      <footer class="c-footer"><div class="c-footer__top">
+        <div class="o-wrapper">
+            <div class="c-footer__top__wrapper">
+                <div class="c-footer__item">
+                    <img class="c-footer__logo" src="img/wamda-logo@2x.png" alt=""><p class="c-footer__about">
+                        Wamda accelerates entrepreneurship ecosystems across the Middle East and North Africa region through its sector-agnostic investment vehicle, Wamda Capital, which invests in high-growth technology and tech-enabled startups. Its leading knowledge platform provides the region with impactful thought leadership and research, community development as well as corporate and government advisory services to stakeholders of the startup ecosystem.
+                        <a href="https://www.wamda.com/about" class="c-footer__learn-more">Learn more</a>
+                    </p>
+                </div>
+                <div class="c-footer__item">
+                    <h2>Learn more</h2>
+                    <ul><li><a href="https://www.wamda.com/about">About</a></li>
+                        <li><a href="https://www.wamda.com/faq">FAQ</a></li>
+                        <li><a href="https://www.wamda.com/wamda-investments?#partner_companies">Partner Companies</a></li>
+                        
+                        <li><a href="https://www.wamda.com/legal">Legal</a></li>
+                    </ul></div>
+                <div class="c-footer__item">
+                    <h2>Explore</h2>
+                    <ul><li><a href="https://www.wamda.com/media/podcast">Podcasts</a></li>
+                        <li><a href="https://www.wamda.com/research">Research</a></li>
+                        <li><a href="https://www.wamda.com/events/wamda">Events by Wamda</a></li>
+                        
+                    </ul></div>
+                <div class="c-footer__item">
+                    <h2>Get Involved</h2>
+                    <ul><li><a href="https://www.wamda.com/contact/send-us-story">Send us a story</a></li>
+                        <li><a href="https://www.wamda.com/contact/host-session-with-wamda">Host a session with Wamda</a></li>
+                        <li><a href="https://www.wamda.com/contact/collaborate-with-our-partner-companies">Collaborate with our Partner companies</a></li>
+                        <li><a href="https://www.wamda.com/contact/launch-innovation-program">Launch an innovation programme</a></li>
+                        <li><a href="https://www.wamda.com/contact/pitch-to-wamda">Pitch to Wamda</a></li>
+                    </ul></div>
+                <div class="c-footer__item arabic">
+                                         <a href="https://www.wamda.com/ar">عربي</a>
+                                    </div>
+            </div>
+        </div>
+    </div>
+    <div class="c-footer__bottom">
+        <div class="o-wrapper">
+            <p>Wamda is licensed under a creative commons attribution-nonCommercial - noDerivs 3.0 unported license</p>
+            <ul class="c-footer__social"><li class="c-footer__social__item facebook">
+                    <a href="https://www.facebook.com/WamdaME">
+                        <svg width="32" height="32" viewbox="0 0 32 32"><title>Facebook</title><use xlink:href="#icon-facebook"></use></svg></a>
+                </li>
+                <li class="c-footer__social__item youtube">
+                    <a href="https://www.youtube.com/user/wamda">
+                        <svg width="32" height="32" viewbox="0 0 32 32"><title>Youtube</title><use xlink:href="#icon-youtube"></use></svg></a>
+                </li>
+                <li class="c-footer__social__item twitter">
+                    <a href="https://twitter.com/wamdame">
+                        <svg width="32" height="32" viewbox="0 0 32 32"><title>Twitter</title><use xlink:href="#icon-twitter"></use></svg></a>
+                </li>
+                <li class="c-footer__social__item googleplus">
+                    <a href="https://www.instagram.com/wamdame">
+                        <svg width="32" height="32" viewbox="0 0 32 32"><title>Instagram</title><use xlink:href="#icon-instagram"></use></svg></a>
+                </li>
+                <li class="c-footer__social__item linkedin">
+                    <a href="https://www.linkedin.com/company/wamda">
+                        <svg width="32" height="32" viewbox="0 0 32 32"><title>Linkedin</title><use xlink:href="#icon-linkedin"></use></svg></a>
+                </li>
+            </ul></div>
+    </div>
+</footer><div id="c-newsletter-popup" class="c-modal c-modal--form-success">
+    <div class="c-modal__dialog">
+        <button data-dismiss="c-newsletter-popup" class="c-modal__close">
+            <img src="/img/close.svg" alt=""></button>
+        
+        <div class="c-modal__body c-newsletter-content">
+            <div>
+                <h2>All the information you need to navigate Mena's startup ecosystem</h2>
+                <p>Sign up to receive our weekly digest of stories, op-eds, events and more updates.</p>
+            </div>
+            
+            <form action="" class="c-newsletter__form" data-form="newsletter" data-form-type="modal">
+                <input type="hidden" name="_token" value="h6MwX92vJy1jDIbt6agwADxwnXcauBQ9OnEDbxM3"><div class="c-input-group">
+                    <label for="firstname" class="sr-only">First Name</label>
+                    <input type="text" name="first_name" id="firstname" class="c-input" placeholder="First Name"></div>
+                <div class="c-input-group">
+                    <label for="lastname" class="sr-only">Last Name</label>
+                    <input type="text" name="last_name" id="lastname" class="c-input" placeholder="Last Name"></div>
+                <div class="c-input-group">
+                    <label for="company_name" class="sr-only">Company name</label>
+                    <input type="text" name="company_name" id="company_name" class="c-input" placeholder="Company name"></div>
+                <div class="c-input-group">
+                    <label for="newsletterCountry" class="sr-only">Country</label>
+                    <select class="select full" name="country" id="newsletterCountry"><option value="" selected disabled>Country</option><option value="Afghanistan">Afghanistan</option><option value="Albania">Albania</option><option value="Algeria">Algeria</option><option value="American Samoa">American Samoa</option><option value="Andorra">Andorra</option><option value="Angola">Angola</option><option value="Anguilla">Anguilla</option><option value="Antarctica">Antarctica</option><option value="Antigua and Barbuda">Antigua and Barbuda</option><option value="Argentina">Argentina</option><option value="Armenia">Armenia</option><option value="Aruba">Aruba</option><option value="Australia">Australia</option><option value="Austria">Austria</option><option value="Azerbaijan">Azerbaijan</option><option value="Bahamas">Bahamas</option><option value="Bahrain">Bahrain</option><option value="Bangladesh">Bangladesh</option><option value="Barbados">Barbados</option><option value="Belarus">Belarus</option><option value="Belgium">Belgium</option><option value="Belize">Belize</option><option value="Benin">Benin</option><option value="Bermuda">Bermuda</option><option value="Bhutan">Bhutan</option><option value="Bolivia">Bolivia</option><option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option><option value="Botswana">Botswana</option><option value="Bouvet Island">Bouvet Island</option><option value="Brazil">Brazil</option><option value="British Indian Ocean Territory">British Indian Ocean Territory</option><option value="Brunei Darussalam">Brunei Darussalam</option><option value="Bulgaria">Bulgaria</option><option value="Burkina Faso">Burkina Faso</option><option value="Burundi">Burundi</option><option value="Cambodia">Cambodia</option><option value="Cameroon">Cameroon</option><option value="Canada">Canada</option><option value="Cape Verde">Cape Verde</option><option value="Cayman Islands">Cayman Islands</option><option value="Central African Republic">Central African Republic</option><option value="Chad">Chad</option><option value="Chile">Chile</option><option value="China">China</option><option value="Christmas Island">Christmas Island</option><option value="Cocos (Keeling) Islands">Cocos (Keeling) Islands</option><option value="Colombia">Colombia</option><option value="Comoros">Comoros</option><option value="Congo">Congo</option><option value="Congo, the Democratic Republic of the">Congo, the Democratic Republic of the</option><option value="Cook Islands">Cook Islands</option><option value="Costa Rica">Costa Rica</option><option value="Cote D'Ivoire">Cote D'Ivoire</option><option value="Croatia">Croatia</option><option value="Cuba">Cuba</option><option value="Cyprus">Cyprus</option><option value="Czech Republic">Czech Republic</option><option value="Denmark">Denmark</option><option value="Djibouti">Djibouti</option><option value="Dominica">Dominica</option><option value="Dominican Republic">Dominican Republic</option><option value="Ecuador">Ecuador</option><option value="Egypt">Egypt</option><option value="El Salvador">El Salvador</option><option value="Equatorial Guinea">Equatorial Guinea</option><option value="Eritrea">Eritrea</option><option value="Estonia">Estonia</option><option value="Ethiopia">Ethiopia</option><option value="Falkland Islands (Malvinas)">Falkland Islands (Malvinas)</option><option value="Faroe Islands">Faroe Islands</option><option value="Fiji">Fiji</option><option value="Finland">Finland</option><option value="France">France</option><option value="French Guiana">French Guiana</option><option value="French Polynesia">French Polynesia</option><option value="French Southern Territories">French Southern Territories</option><option value="Gabon">Gabon</option><option value="Gambia">Gambia</option><option value="Georgia">Georgia</option><option value="Germany">Germany</option><option value="Ghana">Ghana</option><option value="Gibraltar">Gibraltar</option><option value="Greece">Greece</option><option value="Greenland">Greenland</option><option value="Grenada">Grenada</option><option value="Guadeloupe">Guadeloupe</option><option value="Guam">Guam</option><option value="Guatemala">Guatemala</option><option value="Guinea">Guinea</option><option value="Guinea-Bissau">Guinea-Bissau</option><option value="Guyana">Guyana</option><option value="Haiti">Haiti</option><option value="Heard Island and Mcdonald Islands">Heard Island and Mcdonald Islands</option><option value="Holy See (Vatican City State)">Holy See (Vatican City State)</option><option value="Honduras">Honduras</option><option value="Hong Kong">Hong Kong</option><option value="Hungary">Hungary</option><option value="Iceland">Iceland</option><option value="India">India</option><option value="Indonesia">Indonesia</option><option value="Iran, Islamic Republic of">Iran, Islamic Republic of</option><option value="Iraq">Iraq</option><option value="Ireland">Ireland</option><option value="Italy">Italy</option><option value="Jamaica">Jamaica</option><option value="Japan">Japan</option><option value="Jordan">Jordan</option><option value="Kazakhstan">Kazakhstan</option><option value="Kenya">Kenya</option><option value="Kiribati">Kiribati</option><option value="Korea, Democratic People's Republic of">Korea, Democratic People's Republic of</option><option value="Korea, Republic of">Korea, Republic of</option><option value="Kuwait">Kuwait</option><option value="Kyrgyzstan">Kyrgyzstan</option><option value="Lao People's Democratic Republic">Lao People's Democratic Republic</option><option value="Latvia">Latvia</option><option value="Lebanon">Lebanon</option><option value="Lesotho">Lesotho</option><option value="Liberia">Liberia</option><option value="Libyan Arab Jamahiriya">Libyan Arab Jamahiriya</option><option value="Liechtenstein">Liechtenstein</option><option value="Lithuania">Lithuania</option><option value="Luxembourg">Luxembourg</option><option value="Macao">Macao</option><option value="Macedonia, the Former Yugoslav Republic of">Macedonia, the Former Yugoslav Republic of</option><option value="Madagascar">Madagascar</option><option value="Malawi">Malawi</option><option value="Malaysia">Malaysia</option><option value="Maldives">Maldives</option><option value="Mali">Mali</option><option value="Malta">Malta</option><option value="Marshall Islands">Marshall Islands</option><option value="Martinique">Martinique</option><option value="Mauritania">Mauritania</option><option value="Mauritius">Mauritius</option><option value="Mayotte">Mayotte</option><option value="Mexico">Mexico</option><option value="Micronesia, Federated States of">Micronesia, Federated States of</option><option value="Moldova, Republic of">Moldova, Republic of</option><option value="Monaco">Monaco</option><option value="Mongolia">Mongolia</option><option value="Montserrat">Montserrat</option><option value="Morocco">Morocco</option><option value="Mozambique">Mozambique</option><option value="Myanmar">Myanmar</option><option value="Namibia">Namibia</option><option value="Nauru">Nauru</option><option value="Nepal">Nepal</option><option value="Netherlands">Netherlands</option><option value="Netherlands Antilles">Netherlands Antilles</option><option value="New Caledonia">New Caledonia</option><option value="New Zealand">New Zealand</option><option value="Nicaragua">Nicaragua</option><option value="Niger">Niger</option><option value="Nigeria">Nigeria</option><option value="Niue">Niue</option><option value="Norfolk Island">Norfolk Island</option><option value="Northern Mariana Islands">Northern Mariana Islands</option><option value="Norway">Norway</option><option value="Oman">Oman</option><option value="Pakistan">Pakistan</option><option value="Palau">Palau</option><option value="Palestinian Territory, Occupied">Palestinian Territory, Occupied</option><option value="Panama">Panama</option><option value="Papua New Guinea">Papua New Guinea</option><option value="Paraguay">Paraguay</option><option value="Peru">Peru</option><option value="Philippines">Philippines</option><option value="Pitcairn">Pitcairn</option><option value="Poland">Poland</option><option value="Portugal">Portugal</option><option value="Puerto Rico">Puerto Rico</option><option value="Qatar">Qatar</option><option value="Reunion">Reunion</option><option value="Romania">Romania</option><option value="Russian Federation">Russian Federation</option><option value="Rwanda">Rwanda</option><option value="Saint Helena">Saint Helena</option><option value="Saint Kitts and Nevis">Saint Kitts and Nevis</option><option value="Saint Lucia">Saint Lucia</option><option value="Saint Pierre and Miquelon">Saint Pierre and Miquelon</option><option value="Saint Vincent and the Grenadines">Saint Vincent and the Grenadines</option><option value="Samoa">Samoa</option><option value="San Marino">San Marino</option><option value="Sao Tome and Principe">Sao Tome and Principe</option><option value="Saudi Arabia">Saudi Arabia</option><option value="Senegal">Senegal</option><option value="Serbia and Montenegro">Serbia and Montenegro</option><option value="Seychelles">Seychelles</option><option value="Sierra Leone">Sierra Leone</option><option value="Singapore">Singapore</option><option value="Slovakia">Slovakia</option><option value="Slovenia">Slovenia</option><option value="Solomon Islands">Solomon Islands</option><option value="Somalia">Somalia</option><option value="South Africa">South Africa</option><option value="South Georgia and the South Sandwich Islands">South Georgia and the South Sandwich Islands</option><option value="Spain">Spain</option><option value="Sri Lanka">Sri Lanka</option><option value="Sudan">Sudan</option><option value="Suriname">Suriname</option><option value="Svalbard and Jan Mayen">Svalbard and Jan Mayen</option><option value="Swaziland">Swaziland</option><option value="Sweden">Sweden</option><option value="Switzerland">Switzerland</option><option value="Syrian Arab Republic">Syrian Arab Republic</option><option value="Taiwan, Province of China">Taiwan, Province of China</option><option value="Tajikistan">Tajikistan</option><option value="Tanzania, United Republic of">Tanzania, United Republic of</option><option value="Thailand">Thailand</option><option value="Timor-Leste">Timor-Leste</option><option value="Togo">Togo</option><option value="Tokelau">Tokelau</option><option value="Tonga">Tonga</option><option value="Trinidad and Tobago">Trinidad and Tobago</option><option value="Tunisia">Tunisia</option><option value="Turkey">Turkey</option><option value="Turkmenistan">Turkmenistan</option><option value="Turks and Caicos Islands">Turks and Caicos Islands</option><option value="Tuvalu">Tuvalu</option><option value="Uganda">Uganda</option><option value="Ukraine">Ukraine</option><option value="United Arab Emirates">United Arab Emirates</option><option value="United Kingdom">United Kingdom</option><option value="United States">United States</option><option value="United States Minor Outlying Islands">United States Minor Outlying Islands</option><option value="Uruguay">Uruguay</option><option value="Uzbekistan">Uzbekistan</option><option value="Vanuatu">Vanuatu</option><option value="Venezuela">Venezuela</option><option value="Viet Nam">Viet Nam</option><option value="Virgin Islands, British">Virgin Islands, British</option><option value="Virgin Islands, U.s.">Virgin Islands, U.s.</option><option value="Wallis and Futuna">Wallis and Futuna</option><option value="Western Sahara">Western Sahara</option><option value="Yemen">Yemen</option><option value="Zambia">Zambia</option><option value="Zimbabwe">Zimbabwe</option></select></div>
+                <div class="c-input-group">
+                    <label for="email" class="sr-only">Your email address</label>
+                    <input type="email" name="email" id="email" class="c-input" placeholder="Your email address" required=""></div>
+		<div class="c-input-group">
+                    <label for="newsletterLanguage" style="display: flex; justify-content: flex-start;">
+                        Newsletter language
+                    </label>
+                    <select class="select full" name="language" id="newsletterLanguage" required=""><option value="en" selected>
+                            English
+                        </option><option value="ar">
+                            عربي
+                        </option></select></div>
+                <div class="c-newsletter__success">
+                    <img src="/img/checkmark-filled.svg"><p>Thank you! Please check your email to confirm your subscription.</p>
+                </div>
+                <button class="c-button">
+                    <span class="text">Subscribe</span>
+                    <img src="/img/loading.gif" class="loader"></button>
+                
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="c-newsletter-popup-success" class="c-modal c-modal--form-success c-modal--ope">
+    <div class="c-modal__dialog">
+        <button data-dismiss="c-newsletter-popup-success" class="c-modal__close">
+            <img src="/img/close.svg" alt=""></button>
+        <div class="c-modal__body">
+            <img src="/img/confirm.svg" class="icon"><h2 class="title">Thank you</h2>
+            <p class="message">Please check your email to confirm your subscription.</p>
+            <button data-dismiss="c-newsletter-popup-success" class="c-button c-button--long">Okay</button>
+        </div>
+    </div>
+</div>
+      <div id="c-search-popup" data-url="https://www.wamda.com/api/search" class="c-modal c-modal--search c-search-popup"><div class="o-wrapper u-push-bottom-large u-push-top-large"><button data-dismiss="c-search-popup" class="c-modal__close"><img src="/img/close.svg" alt=""></button> <div class="c-search__container"><div class="c-search__main"><div class="c-search__input"><input type="text" placeholder="Search"></div> <ul class="c-search__results"></ul></div></div></div></div>
+      <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script><script src="/js/app-2019.min.js"></script><script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.js"></script><script>
+          (function(h,o,t,j,a,r){
+              h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+              h._hjSettings={hjid:1776118,hjsv:6};
+              a=o.getElementsByTagName('head')[0];
+              r=o.createElement('script');r.async=1;
+              r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+              a.appendChild(r);
+          })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+      </script><iframe id="_hjSafeContext_39615846" title="_hjSafeContext" tabindex="-1" aria-hidden="true" src="about:blank" style="display: none !important; width: 1px !important; height: 1px !important; opacity: 0 !important; pointer-events: none !important;"></iframe></body></html>

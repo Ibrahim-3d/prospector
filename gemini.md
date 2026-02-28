@@ -5,7 +5,7 @@
 Ibrahim's guerrilla client acquisition system for his 3D/CGI/motion design freelance business (Viral X studio, Dubai).
 Goal: find companies that need 3D work RIGHT NOW and get in front of them before they post a job or while their job is unfilled.
 
-Strategy file: `ibrahim_guerrilla_targeting_v2.xlsx`
+Strategy file: `ibrahim_guerrilla_targeting_v2.xlsx` sheets(🎯 Strategy Framework,🔎 Query Library (100+).🌍 Regional Discovery)
 
 ---
 
@@ -58,3 +58,11 @@ python main.py
 Scrapling v0.4.1 is used across all modules.
 - **`DynamicFetcher`**: Used for JS-heavy sites like ArtStation and Wamda.
 - **`StealthyFetcher`**: Used for high-protection sites like LinkedIn and Upwork.
+
+## MCP Servers
+"ScraplingServer": {
+  "command": "scrapling",
+  "args": [
+    "mcp"
+  ]
+}

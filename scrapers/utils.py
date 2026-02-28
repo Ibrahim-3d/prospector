@@ -11,237 +11,188 @@ OUTPUTS_DIR = os.path.join(ROOT_DIR, 'outputs', 'json')
 os.makedirs(LOGS_DIR, exist_ok=True)
 os.makedirs(OUTPUTS_DIR, exist_ok=True)
 
-# --- Upwork sheet schema ---
-UPWORK_SHEET = '🔧 Upwork Projects'
-UPWORK_HEADERS = [
-    '#',              # 1
-    'Job Title',      # 2
-    'Budget',         # 3
-    'Type',           # 4  (Hourly / Fixed-price)
-    'Duration',       # 5
-    'Experience',     # 6
-    'Skills',         # 7
-    'Description',    # 8
-    'Posted',         # 9
-    'Job URL',        # 10
-    'Status',         # 11
-    'Priority',       # 12
-    'Notes',          # 13
-]
+# --- Configuration for Sheets ---
+SHEET_CONFIGS = {
+    'artstation': {
+        'name': '🎨 ArtStation Jobs',
+        'headers': ['#', 'Company', 'Title', 'Location', 'Posted', 'Job URL', 'Website', 'Notes', 'Priority'],
+        'widths': [5, 25, 35, 25, 15, 45, 45, 50, 8]
+    },
+    'linkedin': {
+        'name': '👔 LinkedIn Jobs',
+        'headers': ['#', 'Company', 'Title', 'Location', 'Posted', 'Job URL', 'Notes', 'Priority'],
+        'widths': [5, 25, 35, 25, 15, 50, 50, 8]
+    },
+    'wamda': {
+        'name': '💰 MENA Funding',
+        'headers': ['#', 'Company', 'Headline', 'Date', 'Source URL', 'Notes', 'Priority'],
+        'widths': [5, 30, 60, 15, 50, 40, 8]
+    },
+    'upwork': {
+        'name': '🔧 Upwork Projects',
+        'headers': ['#', 'Job Title', 'Budget', 'Type', 'Duration', 'Experience', 'Skills', 'Description', 'Posted', 'Job URL', 'Status', 'Priority', 'Notes'],
+        'widths': [5, 50, 12, 12, 18, 14, 40, 60, 16, 50, 10, 8, 30]
+    }
+}
 
-
-def save_debug_html(html_content, source_name):
+def save_debug_html(page, source_name):
     """Save raw HTML for debugging scraper selectors."""
     path = os.path.join(LOGS_DIR, f'debug_{source_name}_html.html')
+    content = ""
+    if hasattr(page, 'html_content') and page.html_content:
+        content = page.html_content
+    elif hasattr(page, 'text') and page.text:
+        content = page.text
+    elif hasattr(page, 'body') and page.body:
+        try: content = page.body.decode('utf-8', errors='ignore')
+        except: content = str(page.body)
+            
     with open(path, 'w', encoding='utf-8') as f:
-        f.write(html_content if html_content else '')
+        f.write(content)
     print(f"[DEBUG] Saved HTML dump to {path}")
 
-
-def save_debug_text(text_content, source_name):
-    """Save extracted text for debugging."""
-    path = os.path.join(LOGS_DIR, f'debug_{source_name}_text.txt')
-    with open(path, 'w', encoding='utf-8') as f:
-        f.write(text_content if text_content else '')
-    print(f"[DEBUG] Saved text dump to {path}")
-
-
 def save_to_json(leads, filename):
-    if not leads:
-        return
+    if not leads: return
     path = os.path.join(OUTPUTS_DIR, filename)
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(leads, f, indent=4)
     print(f"[OK] Saved {len(leads)} leads to {path}")
 
-
-def get_existing_leads():
-    """Get existing company leads for deduplication."""
-    if not os.path.exists(EXCEL_FILE):
-        return set()
-
-    wb = openpyxl.load_workbook(EXCEL_FILE)
-    if '📋 Company Tracker' not in wb.sheetnames:
-        return set()
-
-    ws = wb['📋 Company Tracker']
-    existing = set()
-    for row in range(2, ws.max_row + 1):
-        name = ws.cell(row=row, column=2).value
-        source = ws.cell(row=row, column=13).value
-        demand = ws.cell(row=row, column=14).value
-        if name:
-            if source and str(source).strip().lower() == 'upwork':
-                demand_key = str(demand).strip().lower() if demand else ""
-                existing.add(f"upwork::{demand_key}")
-            else:
-                existing.add(str(name).strip().lower())
-    return existing
-
-
-def get_existing_upwork_leads():
-    """Get existing Upwork project titles for deduplication."""
-    if not os.path.exists(EXCEL_FILE):
-        return set()
-
-    wb = openpyxl.load_workbook(EXCEL_FILE)
-    if UPWORK_SHEET not in wb.sheetnames:
-        return set()
-
-    ws = wb[UPWORK_SHEET]
-    existing = set()
-    for row in range(2, ws.max_row + 1):
-        title = ws.cell(row=row, column=2).value  # Job Title column
-        if title:
-            existing.add(str(title).strip().lower())
-    return existing
-
-
-def _ensure_upwork_sheet(wb):
-    """Create the Upwork Projects sheet with headers if it doesn't exist."""
-    if UPWORK_SHEET in wb.sheetnames:
-        return wb[UPWORK_SHEET]
-
-    ws = wb.create_sheet(UPWORK_SHEET)
-
-    # Style the headers
-    header_font = Font(bold=True, color='FFFFFF', size=11)
-    header_fill = PatternFill(start_color='2F5496', end_color='2F5496', fill_type='solid')
-    header_align = Alignment(horizontal='center', vertical='center', wrap_text=True)
-    thin_border = Border(
-        left=Side(style='thin'),
-        right=Side(style='thin'),
-        top=Side(style='thin'),
-        bottom=Side(style='thin')
-    )
-
-    for col_idx, header in enumerate(UPWORK_HEADERS, 1):
-        cell = ws.cell(row=1, column=col_idx, value=header)
+def _ensure_sheet(wb, source_key):
+    config = SHEET_CONFIGS.get(source_key)
+    if not config: return None
+    
+    if config['name'] in wb.sheetnames:
+        return wb[config['name']]
+    
+    ws = wb.create_sheet(config['name'])
+    header_font = Font(bold=True, color='FFFFFF')
+    header_fill = PatternFill(start_color='4472C4', end_color='4472C4', fill_type='solid')
+    header_align = Alignment(horizontal='center', vertical='center')
+    
+    for col, header in enumerate(config['headers'], 1):
+        cell = ws.cell(row=1, column=col, value=header)
         cell.font = header_font
         cell.fill = header_fill
         cell.alignment = header_align
-        cell.border = thin_border
-
-    # Set column widths
-    widths = [5, 50, 12, 12, 18, 14, 40, 60, 16, 50, 10, 8, 30]
-    for i, w in enumerate(widths, 1):
-        ws.column_dimensions[openpyxl.utils.get_column_letter(i)].width = w
-
+        
+    for i, width in enumerate(config['widths'], 1):
+        ws.column_dimensions[openpyxl.utils.get_column_letter(i)].width = width
+    
     return ws
 
-
-def save_upwork_to_excel(leads):
-    """Save Upwork leads to dedicated Upwork Projects sheet."""
-    if not leads:
-        return 0
-
-    if not os.path.exists(EXCEL_FILE):
-        print(f"[ERROR] Excel file not found: {EXCEL_FILE}")
-        return 0
-
+def save_to_excel_structured(leads, source_key):
+    """Saves leads to source-specific sheets and also the master Company Tracker."""
+    if not leads: return 0
+    if not os.path.exists(EXCEL_FILE): return 0
+    
     wb = openpyxl.load_workbook(EXCEL_FILE)
-    ws = _ensure_upwork_sheet(wb)
-
-    # Find max ID
-    max_id = 0
-    for row in range(2, ws.max_row + 1):
-        cell_val = ws.cell(row=row, column=1).value
-        if isinstance(cell_val, int) and cell_val > max_id:
-            max_id = cell_val
-
-    existing = get_existing_upwork_leads()
-    next_row = ws.max_row + 1
+    ws_source = _ensure_sheet(wb, source_key)
+    ws_master = wb['📋 Company Tracker'] if '📋 Company Tracker' in wb.sheetnames else None
+    
     added_count = 0
+    
+    # Robust deduplication across both target source and master tracker
+    existing_companies = set()
+    
+    # 1. Read existing from Source Sheet
+    for r in range(2, ws_source.max_row + 1):
+        val = ws_source.cell(row=r, column=2).value # 2nd column is Company/Title
+        if val: existing_companies.add(str(val).lower().strip())
+        
+    # 2. Read existing from Master Tracker (if available)
+    if ws_master and source_key != 'upwork':
+        for r in range(2, ws_master.max_row + 1):
+            val = ws_master.cell(row=r, column=2).value # 2nd column is Company
+            if val: existing_companies.add(str(val).lower().strip())
 
+    next_row_source = ws_source.max_row + 1
+    
     for lead in leads:
-        title = lead.get('title', '').strip()
-        if len(title) < 5:
+        company = lead.get('company', lead.get('title', 'Unknown')).strip()
+        
+        # Super strict safety validation for unwanted empty outputs
+        if company.lower() in existing_companies or not company or company.lower() == 'unknown':
             continue
+        
+        
+        # 1. Save to Source-Specific Sheet
+        row = next_row_source
+        ws_source.cell(row=row, column=1, value=row-1) # ID
+        
+        if source_key == 'artstation':
+            ws_source.cell(row=row, column=2, value=company)
+            ws_source.cell(row=row, column=3, value=lead.get('title', ''))
+            ws_source.cell(row=row, column=4, value=f"{lead.get('city', '')}, {lead.get('country', '')}")
+            ws_source.cell(row=row, column=5, value=lead.get('posted', ''))
+            ws_source.cell(row=row, column=6, value=lead.get('job_url', ''))
+            ws_source.cell(row=row, column=7, value=lead.get('website', ''))
+            ws_source.cell(row=row, column=8, value=lead.get('notes', ''))
+            ws_source.cell(row=row, column=9, value=lead.get('priority', 'A'))
+        elif source_key == 'linkedin':
+            ws_source.cell(row=row, column=2, value=company)
+            ws_source.cell(row=row, column=3, value=lead.get('title', ''))
+            ws_source.cell(row=row, column=4, value=f"{lead.get('city', '')}, {lead.get('country', '')}")
+            ws_source.cell(row=row, column=5, value=lead.get('posted', ''))
+            ws_source.cell(row=row, column=6, value=lead.get('job_url', ''))
+            ws_source.cell(row=row, column=7, value=lead.get('notes', ''))
+            ws_source.cell(row=row, column=8, value=lead.get('priority', 'A'))
+        elif source_key == 'wamda':
+            ws_source.cell(row=row, column=2, value=company)
+            ws_source.cell(row=row, column=3, value=lead.get('demand_signal', ''))
+            ws_source.cell(row=row, column=4, value=lead.get('date', ''))
+            ws_source.cell(row=row, column=5, value=lead.get('article_url', ''))
+            ws_source.cell(row=row, column=6, value=lead.get('notes', ''))
+            ws_source.cell(row=row, column=7, value=lead.get('priority', 'A'))
+        elif source_key == 'upwork':
+            ws_source.cell(row=row, column=2, value=lead.get('title', ''))
+            ws_source.cell(row=row, column=3, value=lead.get('budget', ''))
+            ws_source.cell(row=row, column=4, value=lead.get('type', ''))
+            ws_source.cell(row=row, column=5, value=lead.get('duration', ''))
+            ws_source.cell(row=row, column=6, value=lead.get('experience', ''))
+            ws_source.cell(row=row, column=7, value=lead.get('skills', ''))
+            ws_source.cell(row=row, column=8, value=lead.get('description', ''))
+            ws_source.cell(row=row, column=9, value=lead.get('posted', ''))
+            ws_source.cell(row=row, column=10, value=lead.get('job_url', ''))
+            ws_source.cell(row=row, column=11, value="Research")
+            ws_source.cell(row=row, column=12, value=lead.get('priority', 'A'))
+            ws_source.cell(row=row, column=13, value=lead.get('notes', ''))
 
-        dedup_key = title.lower()
-        if dedup_key in existing:
-            continue
+        # 2. Sync to Master Company Tracker (if it's a company lead)
+        if ws_master and source_key != 'upwork':
+            m_row = ws_master.max_row + 1
+            ws_master.cell(row=m_row, column=1, value=m_row-1)
+            ws_master.cell(row=m_row, column=2, value=company)
+            ws_master.cell(row=m_row, column=3, value=lead.get('country', 'Unknown'))
+            ws_master.cell(row=m_row, column=4, value=lead.get('city', ''))
+            ws_master.cell(row=m_row, column=5, value=lead.get('category', 'Target'))
+            ws_master.cell(row=m_row, column=8, value=lead.get('website', ''))
+            ws_master.cell(row=m_row, column=13, value=lead.get('source', source_key.capitalize()))
+            ws_master.cell(row=m_row, column=14, value=lead.get('demand_signal', ''))
+            ws_master.cell(row=m_row, column=15, value=lead.get('service_needed', '3D/Motion'))
+            ws_master.cell(row=m_row, column=20, value="Research")
+            ws_master.cell(row=m_row, column=21, value=lead.get('priority', 'A'))
+            ws_master.cell(row=m_row, column=23, value=lead.get('notes', ''))
 
-        ws.cell(row=next_row, column=1, value=max_id + added_count + 1)     # #
-        ws.cell(row=next_row, column=2, value=title)                         # Job Title
-        ws.cell(row=next_row, column=3, value=lead.get('budget', ''))        # Budget
-        ws.cell(row=next_row, column=4, value=lead.get('type', ''))          # Type
-        ws.cell(row=next_row, column=5, value=lead.get('duration', ''))      # Duration
-        ws.cell(row=next_row, column=6, value=lead.get('experience', ''))    # Experience
-        ws.cell(row=next_row, column=7, value=lead.get('skills', ''))        # Skills
-        ws.cell(row=next_row, column=8, value=lead.get('description', ''))   # Description
-        ws.cell(row=next_row, column=9, value=lead.get('posted', ''))        # Posted
-        ws.cell(row=next_row, column=10, value=lead.get('job_url', ''))      # Job URL
-        ws.cell(row=next_row, column=11, value="Research")                   # Status
-        ws.cell(row=next_row, column=12, value=lead.get('priority', 'A'))    # Priority
-        ws.cell(row=next_row, column=13, value=lead.get('notes', ''))        # Notes
-
-        existing.add(dedup_key)
-        next_row += 1
+        next_row_source += 1
         added_count += 1
+        existing_companies.add(company.lower().strip())
 
     wb.save(EXCEL_FILE)
     return added_count
 
-
+# Keep legacy functions for compatibility if needed, but point them to the new logic
+def save_upwork_to_excel(leads): return save_to_excel_structured(leads, 'upwork')
 def save_to_excel(leads):
-    """Save company leads (ArtStation, LinkedIn, Wamda) to Company Tracker sheet."""
-    if not leads:
-        return 0
-
-    if not os.path.exists(EXCEL_FILE):
-        print(f"[ERROR] Excel file not found: {EXCEL_FILE}")
-        return 0
-
-    wb = openpyxl.load_workbook(EXCEL_FILE)
-
-    if '📋 Company Tracker' not in wb.sheetnames:
-        print("[ERROR] Sheet '📋 Company Tracker' not found in Excel file.")
-        return 0
-
-    ws = wb['📋 Company Tracker']
-
-    # Find the actual max ID in column 1
-    max_id = 0
-    for row in range(2, ws.max_row + 1):
-        cell_val = ws.cell(row=row, column=1).value
-        if isinstance(cell_val, int) and cell_val > max_id:
-            max_id = cell_val
-
-    existing = get_existing_leads()
-    next_row = ws.max_row + 1
-    added_count = 0
-
-    for lead in leads:
-        company_name = lead.get('company', 'Unknown').strip()
-        demand_signal = lead.get('demand_signal', '')
-        source = lead.get('source', '')
-
-        # Basic cleaning
-        if len(company_name) < 2 or company_name.lower() in ["sign up", "sign in", "apply", "copy link"]:
-            continue
-
-        # Deduplication
-        dedup_key = company_name.lower()
-        if dedup_key in existing:
-            continue
-
-        ws.cell(row=next_row, column=1, value=max_id + added_count + 1)  # #
-        ws.cell(row=next_row, column=2, value=company_name)               # Company Name
-        ws.cell(row=next_row, column=3, value=lead.get('country', 'Unknown'))  # Country
-        ws.cell(row=next_row, column=4, value=lead.get('city', ''))            # City
-        ws.cell(row=next_row, column=5, value=lead.get('category', '3D/Motion Target'))  # Category
-        ws.cell(row=next_row, column=8, value=lead.get('website', ''))         # Website
-        ws.cell(row=next_row, column=13, value=source or 'Master Suite')       # How Found
-        ws.cell(row=next_row, column=14, value=demand_signal or 'N/A')         # Demand Signal
-        ws.cell(row=next_row, column=15, value=lead.get('service_needed', '3D/Motion Design'))  # Service They Need
-        ws.cell(row=next_row, column=20, value="Research")                     # Status
-        ws.cell(row=next_row, column=21, value=lead.get('priority', 'A'))      # Priority
-        ws.cell(row=next_row, column=23, value=lead.get('notes', ''))          # Notes
-
-        existing.add(dedup_key)
-        next_row += 1
-        added_count += 1
-
-    wb.save(EXCEL_FILE)
-    return added_count
+    # This is tricky because save_to_excel in main.py receives a combined list
+    # Let's split them by source if possible, or just use the master sync
+    if not leads: return 0
+    art_leads = [l for l in leads if l.get('source') == 'ArtStation']
+    lin_leads = [l for l in leads if l.get('source') == 'LinkedIn']
+    wam_leads = [l for l in leads if l.get('source') == 'Wamda']
+    
+    total = 0
+    total += save_to_excel_structured(art_leads, 'artstation')
+    total += save_to_excel_structured(lin_leads, 'linkedin')
+    total += save_to_excel_structured(wam_leads, 'wamda')
+    return total

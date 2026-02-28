@@ -1,3 +1,4 @@
+from scrapers.strategy_loader import get_strategy_data
 from scrapers.artstation import scrape_artstation
 from scrapers.wamda import scrape_wamda
 from scrapers.linkedin import scrape_linkedin
@@ -9,19 +10,24 @@ from datetime import datetime
 def run_suite():
     """
     Main orchestrator for the Master Scraping Suite.
-    Runs all scrapers and updates the Excel tracker.
+    Runs all scrapers intelligently using dynamic Strategy Queries and LLM Enrichers.
     """
     start_time = datetime.now()
     print("="*60)
     print(f"🚀 MASTER SCRAPING SUITE STARTED at {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
     print("="*60)
+    
+    # --- 0. Load Strategy Framework ---
+    strategy = get_strategy_data()
+    linkedin_regions = strategy.get("linkedin_regions")
+    linkedin_queries = strategy.get("linkedin_queries")
+    upwork_queries = strategy.get("upwork_queries")
 
-    # 1. Scraping Phase
-    # We collect results in a list to process later
+    # --- 1. Scraping Phase ---
     all_company_leads = []
     upwork_leads = []
 
-    # ArtStation (Priority A+)
+    # ArtStation (Priority A+) - Still static baseline because url structure is purely pages
     try:
         artstation_results = scrape_artstation()
         if artstation_results:
@@ -29,15 +35,18 @@ def run_suite():
     except Exception as e:
         print(f"[ERROR] ArtStation Scraper Failed: {e}")
 
-    # LinkedIn (Priority A+)
+    # LinkedIn (Priority A+) - Now highly dynamic via Strategy Framework & LLM
     try:
-        linkedin_results = scrape_linkedin()
+        linkedin_results = scrape_linkedin(
+            queries=linkedin_queries, 
+            regions=linkedin_regions
+        )
         if linkedin_results:
             all_company_leads.extend(linkedin_results)
     except Exception as e:
         print(f"[ERROR] LinkedIn Scraper Failed: {e}")
 
-    # Wamda (MENA Funding)
+    # Wamda (MENA Funding) - Enriched via LLM
     try:
         wamda_results = scrape_wamda()
         if wamda_results:
@@ -45,15 +54,15 @@ def run_suite():
     except Exception as e:
         print(f"[ERROR] Wamda Scraper Failed: {e}")
 
-    # Upwork (Project Leads)
+    # Upwork (Project Leads) - Dynamic & LLM Enriched
     try:
-        upwork_results = scrape_upwork()
+        upwork_results = scrape_upwork(queries=upwork_queries)
         if upwork_results:
-            upwork_leads = upwork_results
+            upwork_leads.extend(upwork_results)
     except Exception as e:
         print(f"[ERROR] Upwork Scraper Failed: {e}")
 
-    # 2. Excel Update Phase
+    # --- 2. Excel Update Phase ---
     print("\n" + "-"*30)
     print("📊 UPDATING EXCEL TRACKER...")
     
@@ -63,7 +72,7 @@ def run_suite():
     # Save specialized Upwork leads
     added_upwork = save_upwork_to_excel(upwork_leads)
     
-    # 3. Summary
+    # --- 3. Summary ---
     end_time = datetime.now()
     duration = end_time - start_time
     

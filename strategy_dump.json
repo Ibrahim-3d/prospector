@@ -1,0 +1,1803 @@
+{
+    "🎯 Strategy Framework": [
+        [
+            "Strategy Layer",
+            "Tactic",
+            "Why It Works",
+            "Where to Execute",
+            "Expected Hit Rate",
+            "Priority"
+        ],
+        [
+            "🔍 DEMAND SIGNALS — FIND COMPANIES BEFORE THEY POST JOBS",
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            "Job Post Reverse-Engineering",
+            "Company posts full-time 3D artist job → They NEED one but can't find one → YOU fill the gap as freelancer NOW",
+            "90% of companies that post a full-time role take 2-4 months to hire. They need help TODAY.",
+            "LinkedIn Jobs, Indeed, Glassdoor",
+            "25-35%",
+            "🔴 A+"
+        ],
+        [
+            "Funding Signal",
+            "Startup just raised Seed/Series A → They have money but no team → Need freelance creative ASAP",
+            "Post-funding, startups scramble to build marketing. They can't hire fast enough.",
+            "Crunchbase, Tracxn, TechCrunch, Wamda",
+            "20-30%",
+            "🔴 A+"
+        ],
+        [
+            "New Office/Expansion",
+            "Company opens new Dubai/Kuwait/Europe office → Needs local creative support",
+            "Expansion = new marketing campaigns, new audiences, new content needs",
+            "LinkedIn company updates, press releases",
+            "15-25%",
+            "🔴 A"
+        ],
+        [
+            "Key Person Departure",
+            "Company's 3D artist/motion designer JUST LEFT → Desperate gap to fill",
+            "They need coverage immediately, freelancer is fastest solution",
+            "LinkedIn (watch for job changes)",
+            "30-40%",
+            "🔴 A+"
+        ],
+        [
+            "Bad DIY Content",
+            "Company posts amateur 3D/CGI content on social → They tried but failed → Need a pro",
+            "They already WANT 3D content but lack skill. Easiest sell.",
+            "Instagram, LinkedIn, YouTube",
+            "20-30%",
+            "🔴 A"
+        ],
+        [
+            "Award Winners",
+            "Agency just won an award → Growing, getting more clients → Need overflow capacity",
+            "Awards = more inbound client work = need more freelancers",
+            "Cannes Lions, D&AD, The One Show, Loeries",
+            "15-20%",
+            "🟡 B+"
+        ],
+        [
+            "Competitor Mimicry",
+            "Brand's competitor just did a 3D billboard/campaign → They'll want one too",
+            "FOMO drives massive corporate spending. \"Why don't WE have that?\"",
+            "Social media monitoring, AdAge",
+            "10-20%",
+            "🟡 B"
+        ],
+        [
+            "RFP/Tender Signals",
+            "Government or brand posts RFP for creative/3D/DOOH work",
+            "Pre-qualified demand with budget already approved",
+            "UAE govt portals, Tejari, Kuwait CAPT",
+            "15-25%",
+            "🔴 A"
+        ],
+        [
+            "🕳️ HIDDEN CHANNELS — WHERE OTHER FREELANCERS AREN'T",
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            "Expired Job Posts",
+            "Jobs posted 30-60 days ago that are STILL unfilled → Company still needs help",
+            "If they haven't hired in 60 days, they're desperate or budget-constrained (perfect for freelancer)",
+            "LinkedIn Jobs (filter by date), Indeed",
+            "20-30%",
+            "🔴 A+"
+        ],
+        [
+            "Startup Accelerator Portfolios",
+            "Browse startup portfolios of accelerators → These companies ALL need creative",
+            "Accelerator startups have money + pressure to launch but no creative team",
+            "Hub71, in5, Flat6Labs, Sheraa, Y Combinator, Techstars",
+            "20-25%",
+            "🔴 A"
+        ],
+        [
+            "Freelance Platform Reverse",
+            "Instead of applying on Upwork, find companies who POST 3D jobs there → Reach them DIRECTLY outside Upwork",
+            "You skip the platform fee and competition. Direct = higher trust.",
+            "Upwork job feed → Google company → LinkedIn outreach",
+            "25-35%",
+            "🔴 A+"
+        ],
+        [
+            "Coworking Space Directories",
+            "Browse member lists of premium coworking spaces → Find startups that need creative",
+            "Coworking members are early-stage, bootstrapped, need affordable creative help",
+            "WeWork, Astrolabs, DIFC Innovation Hub, in5",
+            "10-15%",
+            "🟡 B"
+        ],
+        [
+            "Product Hunt Launches",
+            "Companies launching on Product Hunt need 3D/video content for their launch",
+            "Launch = they're spending on marketing RIGHT NOW",
+            "producthunt.com daily launches",
+            "10-20%",
+            "🟡 B"
+        ],
+        [
+            "Conference Speaker/Sponsor Lists",
+            "Companies sponsoring creative/marketing/tech conferences = have budget",
+            "If they can sponsor a conference, they can pay a freelancer",
+            "Event websites, Eventbrite, Meetup",
+            "10-15%",
+            "🟡 B"
+        ],
+        [
+            "E-commerce Product Brands",
+            "D2C brands launching products need CGI product renders → HUGE volume",
+            "Product renders are recurring work. One client = dozens of renders/month",
+            "Shopify store directories, Amazon bestsellers",
+            "15-25%",
+            "🔴 A"
+        ],
+        [
+            "Real Estate Developers",
+            "New projects in UAE/Kuwait need 3D visualization, walkthroughs, fly-throughs",
+            "Every new tower, villa project, mall needs renders before it's built",
+            "Dubai Land Dept, RERA, Kuwait real estate portals",
+            "20-30%",
+            "🔴 A"
+        ],
+        [
+            "Architecture Firms",
+            "Architects constantly need 3D visualization but can't afford full-time artist",
+            "Recurring need, project-based, perfect for freelancer model",
+            "ArchDaily, Dezeen, local architect directories",
+            "15-25%",
+            "🔴 A"
+        ],
+        [
+            "Slack/Discord Communities",
+            "Join creative industry Slack/Discord groups where agencies post freelance needs",
+            "Insider channel, less competition than public job boards",
+            "Motion Design Slack, 3D Artists Discord, DOOH groups",
+            "15-20%",
+            "🟡 B+"
+        ],
+        [
+            "Facebook Groups",
+            "Marketing manager groups where people ask for freelancer recommendations",
+            "Warm referral channel — someone ASKED for what you do",
+            "FB: 'Digital Marketing UAE', 'Kuwait Marketing', etc.",
+            "10-20%",
+            "🟡 B"
+        ],
+        [
+            "🤝 RELATIONSHIP PLAYS — LONG GAME",
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            "White-Label Partner",
+            "Offer to be a studio's invisible production arm (they sell, you produce)",
+            "Studios can take MORE clients without hiring. Win-win.",
+            "Direct pitch to small studios",
+            "15-25%",
+            "🔴 A"
+        ],
+        [
+            "Agency Freelancer Pool",
+            "Get added to agency's approved freelancer roster",
+            "Once approved, work flows to you automatically",
+            "Apply to MediaMonks, Superside, BUCK, etc.",
+            "10-15%",
+            "🟡 B+"
+        ],
+        [
+            "Recruiter Relationships",
+            "Build relationships with creative recruiters who place freelancers",
+            "Recruiters have pipelines of gigs. One relationship = many jobs.",
+            "Creative Circle, Aquent, Vitamin T, The Dots",
+            "15-20%",
+            "🔴 A"
+        ],
+        [
+            "Content Authority",
+            "Post 3D/DOOH tutorials on LinkedIn → Attract inbound leads",
+            "People hire experts. Posting = proof of expertise.",
+            "LinkedIn, YouTube, X",
+            "5-10%",
+            "🟡 B"
+        ],
+        [
+            "Referral Engine",
+            "After every project, ask client 'Who else could use this?'",
+            "Referrals close 4x faster than cold outreach",
+            "Post-project follow-up",
+            "30-50%",
+            "🔴 A+"
+        ]
+    ],
+    "🔎 Query Library (100+)": [
+        [
+            "#",
+            "Platform",
+            "Query Type",
+            "Exact Query / Search String",
+            "What You're Hunting",
+            "Frequency",
+            "Difficulty"
+        ],
+        [
+            "LINKEDIN — FIND DECISION MAKERS WHO HIRE FREELANCERS",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            1,
+            "LinkedIn People",
+            "Creative Directors",
+            "(\"creative director\" OR \"art director\" OR \"design director\") AND (\"3D\" OR \"CGI\" OR \"motion\") NOT (student OR intern)",
+            "People who directly hire 3D freelancers",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            2,
+            "LinkedIn People",
+            "Producers who outsource",
+            "(\"producer\" OR \"executive producer\" OR \"head of production\") AND (agency OR studio) AND (\"3D\" OR \"animation\" OR \"motion\")",
+            "Producers manage freelancer budgets",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            3,
+            "LinkedIn People",
+            "Studio Founders (small)",
+            "(founder OR \"co-founder\" OR owner) AND (\"3D\" OR \"CGI\" OR \"motion design\" OR \"animation studio\") NOT (500+)",
+            "Small studio owners who need help",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            4,
+            "LinkedIn People",
+            "Marketing leads at brands",
+            "(\"marketing director\" OR \"brand manager\" OR CMO) AND (\"product launch\" OR \"campaign\") AND (Dubai OR Kuwait OR UAE)",
+            "Brand-side people who commission 3D work",
+            "Weekly",
+            "Med"
+        ],
+        [
+            5,
+            "LinkedIn People",
+            "DOOH/OOH specialists",
+            "(\"DOOH\" OR \"out of home\" OR \"digital signage\" OR \"billboard\") AND (manager OR director OR \"head of\")",
+            "People who buy DOOH content",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            6,
+            "LinkedIn People",
+            "Real estate marketing",
+            "(\"marketing manager\" OR \"marketing director\") AND (\"real estate\" OR \"property\" OR \"developer\") AND (Dubai OR Kuwait OR Abu Dhabi)",
+            "Real estate companies needing 3D viz",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            7,
+            "LinkedIn People",
+            "Startup CMOs/Founders",
+            "(founder OR CMO OR \"head of marketing\") AND (startup OR \"series A\" OR \"seed\" OR \"funded\") AND (Dubai OR UAE OR MENA)",
+            "Funded startups needing creative",
+            "Weekly",
+            "Med"
+        ],
+        [
+            8,
+            "LinkedIn People",
+            "E-commerce brand owners",
+            "(founder OR CEO OR \"brand owner\") AND (\"e-commerce\" OR \"D2C\" OR \"direct to consumer\") AND (\"product\" OR \"launch\")",
+            "D2C brands needing product renders",
+            "Bi-weekly",
+            "Med"
+        ],
+        [
+            "LINKEDIN — FIND COMPANIES",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            9,
+            "LinkedIn Companies",
+            "New 3D/animation studios",
+            "Filter: Industry=Animation, Founded=Last 2 years, Size=1-50",
+            "Newly created studios (need freelancers)",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            10,
+            "LinkedIn Companies",
+            "Growing agencies",
+            "Filter: Industry=Advertising, Growth=Growing, Size=11-50, Location=[target country]",
+            "Mid-size agencies scaling up",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            11,
+            "LinkedIn Companies",
+            "DOOH companies",
+            "\"DOOH\" OR \"digital out of home\" OR \"3D billboard\" OR \"anamorphic\" | Filter by company",
+            "All DOOH companies worldwide",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            "LINKEDIN — REAL-TIME DEMAND SIGNALS (POSTS)",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            12,
+            "LinkedIn Posts",
+            "People asking for freelancers",
+            "\"looking for\" AND (\"3D\" OR \"CGI\" OR \"motion designer\" OR \"animator\") AND (\"freelance\" OR \"contract\" OR \"project\")",
+            "LIVE demand for 3D freelancers",
+            "Daily",
+            "Easy"
+        ],
+        [
+            13,
+            "LinkedIn Posts",
+            "People recommending",
+            "\"anyone know\" AND (\"3D\" OR \"animation\" OR \"motion\" OR \"CGI\") AND (\"freelancer\" OR \"artist\" OR \"designer\")",
+            "People seeking recommendations",
+            "Daily",
+            "Easy"
+        ],
+        [
+            14,
+            "LinkedIn Posts",
+            "Hiring posts",
+            "\"we're hiring\" AND (\"3D\" OR \"motion\" OR \"CGI\" OR \"animation\") AND (\"remote\" OR \"freelance\" OR \"contract\")",
+            "Companies actively hiring",
+            "Daily",
+            "Easy"
+        ],
+        [
+            15,
+            "LinkedIn Posts",
+            "Project announcements",
+            "\"just launched\" OR \"new campaign\" OR \"excited to share\" AND (\"3D\" OR \"billboard\" OR \"CGI\" OR \"DOOH\")",
+            "Companies launching 3D projects (future clients)",
+            "Daily",
+            "Easy"
+        ],
+        [
+            16,
+            "LinkedIn Posts",
+            "Help requests",
+            "\"need help\" OR \"looking for help\" AND (\"3D\" OR \"rendering\" OR \"animation\" OR \"video\")",
+            "Direct help requests",
+            "Daily",
+            "Easy"
+        ],
+        [
+            17,
+            "LinkedIn Posts",
+            "Budget signals",
+            "\"allocated budget\" OR \"increased budget\" OR \"marketing budget\" AND (\"creative\" OR \"content\" OR \"video\" OR \"3D\")",
+            "Companies with budget to spend",
+            "Weekly",
+            "Med"
+        ],
+        [
+            "LINKEDIN JOBS — REVERSE ENGINEERING (THE GOLD MINE)",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            18,
+            "LinkedIn Jobs",
+            "Full-time 3D (pitch as interim)",
+            "\"3D artist\" OR \"3D designer\" OR \"motion designer\" | Remote | Posted 30+ days ago",
+            "Unfilled roles = companies that need freelancer NOW",
+            "Daily",
+            "Easy"
+        ],
+        [
+            19,
+            "LinkedIn Jobs",
+            "CGI/VFX roles",
+            "\"CGI\" OR \"VFX artist\" OR \"visual effects\" | Contract OR Freelance",
+            "Direct freelance opportunities",
+            "Daily",
+            "Easy"
+        ],
+        [
+            20,
+            "LinkedIn Jobs",
+            "Motion design at agencies",
+            "\"motion designer\" OR \"motion graphics\" AND agency | Date: Past month",
+            "Agencies building motion capacity",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            21,
+            "LinkedIn Jobs",
+            "DOOH content roles",
+            "\"DOOH\" OR \"digital billboard\" OR \"out of home\" AND (\"content\" OR \"creative\" OR \"designer\")",
+            "DOOH industry hiring",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            22,
+            "LinkedIn Jobs",
+            "AI video/creative roles",
+            "\"AI\" AND (\"video\" OR \"creative\" OR \"content\") AND (\"generation\" OR \"automation\" OR \"workflow\")",
+            "AI creative companies hiring",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            23,
+            "LinkedIn Jobs",
+            "Arch viz roles",
+            "\"architectural visualization\" OR \"arch viz\" OR \"3D visualization\" AND (\"real estate\" OR \"architecture\")",
+            "Arch viz demand",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            24,
+            "LinkedIn Jobs",
+            "Product render roles",
+            "\"product rendering\" OR \"product visualization\" OR \"CGI product\" AND (e-commerce OR brand)",
+            "Product render demand",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            25,
+            "LinkedIn Jobs",
+            "Dubai/UAE creative jobs",
+            "\"3D\" OR \"motion\" OR \"CGI\" OR \"animation\" | Location: UAE | Date: Past week",
+            "Local UAE demand snapshot",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            26,
+            "LinkedIn Jobs",
+            "Kuwait creative jobs",
+            "\"3D\" OR \"motion\" OR \"design\" OR \"creative\" | Location: Kuwait | Date: Past month",
+            "Kuwait demand snapshot",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            "GOOGLE — X-RAY LINKEDIN (FIND PEOPLE WITHOUT PREMIUM)",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            27,
+            "Google X-Ray",
+            "Creative directors at agencies",
+            "site:linkedin.com/in \"creative director\" \"3D\" OR \"CGI\" (agency OR studio) -jobs",
+            "CD profiles without LinkedIn Premium",
+            "Weekly",
+            "Med"
+        ],
+        [
+            28,
+            "Google X-Ray",
+            "Studio founders",
+            "site:linkedin.com/in \"founder\" (\"3D studio\" OR \"animation studio\" OR \"CGI studio\") -jobs",
+            "Small studio owners",
+            "Weekly",
+            "Med"
+        ],
+        [
+            29,
+            "Google X-Ray",
+            "Producers",
+            "site:linkedin.com/in \"producer\" (\"motion\" OR \"3D\" OR \"animation\" OR \"VFX\") (agency OR studio) -jobs",
+            "Production people who hire",
+            "Weekly",
+            "Med"
+        ],
+        [
+            30,
+            "Google X-Ray",
+            "DOOH/OOH managers",
+            "site:linkedin.com/in (\"DOOH\" OR \"out of home\") (\"manager\" OR \"director\" OR \"head\") -jobs",
+            "DOOH decision makers",
+            "Monthly",
+            "Med"
+        ],
+        [
+            "GOOGLE — FIND HIDDEN COMPANIES",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            31,
+            "Google",
+            "New studios (hidden gems)",
+            "\"3D animation studio\" OR \"CGI studio\" OR \"motion design studio\" \"founded in 2023\" OR \"founded in 2024\" OR \"founded in 2025\"",
+            "Newly created studios",
+            "Monthly",
+            "Med"
+        ],
+        [
+            32,
+            "Google",
+            "Studios that outsource",
+            "\"we work with freelancers\" OR \"outsource\" OR \"freelance network\" AND (\"3D\" OR \"animation\" OR \"CGI\" OR \"motion\")",
+            "Studios that openly use freelancers",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            33,
+            "Google",
+            "White label studios",
+            "\"white label\" AND (\"3D animation\" OR \"motion graphics\" OR \"CGI\" OR \"rendering\")",
+            "Studios seeking white-label partners",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            34,
+            "Google",
+            "Agencies hiring 3D",
+            "\"hiring\" OR \"careers\" AND (\"3D artist\" OR \"motion designer\" OR \"CGI\") AND (agency OR studio) site:*.com/careers",
+            "Agencies with open 3D roles",
+            "Weekly",
+            "Med"
+        ],
+        [
+            35,
+            "Google",
+            "DOOH companies worldwide",
+            "\"3D anamorphic\" OR \"anamorphic billboard\" (company OR studio OR agency) -news -blog",
+            "Every anamorphic company globally",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            36,
+            "Google",
+            "Clutch/DesignRush scrape",
+            "site:clutch.co \"3D animation\" OR \"motion graphics\" OR \"CGI\" agencies",
+            "Clutch-listed 3D agencies",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            37,
+            "Google",
+            "Dubai creative agencies",
+            "\"creative agency\" OR \"advertising agency\" Dubai -jobs -news 2024 OR 2025",
+            "Dubai agency landscape",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            38,
+            "Google",
+            "Kuwait creative agencies",
+            "\"creative agency\" OR \"advertising agency\" OR \"marketing agency\" Kuwait -jobs",
+            "Kuwait agency landscape",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            39,
+            "Google",
+            "EU motion studios",
+            "\"motion design studio\" OR \"motion graphics studio\" (London OR Berlin OR Amsterdam OR Paris OR Barcelona)",
+            "European motion studios",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            40,
+            "Google",
+            "Companies needing 3D",
+            "\"need 3D\" OR \"looking for 3D\" OR \"3D content\" (company OR brand OR startup) -tutorial -course",
+            "Companies actively seeking 3D",
+            "Weekly",
+            "Med"
+        ],
+        [
+            41,
+            "Google",
+            "Real estate + 3D UAE",
+            "\"3D visualization\" OR \"3D rendering\" (\"real estate\" OR \"property\" OR \"developer\") (Dubai OR Abu Dhabi OR Kuwait)",
+            "Real estate companies needing 3D",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            42,
+            "Google",
+            "E-commerce product viz",
+            "\"product visualization\" OR \"product rendering\" OR \"CGI product\" (brand OR \"e-commerce\" OR \"online store\") -tutorial",
+            "E-commerce brands needing renders",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            43,
+            "Google",
+            "Event companies UAE",
+            "\"event production\" OR \"event management\" (\"LED\" OR \"3D\" OR \"immersive\" OR \"visual\") (Dubai OR Kuwait OR Riyadh)",
+            "Event companies needing 3D content",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            "GOOGLE — FUNDED STARTUPS (THEY HAVE MONEY + NEED CREATIVE)",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            44,
+            "Google",
+            "Funded UAE startups",
+            "site:wamda.com OR site:magnitt.com \"raised\" OR \"funding\" (Dubai OR UAE) 2025 2026",
+            "Recently funded MENA startups",
+            "Weekly",
+            "Med"
+        ],
+        [
+            45,
+            "Google",
+            "Funded US startups",
+            "site:techcrunch.com \"raised\" (\"seed\" OR \"series A\") 2025 2026 -ai -crypto",
+            "Recently funded US startups",
+            "Weekly",
+            "Med"
+        ],
+        [
+            46,
+            "Google",
+            "Funded EU startups",
+            "site:eu-startups.com \"raised\" OR \"funding\" 2025 2026",
+            "Recently funded European startups",
+            "Weekly",
+            "Med"
+        ],
+        [
+            47,
+            "Google",
+            "Product Hunt launches",
+            "site:producthunt.com \"launched\" OR \"just launched\" 2025 2026",
+            "Startups launching products",
+            "Daily",
+            "Easy"
+        ],
+        [
+            "STARTUP DATABASES — FIND COMPANIES WITH MONEY",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            48,
+            "Crunchbase",
+            "Funded UAE companies",
+            "Filter: HQ=UAE, Funding=Seed to Series B, Founded=2022-2025, Industry=any",
+            "All recently funded UAE startups",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            49,
+            "Crunchbase",
+            "Funded Kuwait companies",
+            "Filter: HQ=Kuwait, Funding=any, Founded=2022-2025",
+            "All recently funded Kuwait startups",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            50,
+            "Crunchbase",
+            "US creative/marketing tech",
+            "Filter: HQ=US, Industry=Marketing/Advertising, Funding=Seed-Series A, Founded=2023-2025",
+            "Marketing startups needing creative",
+            "Monthly",
+            "Med"
+        ],
+        [
+            51,
+            "Tracxn",
+            "UAE startup ecosystem",
+            "Browse: UAE → Filter by sector, funding stage",
+            "52K+ UAE startups tracked",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            52,
+            "AngelList/Wellfound",
+            "Startups hiring creative",
+            "Filter: Role=Designer/Creative, Remote=Yes, Stage=Seed/Series A",
+            "Startups with open creative roles",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            "UPWORK — BEYOND BASIC PROPOSALS",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            53,
+            "Upwork Jobs",
+            "3D animation projects",
+            "\"3D animation\" OR \"3D modeling\" OR \"Cinema 4D\" OR \"Blender\" | Budget: $1K+ | Posted: Last 24h",
+            "High-budget 3D projects",
+            "Daily",
+            "Easy"
+        ],
+        [
+            54,
+            "Upwork Jobs",
+            "Motion design projects",
+            "\"motion graphics\" OR \"motion design\" OR \"After Effects\" | Budget: $500+ | Expert level",
+            "Quality motion projects",
+            "Daily",
+            "Easy"
+        ],
+        [
+            55,
+            "Upwork Jobs",
+            "DOOH/Billboard projects",
+            "\"billboard\" OR \"DOOH\" OR \"digital signage\" OR \"LED screen\" | Any budget",
+            "DOOH-specific projects",
+            "Daily",
+            "Easy"
+        ],
+        [
+            56,
+            "Upwork Jobs",
+            "Product rendering",
+            "\"product rendering\" OR \"product visualization\" OR \"CGI product\" | Budget: $500+",
+            "Product viz projects",
+            "Daily",
+            "Easy"
+        ],
+        [
+            57,
+            "Upwork Jobs",
+            "AI video projects",
+            "\"AI video\" OR \"AI animation\" OR \"AI content\" | Any budget",
+            "AI-creative hybrid projects",
+            "Daily",
+            "Easy"
+        ],
+        [
+            58,
+            "Upwork Jobs",
+            "Arch viz projects",
+            "\"architectural visualization\" OR \"3D rendering\" OR \"interior design 3D\" | Budget: $500+",
+            "Architecture visualization projects",
+            "Daily",
+            "Easy"
+        ],
+        [
+            59,
+            "Upwork Jobs",
+            "Web dev + 3D",
+            "\"3D web\" OR \"interactive 3D\" OR \"Three.js\" OR \"WebGL\" OR \"React 3D\"",
+            "Interactive 3D web projects",
+            "Daily",
+            "Easy"
+        ],
+        [
+            60,
+            "Upwork Reverse",
+            "CLIENT RESEARCH",
+            "Find client profiles who posted 3D jobs → Note company name → Reach out DIRECTLY via LinkedIn",
+            "Skip Upwork fees by going direct",
+            "Daily",
+            "Med"
+        ],
+        [
+            "X (TWITTER) — REAL-TIME SIGNALS",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            61,
+            "X Search",
+            "Hiring posts",
+            "\"hiring\" (\"3D artist\" OR \"motion designer\" OR \"CGI\" OR \"animator\") (\"freelance\" OR \"remote\" OR \"contract\")",
+            "Real-time hiring signals",
+            "Daily",
+            "Easy"
+        ],
+        [
+            62,
+            "X Search",
+            "Looking for posts",
+            "\"looking for\" (\"3D\" OR \"animator\" OR \"motion\" OR \"CGI\") (\"freelance\" OR \"help\" OR \"recommend\")",
+            "People actively seeking 3D help",
+            "Daily",
+            "Easy"
+        ],
+        [
+            63,
+            "X Search",
+            "Agency wins",
+            "\"won\" OR \"awarded\" (agency OR studio) (\"campaign\" OR \"account\" OR \"client\") (\"3D\" OR \"creative\" OR \"animation\")",
+            "Agencies winning new business (need capacity)",
+            "Weekly",
+            "Med"
+        ],
+        [
+            64,
+            "X Search",
+            "DOOH/Billboard launches",
+            "\"3D billboard\" OR \"anamorphic\" OR \"DOOH\" (launched OR launch OR live OR debut)",
+            "New DOOH campaigns (competitor intel)",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            65,
+            "X Search",
+            "UAE/Kuwait marketing",
+            "(\"Dubai\" OR \"Kuwait\" OR \"UAE\") (\"marketing\" OR \"campaign\" OR \"launch\") (\"3D\" OR \"animation\" OR \"creative\")",
+            "Regional marketing activity",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            "REDDIT — COMMUNITY SIGNALS",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            66,
+            "Reddit",
+            "r/MotionDesign hiring",
+            "r/MotionDesign \"hiring\" OR \"freelancer\" OR \"looking for\" OR \"anyone available\"",
+            "Motion design community jobs",
+            "Daily",
+            "Easy"
+        ],
+        [
+            67,
+            "Reddit",
+            "r/Cinema4D gigs",
+            "r/Cinema4D \"project\" OR \"gig\" OR \"paid\" OR \"commission\" OR \"freelance\"",
+            "C4D-specific opportunities",
+            "Daily",
+            "Easy"
+        ],
+        [
+            68,
+            "Reddit",
+            "r/blender work",
+            "r/blender \"commission\" OR \"paid work\" OR \"freelance\" OR \"looking for artist\"",
+            "Blender community gigs",
+            "Daily",
+            "Easy"
+        ],
+        [
+            69,
+            "Reddit",
+            "r/vfx outsource",
+            "r/vfx \"outsource\" OR \"freelancer\" OR \"studio looking\" OR \"available\"",
+            "VFX industry outsource needs",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            70,
+            "Reddit",
+            "r/entrepreneur creative",
+            "r/entrepreneur OR r/startups \"3D\" OR \"animation\" OR \"video\" OR \"branding\" OR \"product render\" need OR looking",
+            "Entrepreneurs needing creative",
+            "Weekly",
+            "Med"
+        ],
+        [
+            71,
+            "Reddit",
+            "r/forhire",
+            "r/forhire [Hiring] \"3D\" OR \"animation\" OR \"motion\" OR \"CGI\" OR \"rendering\"",
+            "Direct hiring posts",
+            "Daily",
+            "Easy"
+        ],
+        [
+            "SPECIALIZED JOB BOARDS",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            72,
+            "ArtStation",
+            "Freelance 3D jobs",
+            "Jobs → Filter: Freelance, Remote, 3D Art, Motion Design, VFX, Lighting",
+            "Industry-standard 3D job board",
+            "Daily",
+            "Easy"
+        ],
+        [
+            73,
+            "Working Not Working",
+            "Premium creative gigs",
+            "Sign up as 3D/Motion/CGI specialist → Agencies post exclusive gigs",
+            "Premium agency freelance network",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            74,
+            "Creativepool",
+            "UK/EU creative jobs",
+            "Browse: 3D, Animation, Motion Design, VFX | Filter: Freelance",
+            "European creative opportunities",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            75,
+            "Mandy.com",
+            "Production industry",
+            "Browse: VFX, 3D, Motion Design, Animation | Freelance",
+            "Film/TV/commercial production gigs",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            76,
+            "Dribbble",
+            "Design freelance",
+            "Jobs → Animation, 3D, Motion | Freelance/Remote",
+            "Design community jobs",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            77,
+            "The Dots",
+            "UK creative network",
+            "Browse opportunities in 3D, Animation, Motion",
+            "UK creative industry network",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            78,
+            "Motionographer",
+            "Motion design jobs",
+            "Jobs section → Filter: Freelance",
+            "Premium motion design community",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            79,
+            "School of Motion",
+            "MoGraph jobs",
+            "Job board → Motion design freelance opportunities",
+            "Motion graphics specific",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            80,
+            "We Love Ad",
+            "UAE/MENA ad jobs",
+            "Browse: Dubai, Kuwait creative/design roles",
+            "MENA advertising industry",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            "DIRECTORIES — BUILD YOUR HIT LIST",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            81,
+            "Clutch.co",
+            "3D/Animation agencies",
+            "Browse: 3D Animation → Filter by country, size (2-10, 10-50), min reviews",
+            "Verified agencies with reviews",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            82,
+            "DesignRush",
+            "3D/Motion agencies",
+            "Browse: 3D Design, Animation, VFX → Filter by location",
+            "676+ agencies listed",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            83,
+            "GoodFirms",
+            "Animation companies",
+            "Browse: Animation → Filter by country, hourly rate, reviews",
+            "Agencies with pricing info",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            84,
+            "Sortlist",
+            "Creative agencies",
+            "Browse: Advertising, Animation → Filter by Kuwait, UAE, US, Europe",
+            "Agency marketplace",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            85,
+            "The Manifest",
+            "Advertising agencies",
+            "Browse: Advertising → Filter by Kuwait, UAE",
+            "B2B agency directory",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            86,
+            "TechBehemoths",
+            "Advertising agencies",
+            "Browse: Advertising → Kuwait, UAE",
+            "Tech & creative agency directory",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            87,
+            "ATN Info",
+            "Kuwait agencies",
+            "Browse: 170 advertising agencies in Kuwait",
+            "Complete Kuwait agency list",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            88,
+            "Behance",
+            "Studios on Behance",
+            "Search: 3D, Motion Design, CGI → Filter by location → Note studio names",
+            "Creative studio discovery",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            89,
+            "Vimeo",
+            "Production companies",
+            "Search: 3D animation, motion design, CGI → Filter by PRO accounts (=companies)",
+            "Production studios",
+            "Monthly",
+            "Med"
+        ],
+        [
+            90,
+            "Cannes Lions Archive",
+            "Award-winning agencies",
+            "Browse winners in Film Craft, Digital Craft, Outdoor → Note agencies",
+            "Top creative agencies worldwide",
+            "Yearly",
+            "Med"
+        ],
+        [
+            "BUSINESS REGISTRIES — FIND NEW COMPANIES FIRST",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            91,
+            "Dubai DED",
+            "New Dubai businesses",
+            "Browse new trade licenses: Advertising, Design, Media Production, Animation",
+            "Brand new Dubai companies",
+            "Monthly",
+            "Hard"
+        ],
+        [
+            92,
+            "KCCI",
+            "Kuwait new businesses",
+            "Kuwait Chamber of Commerce: New registrations in media, advertising, design",
+            "Brand new Kuwait companies",
+            "Monthly",
+            "Hard"
+        ],
+        [
+            93,
+            "Companies House UK",
+            "New UK studios",
+            "Search: SIC codes 7311 (advertising), 5911 (motion picture) → Filter: Incorporated last 12 months",
+            "Brand new UK creative companies",
+            "Monthly",
+            "Med"
+        ],
+        [
+            94,
+            "US State Registries",
+            "New US studios",
+            "Delaware/California: New LLCs with \"animation\", \"CGI\", \"3D\", \"motion\", \"studio\" in name",
+            "Brand new US companies",
+            "Monthly",
+            "Hard"
+        ],
+        [
+            "SOCIAL MEDIA — CONTENT MONITORING",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            95,
+            "Instagram",
+            "UAE brands doing 3D",
+            "#3Dbillboard OR #anamorphic OR #DOOH OR #3Danimation + location:Dubai",
+            "Brands investing in 3D content",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            96,
+            "Instagram",
+            "Bad 3D content",
+            "Search brand accounts with amateur 3D/CGI → DM offering better quality",
+            "Brands that tried DIY and failed",
+            "Weekly",
+            "Med"
+        ],
+        [
+            97,
+            "YouTube",
+            "DOOH/Billboard content",
+            "\"3D billboard\" OR \"anamorphic billboard\" + sort by date",
+            "New DOOH campaigns being shared",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            98,
+            "TikTok",
+            "3D/CGI viral content",
+            "#3Dbillboard #anamorphic #CGI → Note brands in comments asking for similar",
+            "Brands inspired by viral 3D content",
+            "Weekly",
+            "Med"
+        ],
+        [
+            "GOOGLE ALERTS — SET IT AND FORGET IT",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            99,
+            "Google Alerts",
+            "3D freelance demand",
+            "\"looking for 3D artist\" OR \"need 3D freelancer\" OR \"hiring 3D animator\" remote",
+            "Auto-notify when someone posts demand",
+            "Auto",
+            "Easy"
+        ],
+        [
+            100,
+            "Google Alerts",
+            "DOOH/Anamorphic news",
+            "\"anamorphic billboard\" OR \"3D billboard\" OR \"DOOH campaign\" launch",
+            "Track all new DOOH campaigns",
+            "Auto",
+            "Easy"
+        ],
+        [
+            101,
+            "Google Alerts",
+            "UAE creative industry",
+            "\"creative agency\" OR \"advertising agency\" Dubai OR Kuwait launch OR opens OR expands",
+            "Track new/expanding agencies",
+            "Auto",
+            "Easy"
+        ],
+        [
+            102,
+            "Google Alerts",
+            "Funding news MENA",
+            "\"raises\" OR \"funding\" OR \"investment\" (startup OR company) (Dubai OR Kuwait OR UAE OR MENA)",
+            "Track funded startups",
+            "Auto",
+            "Easy"
+        ],
+        [
+            103,
+            "Google Alerts",
+            "3D animation industry",
+            "\"3D animation\" OR \"motion design\" OR \"CGI\" (studio OR agency) launch OR opens OR hires",
+            "Track industry movements",
+            "Auto",
+            "Easy"
+        ],
+        [
+            104,
+            "Google Alerts",
+            "Real estate launches UAE",
+            "\"new project\" OR \"launches\" (real estate OR property OR tower OR villa) (Dubai OR Abu Dhabi OR Kuwait)",
+            "Track real estate projects needing 3D",
+            "Auto",
+            "Easy"
+        ],
+        [
+            105,
+            "Google Alerts",
+            "E-commerce brands launch",
+            "\"launches\" OR \"new brand\" OR \"D2C\" (product OR e-commerce) (render OR 3D OR visualization)",
+            "Track brands needing product viz",
+            "Auto",
+            "Easy"
+        ],
+        [
+            "NICHE PLATFORMS — DEEP TRENCHES",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            106,
+            "Tejari/UAE Tenders",
+            "Government tenders",
+            "Browse: Creative services, Media production, Advertising, 3D content tenders",
+            "Government-funded creative projects",
+            "Weekly",
+            "Hard"
+        ],
+        [
+            107,
+            "Dubai SME",
+            "SME directory",
+            "Browse registered SMEs in media, design, advertising sectors",
+            "UAE SME targets",
+            "Monthly",
+            "Med"
+        ],
+        [
+            108,
+            "F6S",
+            "Startup directory",
+            "Browse: UAE, Kuwait startups → Filter by stage, sector",
+            "Global startup directory",
+            "Monthly",
+            "Easy"
+        ],
+        [
+            109,
+            "AngelList/Wellfound",
+            "Startup jobs",
+            "Browse: Design, Creative roles → Filter: Remote, Freelance",
+            "Startup creative opportunities",
+            "Weekly",
+            "Easy"
+        ],
+        [
+            110,
+            "Toptal",
+            "Apply as expert",
+            "Apply to Toptal network → 3D/Motion/Creative category",
+            "Premium freelance network (3% acceptance)",
+            "Once",
+            "Med"
+        ],
+        [
+            111,
+            "A.Team",
+            "Product teams",
+            "Apply as specialist → 3D/Creative/Interactive",
+            "High-end project teams",
+            "Once",
+            "Med"
+        ],
+        [
+            112,
+            "Contra",
+            "Freelance platform",
+            "Create profile → 3D, Motion, CGI, Web Dev categories",
+            "Commission-free freelance platform",
+            "Once",
+            "Easy"
+        ],
+        [
+            113,
+            "Malt",
+            "EU freelance",
+            "Create profile → Available for 3D, Motion, CGI in Europe",
+            "European freelance marketplace",
+            "Once",
+            "Easy"
+        ]
+    ],
+    "🌍 Regional Discovery": [
+        [
+            "Region",
+            "Discovery Channel",
+            "Exact URL / Method",
+            "What to Look For",
+            "Expected Companies",
+            "Notes"
+        ],
+        [
+            "USA DISCOVERY CHANNELS",
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            "USA",
+            "Clutch.co 3D Animation",
+            "clutch.co → 3D Animation → United States → Filter size 2-50",
+            "Small-mid agencies that outsource",
+            "200+",
+            "Filter by reviews for quality"
+        ],
+        [
+            "USA",
+            "Clutch.co Motion Graphics",
+            "clutch.co → Motion Graphics → United States",
+            "Motion design agencies",
+            "150+",
+            ""
+        ],
+        [
+            "USA",
+            "DesignRush 3D",
+            "designrush.com → 3D Design → Filter: USA",
+            "3D design companies",
+            "300+",
+            ""
+        ],
+        [
+            "USA",
+            "LinkedIn Company Search",
+            "LinkedIn → Companies → Industry: Animation, Advertising → USA → Size: 2-200",
+            "Studios and agencies",
+            "500+",
+            "Use Sales Nav if available"
+        ],
+        [
+            "USA",
+            "Google Maps",
+            "Google Maps: '3D animation studio' OR 'motion design studio' in NYC, LA, Chicago, Austin, SF",
+            "Local studios (many not on directories)",
+            "100+",
+            "Hidden gems not on Clutch"
+        ],
+        [
+            "USA",
+            "ArtStation Studios",
+            "artstation.com → Studios → United States",
+            "Game/VFX/3D studios",
+            "200+",
+            "Industry standard"
+        ],
+        [
+            "USA",
+            "Vimeo Pro Accounts",
+            "vimeo.com → Search '3D animation' → Filter PRO accounts → USA",
+            "Production studios",
+            "100+",
+            ""
+        ],
+        [
+            "USA",
+            "AIGA Member Directory",
+            "aiga.org → Member directory → Studios",
+            "Design community members",
+            "100+",
+            "Professional network"
+        ],
+        [
+            "USA",
+            "Crunchbase Creative Tech",
+            "crunchbase.com → Industry: Marketing/Advertising → HQ: USA → Funding: Seed-B → Founded 2022+",
+            "Funded creative/marketing startups",
+            "200+",
+            "Companies with money"
+        ],
+        [
+            "USA",
+            "Indeed/LinkedIn Jobs Reverse",
+            "Search '3D artist' jobs in USA → Note company names → Build list of companies hiring",
+            "Companies with active 3D demand",
+            "50+/week",
+            "Gold mine tactic"
+        ],
+        [
+            "EUROPE DISCOVERY CHANNELS",
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            "Europe",
+            "Clutch.co by country",
+            "clutch.co → 3D Animation/Motion Graphics → Filter: UK, Germany, France, Netherlands, Spain",
+            "Agencies per country",
+            "100+/country",
+            "Run for each country"
+        ],
+        [
+            "Europe",
+            "Sortlist by country",
+            "sortlist.com → Animation/3D → Filter: UK, Germany, France, etc.",
+            "Verified agencies",
+            "50+/country",
+            "Has reviews"
+        ],
+        [
+            "Europe",
+            "Companies House UK",
+            "companieshouse.gov.uk → SIC 7311/5911 → Incorporated last 24 months",
+            "New UK creative companies",
+            "100+",
+            "First to find them"
+        ],
+        [
+            "Europe",
+            "LinkedIn UK/DE/FR",
+            "LinkedIn → Companies → Animation/Advertising → UK, Germany, France → Size 2-200",
+            "Studios across Europe",
+            "500+",
+            ""
+        ],
+        [
+            "Europe",
+            "It's Nice That",
+            "itsnicethat.com → Studios directory → 3D, Motion, Animation",
+            "Curated creative studios",
+            "100+",
+            "Design community favorite"
+        ],
+        [
+            "Europe",
+            "Motionographer",
+            "motionographer.com → Studios → Europe",
+            "Motion design studios",
+            "50+",
+            "Quality over quantity"
+        ],
+        [
+            "Europe",
+            "EU-Startups database",
+            "eu-startups.com → Startup database → Filter by sector, country",
+            "European funded startups",
+            "200+",
+            "Need creative services"
+        ],
+        [
+            "Europe",
+            "Google Maps Europe",
+            "Google Maps: '3D studio' OR 'animation studio' in London, Berlin, Amsterdam, Paris, Barcelona",
+            "Local hidden studios",
+            "50+/city",
+            "Smaller studios not on directories"
+        ],
+        [
+            "Europe",
+            "Malt Platform",
+            "malt.com → Browse companies posting projects in 3D, Animation, Motion",
+            "EU companies seeking freelancers",
+            "100+",
+            "EU freelance marketplace"
+        ],
+        [
+            "Europe",
+            "The Dots UK",
+            "the-dots.com → Companies → Animation, 3D, Motion",
+            "UK creative industry network",
+            "100+",
+            ""
+        ],
+        [
+            "UAE DISCOVERY CHANNELS",
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            "UAE",
+            "Dubai DED Trade License",
+            "dubaided.gov.ae → New licenses in Advertising, Media, Design",
+            "Brand new Dubai companies",
+            "50+/month",
+            "First mover advantage"
+        ],
+        [
+            "UAE",
+            "DMCC/DIFC/DWTC Members",
+            "Browse free zone member directories for media/creative companies",
+            "Free zone companies",
+            "200+",
+            "Many hidden agencies"
+        ],
+        [
+            "UAE",
+            "in5 Media Portfolio",
+            "in5.ae → Portfolio companies → Media sector",
+            "Incubated media startups",
+            "50+",
+            "All need creative"
+        ],
+        [
+            "UAE",
+            "Hub71 Portfolio",
+            "hub71.com → Companies → Browse all",
+            "Abu Dhabi tech startups",
+            "200+",
+            "Funded startups"
+        ],
+        [
+            "UAE",
+            "LinkedIn UAE Agencies",
+            "LinkedIn → Companies → Advertising → UAE → Size: 2-200",
+            "All UAE agencies on LinkedIn",
+            "300+",
+            ""
+        ],
+        [
+            "UAE",
+            "Clutch UAE",
+            "clutch.co → Filter: UAE → All creative categories",
+            "Verified UAE agencies",
+            "100+",
+            ""
+        ],
+        [
+            "UAE",
+            "ATN Info UAE",
+            "atninfo.com → UAE → Advertising agencies",
+            "Complete UAE agency database",
+            "500+",
+            "Massive directory"
+        ],
+        [
+            "UAE",
+            "RERA/Dubai Land Dept",
+            "Monitor new real estate project announcements",
+            "Developers needing 3D visualization",
+            "20+/month",
+            "Recurring work"
+        ],
+        [
+            "UAE",
+            "Magnitt",
+            "magnitt.com → UAE startups → Browse by sector",
+            "MENA startup tracker",
+            "500+",
+            "Investor-grade data"
+        ],
+        [
+            "UAE",
+            "Wamda",
+            "wamda.com → News → UAE funding rounds",
+            "Recently funded MENA startups",
+            "50+/quarter",
+            "Fresh funding = fresh budgets"
+        ],
+        [
+            "UAE",
+            "Google 'agency Dubai'",
+            "Google: creative agency Dubai OR advertising agency Dubai OR digital agency Dubai -jobs",
+            "Comprehensive agency search",
+            "200+",
+            "Go through 10+ pages"
+        ],
+        [
+            "UAE",
+            "Instagram #DubaiAgency",
+            "#dubaiagency #dubaicreative #dubaidesign #dubaimarketing → Note companies",
+            "Social discovery of agencies",
+            "100+",
+            "Many small agencies only on IG"
+        ],
+        [
+            "KUWAIT DISCOVERY CHANNELS",
+            null,
+            null,
+            null,
+            null,
+            null
+        ],
+        [
+            "Kuwait",
+            "ATN Info Kuwait",
+            "atninfo.com → Kuwait → Advertising agencies → 170 listed",
+            "Complete Kuwait ad agency list",
+            "170",
+            "Biggest Kuwait list"
+        ],
+        [
+            "Kuwait",
+            "TechBehemoths Kuwait",
+            "techbehemoths.com → Advertising → Kuwait",
+            "Kuwait tech/creative companies",
+            "50+",
+            ""
+        ],
+        [
+            "Kuwait",
+            "Sortlist Kuwait",
+            "sortlist.com → Advertising → Kuwait",
+            "Verified Kuwait agencies",
+            "30+",
+            "With reviews"
+        ],
+        [
+            "Kuwait",
+            "GoodFirms Kuwait",
+            "goodfirms.co → Advertising → Kuwait",
+            "Kuwait agencies with ratings",
+            "30+",
+            ""
+        ],
+        [
+            "Kuwait",
+            "The Manifest Kuwait",
+            "themanifest.com → Advertising → Kuwait",
+            "Kuwait agency directory",
+            "20+",
+            ""
+        ],
+        [
+            "Kuwait",
+            "LinkedIn Kuwait",
+            "LinkedIn → Companies → Advertising/Marketing → Kuwait → All sizes",
+            "All Kuwait agencies on LinkedIn",
+            "100+",
+            ""
+        ],
+        [
+            "Kuwait",
+            "Kuwait Yellow Pages",
+            "kuwaityello.com → Advertising agencies",
+            "Traditional business directory",
+            "50+",
+            "Includes traditional agencies"
+        ],
+        [
+            "Kuwait",
+            "KCCI Directory",
+            "kcci.org.kw → Member directory → Media, advertising sector",
+            "Chamber of Commerce members",
+            "100+",
+            "Official business registry"
+        ],
+        [
+            "Kuwait",
+            "Google 'agency Kuwait'",
+            "Google: creative agency Kuwait OR advertising agency Kuwait OR marketing agency Kuwait",
+            "All agencies findable via search",
+            "100+",
+            "Go deep, page 5-10+"
+        ],
+        [
+            "Kuwait",
+            "Instagram #KuwaitBusiness",
+            "#kuwaitagency #kuwaitmarketing #kuwaitdesign #kuwaitcreative",
+            "Social-only agencies",
+            "50+",
+            "Many only on Instagram"
+        ],
+        [
+            "Kuwait",
+            "VML Kuwait",
+            "VML, FP7McCann, Impact BBDO → Check all global networks with Kuwait offices",
+            "Global agency local offices",
+            "15+",
+            "Big spenders"
+        ],
+        [
+            "Kuwait",
+            "Real Estate Kuwait",
+            "Monitor new Kuwait real estate projects, malls, towers",
+            "Developers needing 3D",
+            "10+/quarter",
+            "High-value recurring"
+        ]
+    ]
+}

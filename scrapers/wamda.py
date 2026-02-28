@@ -1,10 +1,10 @@
 from scrapling import StealthyFetcher
-import re
 from .utils import save_to_json, save_debug_html
+from .llm_enricher import enrich_startup_lead
 
 def scrape_wamda():
     """
-    Scrapes Wamda News using structured CSS selectors.
+    Scrapes Wamda News using structured CSS selectors, then enriches with Gemini.
     Focuses on funded startups in MENA region.
     """
     print("[...] Scraping Wamda Funding News...")
@@ -13,70 +13,58 @@ def scrape_wamda():
     url = "https://www.wamda.com/news"
     
     try:
-        # Wamda is static/SSR, so simple fetch works
-        page = fetcher.fetch(url, timeout=30000, wait_selector="article.card-item, div.card-item, .card")
+        # Fetch without strict wait_selector
+        page = fetcher.fetch(url, timeout=40000)
         
-        # Save HTML for debugging if no results found
-        if not (page.css("article.card-item") or page.css("div.card-item") or page.css(".card")):
-            save_debug_html(page.text, "wamda")
-            print("[!] Wamda search yielded no results (or blocked). Check debug_wamda_html.html")
+        # Save HTML for debugging
+        save_debug_html(page, "wamda")
         
-        # Wamda uses article.card-item or div.card-item
-        articles = page.css("article.card-item") or page.css("div.card-item") or page.css(".card")
+        # Wamda uses c-media class for articles
+        articles = page.css("div.c-media, .c-media")
         leads = []
         
         for article in articles:
-            # Selectors based on Wamda's clean structure
-            category_el = article.css(".category").first
-            title_el = article.css(".title a").first or article.css("h3 a").first
-            date_el = article.css(".date").first
+            # Selectors updated for actual Wamda structure
+            title_el = article.css("h2.c-media__title a").first
+            meta_el = article.css(".c-media__meta").first
             
             if not title_el:
                 continue
                 
             headline = title_el.text.strip()
-            category = category_el.text.strip() if category_el else "MENA"
-            date = date_el.text.strip() if date_el else "Recent"
+            # Meta usually contains "By Author Name | Date"
+            meta_text = meta_el.text.strip() if meta_el else "Recent"
+            date = meta_text.split("|")[-1].strip() if "|" in meta_text else meta_text
             article_url = page.urljoin(title_el.attrib.get('href', ''))
             
-            # Simple company extraction from headline:
-            # "Saudi's Red Sea Farms raises $10M" -> "Red Sea Farms"
-            # "Takeem raises $5M in seed round" -> "Takeem"
-            company = headline
+            # Use Gemini to enrich the startup data
+            enriched = enrich_startup_lead(headline, date, article_url)
             
-            # Cleanup common patterns
-            company = re.sub(r'\'s\b', '', company) # Remove 's
-            
-            # Extract name before common funding keywords
-            keywords = [" raises", " secures", " closes", " acquires", " bags", " gets"]
-            for kw in keywords:
-                if kw in company.lower():
-                    company = company.split(kw, 1)[0]
-                    break
-            
-            # Remove country prefixes like "Saudi ", "UAE-based ", "Egypt's "
-            prefixes = ["Saudi ", "UAE ", "Egypt ", "Jordan ", "MENA ", "Dubai-based ", "Riyadh-based "]
-            for p in prefixes:
-                if company.startswith(p):
-                    company = company[len(p):]
-            
-            company = company.strip()
-            
+            # Fallback if enrichment returns the raw dict
+            company = enriched.get("company", headline)
+            country = enriched.get("country", "MENA")
+            city = enriched.get("city", "Unknown")
+            demand_signal = enriched.get("demand_signal", headline)
+
             # Only keep if company name is reasonable length
             if len(company) < 2 or len(company) > 40:
                 continue
 
             leads.append({
                 "company": company,
-                "country": category, # Usually country in Wamda
-                "city": "Unknown",
+                "country": country,
+                "city": city,
                 "category": "Funded Startup",
                 "source": "Wamda",
-                "demand_signal": f"Funding News: {headline} ({date})",
+                "demand_signal": f"Funding News: {demand_signal}",
+                "date": date,
+                "article_url": article_url,
                 "service_needed": "3D/CGI Ads / Branding",
                 "notes": f"Full Article: {article_url} | Headline: {headline}",
                 "priority": "A+" # Funded startups are high priority
             })
+
+            print(f"  [+] Added: {company} ({city}, {country}) - {demand_signal}")
 
         print(f"[OK] Found {len(leads)} Wamda funding leads.")
         save_to_json(leads, 'leads_wamda.json')
