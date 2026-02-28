@@ -11,7 +11,7 @@ Strategy file: `ibrahim_guerrilla_targeting_v2.xlsx` sheets(🎯 Strategy Framew
 
 ## Automation & Master Suite
 
-The project features a modular **Master Scraping Suite** for one-button operation and organized output.
+The project features a modular **Master Scraping Suite** for one-button operation and organized output, powered by dynamic strategies and local LLM enrichment.
 
 ### Running the Suite
 ```bash
@@ -19,45 +19,46 @@ python main.py
 ```
 
 ### Project Architecture
-- `main.py` — **The Command Center**. Orchestrates scrapers, generates backups, and updates Excel.
+- `main.py` — **The Command Center**. Loads strategy, orchestrates scrapers, generates backups, and updates Excel.
 - `scrapers/` — Modular scraper package.
-  - `utils.py` — Centralized Excel/JSON handling and **deduplication**.
-  - `artstation.py`, `wamda.py`, `linkedin.py`, `upwork.py` — Individual source modules.
+  - `strategy_loader.py` — **Dynamic Execution Engine**. Parses the Master Excel sheet for regions and Boolean queries.
+  - `llm_enricher.py` — **Gemini AI Layer**. Calls local `gemini` CLI to clean data, extract exact cities/countries, and score lead priority.
+  - `utils.py` — Centralized Excel/JSON handling and strict cross-platform **deduplication**.
+  - `artstation.py`, `wamda.py`, `linkedin.py`, `upwork.py` — Specific platform modules utilizing strategy queries.
 - `outputs/json/` — **Lead History**. Stores timestamped JSON backups of every scrape.
-- `logs/` — **Debug Center**. Stores raw text dumps from protected sites (LinkedIn/Crunchbase).
-- `archive/` — **Legacy Scripts**. Stores old test versions and single-use agents.
+- `logs/` — **Debug Center**. Stores raw HTML dumps.
+- `archive/` — **Legacy Scripts**.
 
 ### Deduplication & Data Safety
-1. **Deduplication**: The suite cross-references the `📋 Company Tracker` before saving to prevent duplicate leads.
-2. **JSON Backups**: Every scrape automatically generates a timestamped JSON file in `outputs/json/` before the Excel update.
+1. **Absolute Deduplication**: Filtered against BOTH individual module sheets AND the `📋 Company Tracker` master database to guarantee no redundant leads.
+2. **JSON Backups**: Every scrape automatically generates JSON backups.
 
 ---
 
 ## Target Sources (Priority Order)
 
 ### Priority A+ (Daily)
+- **LinkedIn Jobs** — Mass-executed across multiple regions (MENA, Europe, etc) natively from the Strategy Query Library.
+- **Wamda (MENA)** — Recent funding news (Startups raising Seed/Series A).
+- **Upwork** — Direct project posts (3D, Animation, DOOH, WebGL).
 - **ArtStation Jobs** — Active studio hiring.
-- **LinkedIn Jobs** — UAE-based 3D/Motion roles unfilled for 14+ days.
-- **Wamda (MENA)** — Recent funding news for startups in UAE/KSA/Egypt.
-- **Crunchbase** — Seed/Series A funded startups.
 
 ---
 
 ## Workflow
 
-1. **Run `python main.py`**: Fetches new leads from all sources.
-2. **Check `outputs/json/`**: Verify the latest backup if needed.
+1. **Update Strategy Excel**: If you want to search new regions/queries, update `ibrahim_guerrilla_targeting_v2.xlsx`.
+2. **Run `python main.py`**: Fetches, LLM enriches, and dedups new leads from all regions.
 3. **Review Excel Tracker**: Focus on "Priority A+" leads first.
-4. **Outreach**: Use the `Outreach Templates` sheet to contact decision makers.
-5. **Update Status**: Track your pipeline directly in the Excel file.
+4. **Outreach**: Target decision makers using customized outreach.
 
 ---
 
-## Scraping Setup (Technical)
+## Scraping & LLM Setup (Technical)
 
-Scrapling v0.4.1 is used across all modules.
-- **`DynamicFetcher`**: Used for JS-heavy sites like ArtStation and Wamda.
-- **`StealthyFetcher`**: Used for high-protection sites like LinkedIn and Upwork.
+- **Scrapling v0.4.1**: Used across modules.
+  - `DynamicFetcher` / `StealthyFetcher`: Handle high-protection sites.
+- **Local Gemini CLI Engine**: Used as a data extractor. Raw data is parsed via CSS, packed into a prompt, and pushed to `gemini.cmd -p`. The LLM returns a strict JSON payload predicting lead priority and demand context. 
 
 ## MCP Servers
 "ScraplingServer": {
