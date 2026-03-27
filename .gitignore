@@ -21,6 +21,9 @@ frontend/dist/
 frontend/.env
 frontend/vite.config.js.timestamp-*
 
+# User data
+*.xlsx
+
 # Project runtime data
 data/*.db
 data/*.db-wal
