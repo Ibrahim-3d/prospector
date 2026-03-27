@@ -1,0 +1,47 @@
+name: Bug Report
+description: Something isn't working correctly
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug. What did you expect to happen?
+      placeholder: "When I click 'Start Scrape', nothing happens..."
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Which mode are you using?
+      options:
+        - Dashboard (browser UI)
+        - CLI (python main.py)
+        - Both
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: How can we recreate this?
+      placeholder: |
+        1. Open the dashboard
+        2. Go to Scrape Control
+        3. Click Start
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error messages or screenshots
+      description: Paste any error text or attach a screenshot
+    validations:
+      required: false
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: "Windows 11 / macOS 14 / Ubuntu 24"
+    validations:
+      required: false
