@@ -1,192 +1,156 @@
 # Prospector
 
-**Open-source lead generation engine** — scrape job boards, funding news, and freelance platforms to find companies that need your services. Configurable for any industry, any role, any region.
+An open-source lead generation engine that scrapes job boards, funding news, and freelance platforms to surface companies actively hiring or buying services. Configure it for any industry, role, or region — then let it run.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg)](https://fastapi.tiangolo.com)
 [![React](https://img.shields.io/badge/React-18%2B-61DAFB.svg)](https://react.dev)
 
----
-
-## What It Does
-
-Prospector monitors multiple sources for hiring signals — job postings, startup funding rounds, freelance project listings — and turns them into a structured, deduplicated lead database. It works in two modes:
-
-- **CLI Mode** — headless, Excel-driven bulk scraping for power users
-- **Dashboard Mode** — a web UI (FastAPI + React) for visual control, live progress, and lead management
-
-All search preferences (job titles, queries, regions, sources) are **configurable once** in Settings and persist across sessions, but can be overridden per-run.
-
----
-
 ## Features
 
-- **Multi-source scraping** — LinkedIn Jobs, Upwork, ArtStation, Wamda (MENA funding news), with a pluggable scraper architecture for adding more
-- **Config-driven search** — set your target job titles, boolean queries per source, and regions once; they auto-fill on every scrape
-- **LLM enrichment** — optional local Gemini CLI integration to extract cities, countries, clean company names, and score lead priority (A+ / A / B)
-- **Absolute deduplication** — no duplicate leads, ever, verified against both per-source and master trackers
-- **Real-time dashboard** — WebSocket-powered live progress, paginated lead browser, CSV/Excel export, bulk actions, tagging
-- **Webhook notifications** — get notified when scrape jobs complete or new leads are found
-- **Timestamped backups** — every run creates a JSON snapshot in `outputs/json/`
+- Scrapes LinkedIn Jobs, Upwork, ArtStation, and Wamda out of the box — pluggable architecture for adding more
+- Config-driven defaults: set job titles, per-source queries, and target regions once in Settings — they auto-fill on every scrape and persist across sessions
+- Optional LLM enrichment via local Gemini CLI — cleans company names, infers location, scores priority (A+ / A / B)
+- Absolute deduplication across all sources and the master tracker
+- Real-time WebSocket progress, paginated lead browser, CSV/Excel export, bulk operations, tagging
+- Webhook notifications on job completion or new leads
+- Two modes: a headless CLI for bulk runs and a full web dashboard for interactive use
 
----
+## Installation
 
-## Quick Start
-
-### Prerequisites
-
-- Python 3.10+
-- Node.js 18+
-- [Scrapling](https://github.com/D4Vinci/Scrapling) (web scraping library)
-
-### Install
-
-```bash
+```sh
 git clone https://github.com/Ibrahim-3d/prospector.git
 cd prospector
 
-# Backend
 pip install -r requirements.txt
-
-# Frontend
 cd frontend && npm install && cd ..
 ```
 
-### Run — Dashboard Mode (recommended)
+[Scrapling](https://github.com/D4Vinci/Scrapling) must be installed separately — it powers all browser automation. Follow the instructions in their repo to install it for your platform.
 
-```bash
-python run.py                    # API server on http://localhost:8000
-cd frontend && npm run dev       # Dashboard on http://localhost:5173
+## Usage
+
+Start the dashboard (recommended):
+
+```sh
+python run.py                    # API on http://localhost:8000
+cd frontend && npm run dev       # UI  on http://localhost:5173
 ```
 
-- **Dashboard**: [http://localhost:5173](http://localhost:5173)
-- **API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
-- **WebSocket**: `ws://localhost:8000/ws`
+Or run headless from the CLI against an Excel strategy file:
 
-### Run — CLI Mode (headless)
-
-```bash
+```sh
 python main.py
 ```
 
-Reads queries and regions from your Excel strategy file, runs all scrapers, enriches via LLM, and writes leads back to the tracker.
+The dashboard gives you four pages:
 
----
+- **Dashboard** — lead stats, source breakdown, priority distribution, trend charts
+- **Leads** — filterable, sortable, paginated table with inline editing, bulk actions, and export
+- **Scrape Control** — pick a source, review pre-filled queries/regions from config, launch a job, watch progress live
+- **Settings** — all configuration in one place (details below)
 
 ## Configuration
 
-All preferences are stored in `data/config.json` and editable from the **Settings** page:
+Everything lives in `data/config.json`, editable from the Settings page or the API. Here's what you can set:
 
-| Setting | Description |
-|---|---|
-| **Job Titles** | Target roles across all sources (e.g. "Software Engineer", "Product Designer") |
-| **Search Queries** | Per-source queries — boolean strings for LinkedIn, skill slugs for Upwork, etc. |
-| **Regions** | Target locations (cities, countries, "Remote") |
-| **Enabled Sources** | Which scrapers are active |
-| **LLM Enrichment** | Gemini CLI path and timeout |
-| **Scraping Behavior** | Request delay, page limit, retries |
-| **Webhooks** | Notification URL and triggers |
-
-When you launch a scrape from the dashboard, your saved config **auto-fills** the queries and regions — you can still adjust per-run.
-
----
-
-## Architecture
-
-```
-prospector/
-├── main.py                  # CLI orchestrator
-├── run.py                   # Dashboard server (FastAPI + uvicorn)
-├── backend/
-│   ├── app.py               # FastAPI app, WebSocket broadcast
-│   ├── api/
-│   │   ├── routes.py        # REST API endpoints
-│   │   └── schemas.py       # Pydantic request/response models
-│   ├── core/
-│   │   ├── config.py        # AppConfig model, persistence
-│   │   └── database.py      # SQLAlchemy session
-│   ├── models/              # Lead, ScrapeJob, Source ORM models
-│   ├── services/            # Business logic (scrape, leads, seeding)
-│   └── scrapers/            # Backend scraper wrappers + registry
-├── scrapers/                # CLI-side scraper modules
-│   ├── strategy_loader.py   # Reads queries/regions from Excel
-│   ├── llm_enricher.py      # Local Gemini CLI integration
-│   ├── utils.py             # Excel I/O, JSON backups, deduplication
-│   ├── linkedin.py
-│   ├── upwork.py
-│   ├── artstation.py
-│   └── wamda.py
-├── frontend/                # React + Vite + Tailwind dashboard
-│   └── src/pages/
-│       ├── Dashboard.jsx    # Stats and charts
-│       ├── LeadsTable.jsx   # Paginated lead browser
-│       ├── ScrapeControl.jsx # Launch and monitor scrapes
-│       └── Settings.jsx     # All configuration
-├── data/                    # config.json, SQLite database
-├── outputs/json/            # Timestamped JSON backups
-└── logs/                    # Debug HTML snapshots
+```json
+{
+  "job_titles": ["Software Engineer", "Product Designer", "Data Analyst"],
+  "search_queries": {
+    "linkedin": ["Software Engineer OR Backend Developer", "Product Designer"],
+    "upwork": ["web-development", "data-analysis", "ui-ux-design"],
+    "artstation": [],
+    "wamda": []
+  },
+  "regions": ["United Arab Emirates", "London", "Berlin", "Remote"],
+  "enabled_sources": ["linkedin", "upwork", "artstation", "wamda"],
+  "default_page_limit": 3,
+  "request_delay": 2.0,
+  "gemini_command": "gemini",
+  "webhook_url": null,
+  "webhook_on_job_complete": false,
+  "webhook_on_new_leads": false
+}
 ```
 
----
+When you launch a scrape, the dashboard pre-fills queries and regions from this config. You can adjust per-run without changing the saved defaults.
+
+## Adding a New Source
+
+1. Create a scraper class that implements the base interface in `backend/scrapers/`
+2. Register it in `backend/scrapers/registry.py`
+3. Add its slug to the `search_queries` dict in config if it uses queries
+
+The registry auto-discovers your scraper and exposes it in the dashboard.
 
 ## Supported Sources
 
-| Source | Type | Scraping Method |
+| Source | Signal | Method |
 |---|---|---|
-| **LinkedIn Jobs** | Job postings | `StealthyFetcher` — multi-region, boolean queries |
-| **Upwork** | Freelance projects | `StealthyFetcher` with Cloudflare bypass |
-| **ArtStation Jobs** | Studio hiring | `DynamicFetcher` — JS-rendered boards |
-| **Wamda** | Startup funding (MENA) | `DynamicFetcher` — Seed/Series A news |
+| LinkedIn Jobs | Active hiring — job postings across regions | `StealthyFetcher` (anti-detection) |
+| Upwork | Active buying — freelance project listings | `StealthyFetcher` + Cloudflare bypass |
+| ArtStation Jobs | Studio hiring — creative industry boards | `DynamicFetcher` (JS rendering) |
+| Wamda | Startup funding — Seed/Series A news (MENA) | `DynamicFetcher` (JS rendering) |
 
-Adding a new source? Implement the base scraper interface and register it in `backend/scrapers/registry.py`.
-
----
+All fetchers are powered by [Scrapling](https://github.com/D4Vinci/Scrapling), which provides three tiers: static (`Fetcher`), dynamic (`DynamicFetcher` for JS-rendered pages), and stealth (`StealthyFetcher` for bot-protected sites).
 
 ## API
 
-Full OpenAPI docs at `/docs` when running. Key endpoints:
+The backend exposes a full REST API with interactive docs at [`/docs`](http://localhost:8000/docs) when running. Key endpoints:
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/leads` | List leads (paginated, filterable) |
-| `POST` | `/api/scrape` | Launch a scrape job |
-| `GET` | `/api/stats` | Dashboard statistics |
-| `GET` | `/api/config` | Get current config |
-| `PUT` | `/api/config` | Update config |
-| `GET` | `/api/leads/export` | Export as CSV or Excel |
-| `POST` | `/api/leads/import` | Import from CSV |
+```
+GET    /api/leads           Paginated, filterable lead list
+POST   /api/leads           Create a lead manually
+POST   /api/scrape          Launch a scrape job
+GET    /api/scrape/jobs     List recent jobs with progress
+GET    /api/stats           Dashboard statistics
+GET    /api/config          Current config
+PUT    /api/config          Update config
+GET    /api/leads/export    Export as CSV or Excel
+POST   /api/leads/import    Import from CSV
+```
 
----
+## Project Structure
+
+```
+prospector/
+├── main.py                     CLI orchestrator (Excel-driven)
+├── run.py                      Dashboard server (FastAPI + uvicorn)
+├── backend/
+│   ├── app.py                  FastAPI app with WebSocket broadcast
+│   ├── api/                    Routes and Pydantic schemas
+│   ├── core/                   Config, database session
+│   ├── models/                 Lead, ScrapeJob, Source (SQLAlchemy)
+│   ├── services/               Business logic
+│   └── scrapers/               Backend scraper wrappers + registry
+├── scrapers/                   CLI scraper modules
+│   ├── strategy_loader.py      Excel strategy parser
+│   ├── llm_enricher.py         Gemini CLI integration
+│   └── utils.py                Deduplication, I/O, backups
+├── frontend/                   React + Vite + Tailwind
+│   └── src/pages/              Dashboard, Leads, ScrapeControl, Settings
+├── data/                       config.json, leads.db
+└── outputs/json/               Timestamped lead backups
+```
 
 ## Tech Stack
 
-- **Backend**: Python, FastAPI, SQLAlchemy, Pydantic, uvicorn
-- **Frontend**: React 18, Vite, Tailwind CSS, Lucide icons
-- **Scraping**: [Scrapling](https://github.com/D4Vinci/Scrapling) — undetectable web scraping with static, dynamic, and stealth fetchers
-- **LLM**: Local Gemini CLI for data enrichment (optional)
-- **Database**: SQLite (zero-config, file-based)
-
----
+- **Backend**: Python, FastAPI, SQLAlchemy, Pydantic
+- **Frontend**: React 18, Vite, Tailwind CSS, Lucide
+- **Scraping**: [Scrapling](https://github.com/D4Vinci/Scrapling) by [Karim Shoair](https://github.com/D4Vinci) — undetectable browser automation with static, dynamic, and stealth fetchers
+- **LLM**: Local Gemini CLI (optional, for data enrichment and priority scoring)
+- **Database**: SQLite (zero-config)
 
 ## Acknowledgments
 
-- **[Scrapling](https://github.com/D4Vinci/Scrapling)** by [Karim Shoair (D4Vinci)](https://github.com/D4Vinci) — the web scraping engine powering all fetchers in this project. Scrapling provides undetectable, high-performance browser automation with static, dynamic, and stealth modes. MIT licensed.
+This project is built on [**Scrapling**](https://github.com/D4Vinci/Scrapling) by [Karim Shoair (D4Vinci)](https://github.com/D4Vinci) — a high-performance, undetectable Python web scraping library. All browser automation in Prospector runs through Scrapling's fetcher system. Check out their repo for documentation and contribution.
 
----
+## Contributing
+
+Pull requests welcome. For major changes, open an issue first to discuss the approach.
 
 ## License
 
 [MIT](LICENSE)
-
----
-
-## Contributing
-
-Pull requests welcome. For major changes, open an issue first.
-
-1. Fork the repo
-2. Create your feature branch (`git checkout -b feature/my-feature`)
-3. Commit your changes
-4. Push to the branch
-5. Open a pull request
