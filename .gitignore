@@ -36,6 +36,17 @@ outputs/json/
 *.swp
 *.swo
 
+# Debug / diagnostic dumps
+scrapling_mcp_*.txt
+data_dump.txt
+strategy_dump.json
+
+# Vendored dependencies
+Scrapling/
+
+# Session-local task tracking
+tasks/
+
 # Playwright
 /.playwright-mcp
 
