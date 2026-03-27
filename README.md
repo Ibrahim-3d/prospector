@@ -1,130 +1,160 @@
-# Prospector
+<p align="center">
+  <h1 align="center">Prospector</h1>
+  <p align="center">
+    <strong>Find companies that need your services — automatically.</strong>
+    <br />
+    Prospector scrapes job boards, funding news, and freelance platforms to build you a pipeline of warm leads. Set your target roles, industries, and regions once — then let it run.
+  </p>
+  <p align="center">
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License" /></a>
+    <img src="https://img.shields.io/badge/Python-3.10%2B-blue.svg" alt="Python 3.10+" />
+    <img src="https://img.shields.io/badge/Self--Hosted-Yes-green.svg" alt="Self Hosted" />
+    <img src="https://img.shields.io/badge/Cost-Free-brightgreen.svg" alt="Free" />
+  </p>
+</p>
 
-An open-source lead generation engine that scrapes job boards, funding news, and freelance platforms to surface companies actively hiring or buying services. Configure it for any industry, role, or region — then let it run.
+<br />
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://python.org)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg)](https://fastapi.tiangolo.com)
-[![React](https://img.shields.io/badge/React-18%2B-61DAFB.svg)](https://react.dev)
+<!--
+  Add your own screenshots here! Take a screenshot of each page and save to docs/screenshots/
+  Then uncomment these lines:
 
-## Features
+  <p align="center">
+    <img src="docs/screenshots/dashboard.png" width="90%" alt="Dashboard" />
+  </p>
+-->
 
-- Scrapes LinkedIn Jobs, Upwork, ArtStation, and Wamda out of the box — pluggable architecture for adding more
-- Config-driven defaults: set job titles, per-source queries, and target regions once in Settings — they auto-fill on every scrape and persist across sessions
-- Optional LLM enrichment via local Gemini CLI — cleans company names, infers location, scores priority (A+ / A / B)
-- Absolute deduplication across all sources and the master tracker
-- Real-time WebSocket progress, paginated lead browser, CSV/Excel export, bulk operations, tagging
-- Webhook notifications on job completion or new leads
-- Two modes: a headless CLI for bulk runs and a full web dashboard for interactive use
+## The Problem
 
-## Installation
+You need clients. You spend hours manually checking LinkedIn, Upwork, job boards, and startup news to find companies that might need your services. By the time you find them, compile their info, and reach out — the opportunity is cold.
+
+## The Solution
+
+Prospector does the hunting for you. It continuously scrapes multiple platforms, deduplicates results, enriches leads with AI, and delivers a clean, prioritized list of companies that are **actively spending money** on what you offer.
+
+> **Works for any industry.** Whether you're a freelance designer, a software agency, a marketing consultant, or a 3D studio — just configure your target job titles and regions.
+
+<br />
+
+## How It Works
+
+| Step | What Happens |
+|:---:|---|
+| **1. Configure** | Tell Prospector what you're looking for — job titles, search queries, and target regions. Do this once in Settings. |
+| **2. Scrape** | Hit "Launch" on any source. Prospector searches LinkedIn, Upwork, ArtStation, and Wamda for matching leads. Watch progress in real time. |
+| **3. Review** | Browse your leads in a clean table. Filter by source, country, priority, or status. Export to Excel. Start outreach. |
+
+<br />
+
+## What You Get
+
+### A Full Dashboard
+
+| Page | What It Shows |
+|---|---|
+| **Dashboard** | Total leads, leads this week, breakdown by source, priority distribution, and daily trend charts |
+| **Leads** | Searchable, filterable table of every lead — company, job title, location, priority score, status, and more. Edit inline, tag, bulk update, or export to CSV/Excel |
+| **Scrape Control** | Pick a source, see your pre-filled search queries and regions, launch a job, and watch live progress with a real-time progress bar |
+| **Settings** | Configure everything: target job titles, per-source search queries, regions, enabled sources, AI enrichment, webhooks |
+
+### AI-Powered Lead Scoring
+
+When enabled, Prospector uses a local AI model (Gemini) to automatically:
+- Clean and standardize company names
+- Extract city and country from messy job descriptions
+- Score each lead's priority: **A+** (high urgency), **A** (strong signal), or **B** (worth watching)
+
+### Smart Deduplication
+
+No duplicates, ever. Prospector checks every new lead against all existing leads across all sources before adding it. Your database stays clean no matter how many times you run it.
+
+### Webhook Notifications
+
+Get notified via webhook when a scrape finishes or when new leads are found. Connect it to Slack, email, or any automation tool.
+
+<br />
+
+## Where It Looks
+
+Prospector ships with four built-in sources. More can be added.
+
+| Source | What It Finds | Why It Matters |
+|---|---|---|
+| **LinkedIn Jobs** | Job postings across any region | Companies posting jobs are actively spending. If they're hiring for a role you can fill or support, that's a warm lead. |
+| **Upwork** | Freelance project listings | Direct demand — someone is literally looking to pay for the service you offer. |
+| **ArtStation Jobs** | Creative industry job boards | Studios and agencies actively hiring signal growth and budget. |
+| **Wamda** | Startup funding news (MENA) | Companies that just raised a Seed or Series A round have money to spend on services. |
+
+<br />
+
+## Quick Setup
+
+You'll need **Python 3.10+** and **Node.js 18+** installed on your computer.
 
 ```sh
+# 1. Download Prospector
 git clone https://github.com/Ibrahim-3d/prospector.git
 cd prospector
 
+# 2. Install dependencies
 pip install -r requirements.txt
 cd frontend && npm install && cd ..
+
+# 3. Start the dashboard
+python run.py                    # Starts the backend
+cd frontend && npm run dev       # Starts the dashboard
 ```
 
-[Scrapling](https://github.com/D4Vinci/Scrapling) must be installed separately — it powers all browser automation. Follow the instructions in their repo to install it for your platform.
+Then open **http://localhost:5173** in your browser.
 
-## Usage
+> **Note:** Prospector uses [Scrapling](https://github.com/D4Vinci/Scrapling) for web scraping. You'll need to install it separately — follow the instructions on their repo.
 
-Start the dashboard (recommended):
+<br />
 
-```sh
-python run.py                    # API on http://localhost:8000
-cd frontend && npm run dev       # UI  on http://localhost:5173
-```
+## Your Settings, Your Rules
 
-Or run headless from the CLI against an Excel strategy file:
+Configure once, use forever. All settings persist and auto-fill when you launch scrapes.
 
-```sh
-python main.py
-```
-
-The dashboard gives you four pages:
-
-- **Dashboard** — lead stats, source breakdown, priority distribution, trend charts
-- **Leads** — filterable, sortable, paginated table with inline editing, bulk actions, and export
-- **Scrape Control** — pick a source, review pre-filled queries/regions from config, launch a job, watch progress live
-- **Settings** — all configuration in one place (details below)
-
-## Configuration
-
-Everything lives in `data/config.json`, editable from the Settings page or the API. Here's what you can set:
-
-```json
-{
-  "job_titles": ["Software Engineer", "Product Designer", "Data Analyst"],
-  "search_queries": {
-    "linkedin": ["Software Engineer OR Backend Developer", "Product Designer"],
-    "upwork": ["web-development", "data-analysis", "ui-ux-design"],
-    "artstation": [],
-    "wamda": []
-  },
-  "regions": ["United Arab Emirates", "London", "Berlin", "Remote"],
-  "enabled_sources": ["linkedin", "upwork", "artstation", "wamda"],
-  "default_page_limit": 3,
-  "request_delay": 2.0,
-  "gemini_command": "gemini",
-  "webhook_url": null,
-  "webhook_on_job_complete": false,
-  "webhook_on_new_leads": false
-}
-```
-
-When you launch a scrape, the dashboard pre-fills queries and regions from this config. You can adjust per-run without changing the saved defaults.
-
-## Adding a New Source
-
-1. Create a scraper class that implements the base interface in `backend/scrapers/`
-2. Register it in `backend/scrapers/registry.py`
-3. Add its slug to the `search_queries` dict in config if it uses queries
-
-The registry auto-discovers your scraper and exposes it in the dashboard.
-
-## Supported Sources
-
-| Source | Signal | Method |
+| Setting | What It Controls | Example |
 |---|---|---|
-| LinkedIn Jobs | Active hiring — job postings across regions | `StealthyFetcher` (anti-detection) |
-| Upwork | Active buying — freelance project listings | `StealthyFetcher` + Cloudflare bypass |
-| ArtStation Jobs | Studio hiring — creative industry boards | `DynamicFetcher` (JS rendering) |
-| Wamda | Startup funding — Seed/Series A news (MENA) | `DynamicFetcher` (JS rendering) |
+| **Job Titles** | Roles you're targeting across all platforms | "Product Designer", "Marketing Manager" |
+| **Search Queries** | Source-specific search strings | LinkedIn: "UX Designer OR Product Designer" |
+| **Regions** | Where to look | "London", "Remote", "UAE" |
+| **Enabled Sources** | Which platforms to scrape | LinkedIn + Upwork only |
+| **Page Limit** | How deep to scrape per query | 3 pages (about 30-75 results) |
+| **AI Enrichment** | Automatic lead scoring and cleanup | On / Off |
+| **Webhooks** | Get notified when scrapes finish | Your Slack webhook URL |
 
-All fetchers are powered by [Scrapling](https://github.com/D4Vinci/Scrapling), which provides three tiers: static (`Fetcher`), dynamic (`DynamicFetcher` for JS-rendered pages), and stealth (`StealthyFetcher` for bot-protected sites).
+<br />
 
-## API
+---
 
-The backend exposes a full REST API with interactive docs at [`/docs`](http://localhost:8000/docs) when running. Key endpoints:
+<details>
+<summary><strong>For Developers</strong> — Architecture, API, and extending Prospector</summary>
 
-```
-GET    /api/leads           Paginated, filterable lead list
-POST   /api/leads           Create a lead manually
-POST   /api/scrape          Launch a scrape job
-GET    /api/scrape/jobs     List recent jobs with progress
-GET    /api/stats           Dashboard statistics
-GET    /api/config          Current config
-PUT    /api/config          Update config
-GET    /api/leads/export    Export as CSV or Excel
-POST   /api/leads/import    Import from CSV
-```
+<br />
 
-## Project Structure
+### Tech Stack
+
+- **Backend**: Python, FastAPI, SQLAlchemy, Pydantic, uvicorn
+- **Frontend**: React 18, Vite, Tailwind CSS, Lucide
+- **Scraping**: [Scrapling](https://github.com/D4Vinci/Scrapling) by [Karim Shoair](https://github.com/D4Vinci)
+- **LLM**: Local Gemini CLI (optional)
+- **Database**: SQLite (zero-config, file-based)
+
+### Project Structure
 
 ```
 prospector/
-├── main.py                     CLI orchestrator (Excel-driven)
+├── main.py                     CLI orchestrator (headless mode)
 ├── run.py                      Dashboard server (FastAPI + uvicorn)
 ├── backend/
 │   ├── app.py                  FastAPI app with WebSocket broadcast
 │   ├── api/                    Routes and Pydantic schemas
 │   ├── core/                   Config, database session
-│   ├── models/                 Lead, ScrapeJob, Source (SQLAlchemy)
-│   ├── services/               Business logic
-│   └── scrapers/               Backend scraper wrappers + registry
+│   ├── models/                 Lead, ScrapeJob, Source (SQLAlchemy ORM)
+│   ├── services/               Business logic layer
+│   └── scrapers/               Scraper wrappers + registry
 ├── scrapers/                   CLI scraper modules
 │   ├── strategy_loader.py      Excel strategy parser
 │   ├── llm_enricher.py         Gemini CLI integration
@@ -135,22 +165,53 @@ prospector/
 └── outputs/json/               Timestamped lead backups
 ```
 
-## Tech Stack
+### API Reference
 
-- **Backend**: Python, FastAPI, SQLAlchemy, Pydantic
-- **Frontend**: React 18, Vite, Tailwind CSS, Lucide
-- **Scraping**: [Scrapling](https://github.com/D4Vinci/Scrapling) by [Karim Shoair](https://github.com/D4Vinci) — undetectable browser automation with static, dynamic, and stealth fetchers
-- **LLM**: Local Gemini CLI (optional, for data enrichment and priority scoring)
-- **Database**: SQLite (zero-config)
+Full interactive docs at [`localhost:8000/docs`](http://localhost:8000/docs) when running.
+
+```
+GET    /api/leads           Paginated, filterable lead list
+POST   /api/leads           Create a lead manually
+POST   /api/scrape          Launch a scrape job
+GET    /api/scrape/jobs     List recent jobs with progress
+GET    /api/stats           Dashboard statistics
+GET    /api/config          Read config
+PUT    /api/config          Update config
+GET    /api/leads/export    Export as CSV or Excel
+POST   /api/leads/import    Import from CSV
+WS     /ws                  Real-time scrape progress
+```
+
+### Adding a New Source
+
+1. Create a scraper in `backend/scrapers/` implementing the base interface
+2. Register it in `backend/scrapers/registry.py`
+3. Add a query list under its slug in `search_queries` config
+
+The registry auto-discovers it and exposes it in the dashboard.
+
+### CLI Mode
+
+For power users who prefer headless operation with an Excel strategy file:
+
+```sh
+python main.py
+```
+
+Reads queries and regions from your Excel workbook, runs all enabled scrapers, enriches via LLM, and writes results back to the tracker.
+
+</details>
+
+<br />
 
 ## Acknowledgments
 
-This project is built on [**Scrapling**](https://github.com/D4Vinci/Scrapling) by [Karim Shoair (D4Vinci)](https://github.com/D4Vinci) — a high-performance, undetectable Python web scraping library. All browser automation in Prospector runs through Scrapling's fetcher system. Check out their repo for documentation and contribution.
+Built on [**Scrapling**](https://github.com/D4Vinci/Scrapling) by [Karim Shoair (D4Vinci)](https://github.com/D4Vinci) — a high-performance, undetectable Python web scraping library that powers all browser automation in this project. Give their repo a star.
 
 ## Contributing
 
-Pull requests welcome. For major changes, open an issue first to discuss the approach.
+Pull requests welcome. For major changes, open an issue first.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) — free for personal and commercial use.
