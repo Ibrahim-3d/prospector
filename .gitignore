@@ -1,2 +1,43 @@
-/.gemini
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.egg-info/
+.eggs/
+dist/
+build/
+.env
+.env.*
+*.env
+venv/
+.venv/
+env/
+
+# Node.js / Frontend
+node_modules/
+frontend/dist/
+frontend/.env
+frontend/vite.config.js.timestamp-*
+
+# Project runtime data
+data/*.db
+data/*.db-wal
+data/*.db-shm
+logs/
+outputs/json/
+*.db
+
+# IDE and tools
+.mcp.json
+.DS_Store
+.vscode/
+*.swp
+*.swo
+
+# Playwright
 /.playwright-mcp
+
+# Gemini
+/.gemini

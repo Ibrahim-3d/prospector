@@ -1,0 +1,1742 @@
+full analysis.
+
+  ---
+  PHASE 1 — INTENT DISCOVERY
+
+  The Real Goal
+
+  This system is Ibrahim's automated client acquisition engine for his freelance 3D/CGI/motion design business operating as "Viral X" studio out of Dubai. The objective is not data collection — it is revenue
+  pipeline generation. Every lead is a potential client who needs 3D visualization, motion design, CGI production, or DOOH content right now.
+
+  What Type of Leads It Targets
+
+  The system hunts for demand signals — evidence that a company currently needs 3D/creative services but hasn't yet filled that need. Four signal types:
+
+  1. Active hiring signals: Companies posting 3D Artist / Motion Designer / CGI roles on LinkedIn and ArtStation. The thesis: if they're hiring full-time, they need help today and won't fill that seat for 2-4
+  months. A freelancer can fill the gap immediately.
+  2. Funding signals: MENA startups that just raised Seed/Series A. Post-funding startups scramble to build marketing collateral. They have cash but no creative team.
+  3. Project signals: Companies posting explicit 3D/animation/CGI project briefs on Upwork. Direct evidence of budget and intent.
+  4. Expansion signals (designed but not implemented): New office openings, key person departures, competitor mimicry — all theorized in the Strategy Framework but never automated.
+
+  Intended Outcome of the Excel Output
+
+  The Excel file ibrahim_guerrilla_targeting_v2.xlsx is intended to be a live intelligence database that feeds a manual outreach workflow:
+
+  1. Strategy Framework sheet defines what to look for
+  2. Query Library sheet defines how to look
+  3. Regional Discovery sheet defines where to look
+  4. Company Tracker sheet is the master CRM — the canonical list of all discovered leads
+  5. Source-specific sheets (ArtStation, LinkedIn, Wamda, Upwork) are the raw intake funnels
+
+  The human workflow is: run the suite → sort by priority → research A+ leads → craft personalized outreach → pitch via LinkedIn/email.
+
+  Assumptions the Current Architecture Makes
+
+  1. CSS selectors are stable — assumes platform DOM structures don't change (they do, frequently)
+  2. Gemini CLI always returns valid JSON — a single malformed response silently falls back to raw data with no flag
+  3. Company name is a reliable dedup key — "ACME Inc" vs "ACME" vs "Acme Inc." will all be treated as different entities
+  4. Excel is a viable database — concurrent writes, schema enforcement, query capability are all absent
+  5. Sequential execution is acceptable — 7 regions × 15 queries × 60-second timeouts = potentially 1.75+ hours for LinkedIn alone
+  6. All scraped data is equally valuable — no confidence scoring, no freshness decay, no signal strength measurement
+  7. LLM enrichment is fire-and-forget — no validation of LLM output quality, no retry on low-confidence results
+
+  Artificial vs Necessary Constraints
+
+  Artificial (can be removed):
+  - Hardcoded region list in strategy_loader.py despite the Excel sheet containing dynamic regions
+  - Arbitrary query caps ([:15] LinkedIn, [:5] Upwork) with no intelligence behind the limits
+  - Single-threaded sequential scraping
+  - 20-second Gemini timeout with no retry
+  - Excel as sole data store
+  - No scheduling or incremental run capability
+
+  Necessary (must work around):
+  - LinkedIn anti-bot protections (StealthyFetcher is the right tool)
+  - Cloudflare on Upwork (solve_cloudflare=True is correct)
+  - Gemini CLI as the local LLM interface (no API, subprocess-only)
+  - Rate limiting on target platforms
+  - Excel as the output format (Ibrahim's manual review happens there)
+
+  ---
+  PHASE 2 — GAP ANALYSIS
+
+  Strategic Design vs Current Implementation
+
+  ┌────────────────┬──────────────────────────────────────────────────────────────────────┬─────────────────────────────────────────────────────────────────────────────────────────────────────┬───────────┐
+  │   Dimension    │                           Intended Design                            │                                        Actual Implementation                                        │   Gap     │
+  │                │                                                                      │                                                                                                     │ Severity  │
+  ├────────────────┼──────────────────────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────┼───────────┤
+  │ Strategy       │                                                                      │ Regions are hardcoded. Query parsing is fragile. Only "LinkedIn Job" and "Upwork" platforms are     │           │
+  │ execution      │ Dynamic queries from Excel drive all scrapers                        │ extracted from the Query Library. The remaining ~80+ queries for LinkedIn People, Google,           │ CRITICAL  │
+  │                │                                                                      │ Instagram, Crunchbase, ArchDaily, etc. are completely ignored.                                      │           │
+  ├────────────────┼──────────────────────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────┼───────────┤
+  │ Source         │ 20+ channels identified in Strategy Framework (LinkedIn People,      │ 4 sources implemented. Clutch abandoned (404). Product Hunt, Crunchbase, Instagram, Google,         │           │
+  │ coverage       │ Crunchbase, Product Hunt, ArchDaily, Clutch, accelerator portfolios, │ ArchDaily — none implemented.                                                                       │ CRITICAL  │
+  │                │  real estate portals, coworking directories, etc.)                   │                                                                                                     │           │
+  ├────────────────┼──────────────────────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────┼───────────┤
+  │ LLM            │ Intelligent lead classification, entity resolution, contact          │ Used only for basic field cleaning and crude A/A+ priority assignment. No multi-pass pipeline. No   │ SEVERE    │
+  │ utilization    │ extraction, priority scoring, demand signal interpretation           │ confidence scoring. No validation. No entity resolution. No contact extraction.                     │           │
+  ├────────────────┼──────────────────────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────┼───────────┤
+  │ Deduplication  │ "Absolute deduplication" across all sheets                           │ Case-insensitive string match on company name only. "McKinsey & Company" vs "McKinsey" vs           │ SEVERE    │
+  │                │                                                                      │ "MCKINSEY" are separate entities. No fuzzy matching, no domain-based dedup, no entity resolution.   │           │
+  ├────────────────┼──────────────────────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────┼───────────┤
+  │ Data quality   │ Clean, enriched, prioritized intelligence                            │ LLM fallback returns raw scraped data silently. No data quality flags. No confidence indicators.    │ SEVERE    │
+  │                │                                                                      │ LinkedIn returned ~16,500 leads all marked priority "A" — zero discrimination.                      │           │
+  ├────────────────┼──────────────────────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────┼───────────┤
+  │ Concurrency    │ Not designed for                                                     │ Serial execution. LinkedIn: 7 regions × 15 queries = 105 fetches × 60s timeout + LLM calls per      │ HIGH      │
+  │                │                                                                      │ lead. Potential runtime: 3-6 hours.                                                                 │           │
+  ├────────────────┼──────────────────────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────┼───────────┤
+  │ Error handling │ Not designed for                                                     │ Bare except Exception as e: print(). Failures are logged to stdout and silently skipped. No         │ HIGH      │
+  │                │                                                                      │ classification (network error vs blocked vs selector change vs rate limit). No retry strategy.      │           │
+  ├────────────────┼──────────────────────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────┼───────────┤
+  │ Observability  │ Debug HTML dumps                                                     │ HTML dumps exist but are overwritten each run (not timestamped). No structured logging. No run      │ HIGH      │
+  │                │                                                                      │ metrics. No success rate tracking. No alerting on degradation.                                      │           │
+  ├────────────────┼──────────────────────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────┼───────────┤
+  │ Lead lifecycle │ Strategy Framework describes a full outreach pipeline                │ Excel has a "Status" column but it's always set to "Research". No lifecycle state machine. No       │ MODERATE  │
+  │                │                                                                      │ tracking of contacted/responded/converted.                                                          │           │
+  ├────────────────┼──────────────────────────────────────────────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────┼───────────┤
+  │ Scheduling     │ One-button daily operation                                           │ Manual python main.py only. No cron, no scheduler, no incremental runs.                             │ MODERATE  │
+  └────────────────┴──────────────────────────────────────────────────────────────────────┴─────────────────────────────────────────────────────────────────────────────────────────────────────┴───────────┘
+
+  Specific Structural Inefficiencies
+
+  1. Strategy Loader is a Facade
+  strategy_loader.py claims to "parse the Master Excel sheet for regions and Boolean queries" but hardcodes all 7 regions and only extracts queries containing "linkedin" + "job" or "upwork" in the platform
+  column. The Query Library has 100+ entries spanning 12 platforms — 95% are ignored.
+
+  2. LLM Enricher is a Single-Shot Gamble
+  parse_with_gemini() fires a single subprocess call with a 20-second timeout. If the LLM returns malformed JSON, the raw dict is silently used. There is:
+  - No schema validation of the response
+  - No confidence threshold
+  - No retry on failure
+  - No hallucination detection
+  - No cross-field consistency check
+  - No batching (each lead = 1 subprocess call = 1 cold start)
+
+  For LinkedIn's 16,500 leads, this means potentially 16,500 individual gemini.cmd invocations — each spawning a new process.
+
+  3. Deduplication is String-Match Theatre
+  The dedup logic in utils.py compares str(val).lower().strip() — pure string equality. No normalization of:
+  - Company suffixes (Inc, LLC, Ltd, GmbH)
+  - Unicode variants
+  - Abbreviations (Int'l vs International)
+  - Domain-based identity (two entries with same website are still treated as different if names differ)
+
+  4. Excel as Database is a Time Bomb
+  - No schema enforcement — any column can contain any value
+  - No referential integrity between source sheets and master tracker
+  - Concurrent writes (if multiple scrapers ran in parallel) would corrupt the file
+  - openpyxl loads the entire file into memory for every save operation
+  - No indexing — dedup requires full column scan every time
+  - File grows unboundedly with no archival strategy
+
+  5. Priority Scoring is Non-Functional
+  LinkedIn scraper: every lead gets the LLM to determine priority. But the leads_linkedin.json shows all 16,500 entries marked "A". The LLM is not discriminating because:
+  - The prompt provides no calibration examples
+  - There's no rubric for what differentiates A+ from A from B
+  - There's no budget/urgency signal in the data being sent to the LLM
+  - The fallback priority is "A" anyway
+
+  6. Upwork is Structurally Orphaned
+  Upwork leads use title as key (not company), are excluded from the master Company Tracker, and have a completely different schema. They exist in a parallel universe within the same system.
+
+  7. No Contact Intelligence
+  The system finds companies but extracts zero contact information. No:
+  - Decision maker names
+  - Email addresses
+  - LinkedIn profile URLs
+  - Phone numbers
+  - Company website extraction (only ArtStation attempts this)
+
+  The outreach workflow requires manually researching every lead — the system generates awareness but not actionable intelligence.
+
+  ---
+  PHASE 3A — SCRAPING LAYER ARCHITECTURE
+
+  Browser Session Architecture
+
+  ┌─────────────────────────────────────────────┐
+  │              SESSION POOL MANAGER            │
+  ├─────────────────────────────────────────────┤
+  │                                             │
+  │  ┌─────────────┐  ┌─────────────┐          │
+  │  │ StealthPool  │  │ DynamicPool │          │
+  │  │ (LinkedIn,   │  │ (ArtStation,│          │
+  │  │  Upwork,     │  │  open job   │          │
+  │  │  ProductHunt)│  │  boards)    │          │
+  │  └──────┬──────┘  └──────┬──────┘          │
+  │         │                │                  │
+  │  ┌──────▼──────────────────▼──────┐         │
+  │  │     FETCHER WRAPPER LAYER      │         │
+  │  │  - Unified interface           │         │
+  │  │  - Auto-selects fetcher type   │         │
+  │  │  - Manages session lifecycle   │         │
+  │  │  - Handles proxy rotation      │         │
+  │  │  - Implements backoff          │         │
+  │  └────────────────────────────────┘         │
+  └─────────────────────────────────────────────┘
+
+  Design:
+
+  # Source registry — each source declares its own requirements
+  SOURCE_REGISTRY = {
+      "linkedin_jobs": {
+          "fetcher": "stealthy",
+          "max_concurrency": 2,       # LinkedIn is aggressive on rate limits
+          "base_delay": (3, 8),       # Random delay range in seconds
+          "timeout": 60000,
+          "max_retries": 3,
+          "retry_backoff": "exponential",
+          "cloudflare": False,
+          "wait_selector": None,      # LinkedIn blocks on strict waits
+          "failure_threshold": 5,     # Consecutive failures before circuit break
+      },
+      "upwork": {
+          "fetcher": "stealthy",
+          "max_concurrency": 1,
+          "base_delay": (5, 12),
+          "timeout": 60000,
+          "max_retries": 3,
+          "cloudflare": True,
+          "wait_selector": "div.job-tile",
+          "failure_threshold": 3,
+      },
+      "artstation": {
+          "fetcher": "dynamic",
+          "max_concurrency": 3,
+          "base_delay": (1, 3),
+          "timeout": 30000,
+          "max_retries": 2,
+          "cloudflare": False,
+          "wait_selector": "div.job-listing",
+          "failure_threshold": 5,
+      },
+      "wamda": {
+          "fetcher": "stealthy",
+          "max_concurrency": 2,
+          "base_delay": (2, 5),
+          "timeout": 40000,
+          "max_retries": 2,
+          "cloudflare": False,
+          "wait_selector": None,
+          "failure_threshold": 3,
+      }
+  }
+
+  Concurrency Model
+
+  Async task queue with per-source semaphores:
+
+  - Global orchestrator dispatches scrape tasks to an asyncio-compatible queue
+  - Each source has its own semaphore limiting concurrent requests (defined in registry)
+  - Within a source, requests are serialized with jittered delays
+  - Between sources, requests are fully parallel
+  - Worker pool size: sum(max_concurrency for all active sources)
+
+  This means LinkedIn (2 concurrent) + Upwork (1) + ArtStation (3) + Wamda (2) = 8 concurrent sessions max.
+
+  Anti-Detection Strategy
+
+  Layer 1 — Scrapling-Native:
+  - StealthyFetcher with real browser profiles (already handles fingerprint randomization)
+  - solve_cloudflare=True where needed
+
+  Layer 2 — Behavioral:
+  - Jittered delays between requests: random.uniform(*base_delay)
+  - Session reuse within a source (don't create new browser per request)
+  - Limit pages per query (max 3-5 pages before moving to next query)
+  - Randomize query execution order per run
+
+  Layer 3 — Circuit Breaker:
+  - Track consecutive failures per source
+  - If failure_threshold exceeded → pause source for escalating cooldown (1min, 5min, 15min)
+  - Log circuit break events for human review
+  - Never hammer a blocked source
+
+  Retry & Fallback Strategy
+
+  FETCH ATTEMPT
+    ├── Success (200) → Extract → Continue
+    ├── Soft Block (403, captcha page) → Retry with backoff (max 3)
+    │     ├── Still blocked → Circuit break this source
+    │     └── Recovered → Continue with extended delays
+    ├── Rate Limited (429) → Exponential backoff (30s, 60s, 120s)
+    ├── Timeout → Retry once with 2x timeout
+    ├── Network Error → Retry once after 10s
+    ├── Selector Miss (200 but 0 results) →
+    │     ├── Save debug HTML with timestamp
+    │     ├── Flag as SELECTOR_DRIFT
+    │     └── Continue (don't retry — the page loaded, selectors are wrong)
+    └── Unknown Error → Log full traceback, skip, continue
+
+  Structured DOM Extraction Rules
+
+  Each source module defines an ExtractionContract:
+
+  @dataclass
+  class ExtractionField:
+      name: str                     # Field name in output
+      selectors: list[str]          # CSS selector chain (fallback order)
+      attribute: str = "text"       # "text", "href", "datetime", etc.
+      required: bool = False        # If True, skip entire record on miss
+      transform: Callable = None    # Post-extraction transform function
+
+  @dataclass
+  class ExtractionContract:
+      source: str
+      container_selector: str       # The repeating element (job card, article)
+      container_fallbacks: list[str]
+      fields: list[ExtractionField]
+      min_expected_results: int = 1 # Alert if fewer results than this
+
+  This replaces the current approach of ad-hoc job.css("h3.job-tile-title a").first scattered throughout each scraper. The contract is declarative, testable, and version-controlled.
+
+  Pre-LLM Normalization Layer
+
+  Before any data touches the LLM, apply deterministic transformations:
+
+  1. Whitespace normalization — collapse multi-spaces, strip, remove zero-width chars
+  2. HTML entity decoding — &amp; → &, etc.
+  3. Location standardization — known mapping table: UAE → United Arab Emirates, KW → Kuwait, etc.
+  4. Date normalization — parse "3 days ago", "2024-01-15", "Jan 15", "15/01/2024" all to ISO 8601
+  5. URL cleaning — strip tracking params (?utm_*, ?trk=, ?refId=)
+  6. Budget parsing — "$1,000 - $5,000" → {"min": 1000, "max": 5000, "currency": "USD"}
+  7. Empty field standardization — all empty/null/whitespace → explicit None
+
+  This layer is pure Python. Zero LLM calls. Reduces LLM workload and error surface.
+
+  Data Validation Before Enrichment
+
+  Post-extraction, pre-LLM gate:
+
+  @dataclass
+  class RawLead:
+      source: str
+      company: str | None
+      title: str | None
+      location_raw: str | None
+      url: str | None
+      posted_raw: str | None
+      description: str | None
+      budget_raw: str | None
+      metadata: dict
+
+      def is_valid_for_enrichment(self) -> tuple[bool, str]:
+          """Returns (valid, reason) — only valid leads enter LLM pipeline."""
+          if not self.company and not self.title:
+              return False, "NO_IDENTIFIABLE_ENTITY"
+          if self.url and not self.url.startswith("http"):
+              return False, "INVALID_URL"
+          return True, "OK"
+
+  Leads that fail validation are logged to a rejected_leads.jsonl file with reason codes. They never consume LLM tokens.
+
+  Logging and Observability Layer
+
+  Structured logging with levels:
+
+  # Every scrape run generates a RunReport
+  @dataclass
+  class RunReport:
+      run_id: str                    # UUID
+      started_at: datetime
+      completed_at: datetime
+      source: str
+      queries_executed: int
+      pages_fetched: int
+      pages_succeeded: int
+      pages_failed: int
+      failure_reasons: dict[str, int]  # {"TIMEOUT": 2, "403": 1}
+      raw_leads_extracted: int
+      leads_after_validation: int
+      leads_after_dedup: int
+      leads_enriched: int
+      enrichment_failures: int
+      leads_written: int
+      circuit_breaks: int
+      avg_fetch_time_ms: float
+      avg_enrichment_time_ms: float
+
+  Debug HTML dumps are timestamped:
+  logs/debug_linkedin_UAE_2026-02-28T14-30-00.html — never overwritten.
+
+  Failure states are classified, not generic:
+
+  ┌───────────────────┬───────────────────────────────────────┬────────────────────────────┐
+  │       Code        │                Meaning                │           Action           │
+  ├───────────────────┼───────────────────────────────────────┼────────────────────────────┤
+  │ FETCH_BLOCKED     │ 403/captcha                           │ Circuit break + alert      │
+  ├───────────────────┼───────────────────────────────────────┼────────────────────────────┤
+  │ FETCH_TIMEOUT     │ Network timeout                       │ Retry with backoff         │
+  ├───────────────────┼───────────────────────────────────────┼────────────────────────────┤
+  │ SELECTOR_DRIFT    │ 200 but 0 results                     │ Flag for human review      │
+  ├───────────────────┼───────────────────────────────────────┼────────────────────────────┤
+  │ RATE_LIMITED      │ 429                                   │ Exponential backoff        │
+  ├───────────────────┼───────────────────────────────────────┼────────────────────────────┤
+  │ LLM_TIMEOUT       │ Gemini didn't respond in time         │ Retry or skip              │
+  ├───────────────────┼───────────────────────────────────────┼────────────────────────────┤
+  │ LLM_MALFORMED     │ Gemini returned invalid JSON          │ Retry with stricter prompt │
+  ├───────────────────┼───────────────────────────────────────┼────────────────────────────┤
+  │ LLM_HALLUCINATION │ Output fails cross-field validation   │ Flag, don't use            │
+  ├───────────────────┼───────────────────────────────────────┼────────────────────────────┤
+  │ DEDUP_COLLISION   │ Lead already exists                   │ Normal, skip               │
+  ├───────────────────┼───────────────────────────────────────┼────────────────────────────┤
+  │ VALIDATION_FAIL   │ Raw data doesn't meet minimum quality │ Log and skip               │
+  └───────────────────┴───────────────────────────────────────┴────────────────────────────┘
+
+  ---
+  PHASE 3B — LLM LAYER (Gemini CLI Orchestration)
+
+  Multi-Pass Architecture
+
+  The current system uses a single LLM call per lead that tries to do everything (clean, classify, extract, score) in one shot. This is the root cause of the uniform "A" priority across 16,500 leads.
+
+  The redesigned pipeline separates concerns into discrete, auditable passes:
+
+  RAW LEAD (post-normalization)
+      │
+      ▼
+  ┌──────────────────────┐
+  │  PASS 1: EXTRACTION  │  Deterministic field parsing + LLM for ambiguous fields only
+  │  - Clean company name│
+  │  - Parse location    │
+  │  - Normalize dates   │
+  │  - Extract contacts  │
+  └──────────┬───────────┘
+             │
+             ▼
+  ┌──────────────────────┐
+  │  PASS 2: ENRICHMENT  │  LLM augments with external knowledge
+  │  - Industry sector   │
+  │  - Company size est. │
+  │  - Service match     │
+  │  - Demand urgency    │
+  └──────────┬───────────┘
+             │
+             ▼
+  ┌──────────────────────┐
+  │  PASS 3: VALIDATION  │  Cross-field consistency + hallucination check
+  │  - Location vs URL   │
+  │  - Company vs domain │
+  │  - Sector coherence  │
+  │  - Confidence score  │
+  └──────────┬───────────┘
+             │
+             ▼
+  ┌──────────────────────┐
+  │  PASS 4: SCORING     │  Deterministic rubric applied to enriched data
+  │  - Priority (A+/A/B) │
+  │  - Outreach urgency  │
+  │  - Budget potential   │
+  │  - Fit score         │
+  └──────────┬───────────┘
+             │
+             ▼
+      ENRICHED LEAD (ready for storage)
+
+  Pass 1: Extraction
+
+  Goal: Clean raw scraped data into canonical form. LLM is used ONLY when deterministic parsing fails.
+
+  # Deterministic first, LLM fallback
+  def extract_location(raw_location: str) -> dict:
+      """Try regex/lookup first, LLM only if needed."""
+      # Attempt 1: Direct lookup
+      for country, patterns in COUNTRY_PATTERNS.items():
+          if any(p in raw_location.lower() for p in patterns):
+              return {"country": country, "city": extract_city(raw_location, country)}
+
+      # Attempt 2: LLM extraction (only for truly ambiguous strings)
+      return llm_extract_location(raw_location)
+
+  Batching: Instead of 1 subprocess call per lead, batch up to 10 leads per LLM invocation:
+
+  EXTRACTION_PROMPT = """
+  You are a data extraction engine. Parse each entry below into the exact JSON schema.
+
+  Entries:
+  {batch_json}
+
+  Return a JSON array of objects, one per entry. Schema per object:
+  {{
+    "id": <entry index>,
+    "company_clean": <cleaned company name, no suffixes like Inc/Ltd unless part of brand>,
+    "country": <ISO country name or "Unknown">,
+    "city": <city name or "Unknown">,
+    "posted_date": <ISO 8601 date or "Unknown">,
+    "contact_name": <if visible in data, else null>,
+    "contact_title": <if visible, else null>
+  }}
+
+  Rules:
+  - Return ONLY the JSON array. No markdown, no explanation.
+  - If a field cannot be determined, use "Unknown" for strings, null for optional fields.
+  - Do NOT invent information. Only extract what is explicitly present.
+  """
+
+  Pass 2: Enrichment
+
+  Goal: Add intelligence that requires world knowledge. This is where the LLM earns its keep.
+
+  ENRICHMENT_PROMPT = """
+  You are a business intelligence analyst specializing in the creative services industry.
+
+  For each company below, provide enrichment based on your knowledge:
+
+  {batch_json}
+
+  Return a JSON array. Schema per object:
+  {{
+    "id": <entry index>,
+    "industry": <primary industry sector>,
+    "estimated_size": <"startup" | "small" | "medium" | "enterprise">,
+    "service_match": <how relevant is this company to 3D/CGI/motion design services>,
+    "service_match_score": <0.0 to 1.0>,
+    "demand_urgency": <"immediate" | "short_term" | "exploratory">,
+    "reasoning": <1-sentence explanation of your assessment>
+  }}
+
+  Rules:
+  - service_match_score: 1.0 = explicitly hiring for 3D/CGI. 0.5 = adjacent creative. 0.0 = no relevance.
+  - demand_urgency: "immediate" = active job post or recent funding. "short_term" = likely to need soon. "exploratory" = speculative.
+  - If you don't recognize the company, base assessment purely on the job title and description provided.
+  - Do NOT hallucinate company details you don't know. Use the data provided.
+  """
+
+  Pass 3: Validation
+
+  Goal: Catch LLM errors before they enter the database. This pass is primarily deterministic with one LLM self-consistency check.
+
+  Deterministic checks:
+  def validate_enriched_lead(lead: dict) -> tuple[bool, list[str]]:
+      issues = []
+
+      # Cross-field: country in URL should match declared country
+      if lead.get("url") and lead.get("country"):
+          tld = extract_tld(lead["url"])
+          if tld == ".ae" and lead["country"] != "United Arab Emirates":
+              issues.append("COUNTRY_URL_MISMATCH")
+
+      # Range check: scores must be 0-1
+      if not (0 <= lead.get("service_match_score", 0) <= 1):
+          issues.append("SCORE_OUT_OF_RANGE")
+
+      # Hallucination flag: if LLM returned very specific details for an unknown company
+      if lead.get("estimated_size") == "enterprise" and lead.get("source") == "Upwork":
+          issues.append("UNLIKELY_SIZE_FOR_SOURCE")
+
+      # Self-consistency: company name should not be a sentence
+      if len(lead.get("company_clean", "").split()) > 6:
+          issues.append("COMPANY_NAME_TOO_LONG")
+
+      return len(issues) == 0, issues
+
+  Confidence scoring:
+  def compute_confidence(lead: dict, validation_issues: list) -> float:
+      """0.0 to 1.0 confidence that this lead is high-quality and accurate."""
+      score = 1.0
+
+      # Penalize for each validation issue
+      score -= len(validation_issues) * 0.15
+
+      # Penalize for "Unknown" fields
+      unknown_count = sum(1 for v in lead.values() if v in ("Unknown", None, ""))
+      score -= unknown_count * 0.05
+
+      # Boost for explicit signals
+      if lead.get("demand_urgency") == "immediate":
+          score += 0.1
+      if lead.get("url") and lead["url"].startswith("http"):
+          score += 0.05
+
+      return max(0.0, min(1.0, score))
+
+  Pass 4: Scoring
+
+  Goal: Deterministic priority assignment based on a calibrated rubric. NO LLM in this pass — the LLM already provided the inputs in Pass 2.
+
+  SCORING_RUBRIC = {
+      # Signal type weights
+      "active_hiring": 30,          # Company has an open role for 3D/CGI
+      "recent_funding": 25,         # Raised money in last 6 months
+      "direct_project": 35,         # Posted a specific 3D project (Upwork)
+      "adjacent_hiring": 15,        # Hiring for related creative role
+
+      # Urgency multipliers
+      "immediate": 1.5,
+      "short_term": 1.0,
+      "exploratory": 0.5,
+
+      # Fit multipliers
+      "service_match_threshold_a_plus": 0.8,
+      "service_match_threshold_a": 0.5,
+      "service_match_threshold_b": 0.3,
+
+      # Geography bonus (MENA = home market)
+      "mena_bonus": 10,
+      "europe_bonus": 5,
+  }
+
+  def score_lead(lead: dict) -> dict:
+      base = 0
+
+      # Signal type
+      if "hiring" in lead.get("demand_signal", "").lower():
+          base += SCORING_RUBRIC["active_hiring"]
+      if "fund" in lead.get("demand_signal", "").lower():
+          base += SCORING_RUBRIC["recent_funding"]
+      if lead.get("source") == "Upwork":
+          base += SCORING_RUBRIC["direct_project"]
+
+      # Urgency
+      urgency = lead.get("demand_urgency", "exploratory")
+      base *= SCORING_RUBRIC.get(urgency, 1.0)
+
+      # Fit
+      fit = lead.get("service_match_score", 0.5)
+      base *= fit
+
+      # Geography
+      country = lead.get("country", "")
+      if country in MENA_COUNTRIES:
+          base += SCORING_RUBRIC["mena_bonus"]
+      elif country in EUROPE_COUNTRIES:
+          base += SCORING_RUBRIC["europe_bonus"]
+
+      # Priority assignment
+      if base >= 35:
+          priority = "A+"
+      elif base >= 20:
+          priority = "A"
+      elif base >= 10:
+          priority = "B+"
+      else:
+          priority = "B"
+
+      return {
+          "priority": priority,
+          "score_raw": round(base, 2),
+          "score_breakdown": {...}  # Full explanation
+      }
+
+  JSON Contract Enforcement
+
+  Every LLM call is wrapped in a strict contract validator:
+
+  def call_gemini_with_contract(
+      prompt: str,
+      expected_schema: dict,      # JSON Schema definition
+      max_retries: int = 3,
+      timeout: int = 30
+  ) -> tuple[dict | list, float]:  # Returns (parsed_data, confidence)
+
+      for attempt in range(max_retries):
+          raw_output = invoke_gemini_cli(prompt, timeout)
+          parsed = attempt_json_parse(raw_output)
+
+          if parsed is None:
+              # Retry with explicit "RETURN ONLY JSON" reinforcement
+              continue
+
+          # Validate against schema
+          valid, errors = validate_against_schema(parsed, expected_schema)
+
+          if valid:
+              return parsed, 1.0 - (attempt * 0.1)
+
+          if attempt < max_retries - 1:
+              # Include validation errors in retry prompt
+              prompt += f"\n\nYour previous response had errors: {errors}. Fix them."
+
+      # All retries exhausted
+      return None, 0.0
+
+  Entity Resolution
+
+  The dedup problem requires a multi-signal approach:
+
+  def resolve_entity(new_lead: dict, existing_leads: list[dict]) -> str | None:
+      """Returns ID of matching existing lead, or None if new."""
+
+      candidates = []
+
+      for existing in existing_leads:
+          score = 0.0
+
+          # Signal 1: Exact name match (normalized)
+          if normalize_company(new_lead["company"]) == normalize_company(existing["company"]):
+              score += 0.5
+
+          # Signal 2: Fuzzy name match (Levenshtein ratio > 0.85)
+          elif fuzz_ratio(new_lead["company"], existing["company"]) > 0.85:
+              score += 0.35
+
+          # Signal 3: Domain match
+          if new_lead.get("website") and existing.get("website"):
+              if extract_domain(new_lead["website"]) == extract_domain(existing["website"]):
+                  score += 0.4
+
+          # Signal 4: URL overlap
+          if new_lead.get("url") == existing.get("url"):
+              score += 0.8  # Same exact listing
+
+          # Signal 5: Same location + similar name
+          if (new_lead.get("city") == existing.get("city") and
+              fuzz_ratio(new_lead["company"], existing["company"]) > 0.7):
+              score += 0.2
+
+          if score >= 0.5:
+              candidates.append((existing["id"], score))
+
+      if candidates:
+          return max(candidates, key=lambda x: x[1])[0]
+      return None
+
+  Hallucination Mitigation
+
+  1. Never ask the LLM for facts it can't know — don't ask "what is the company revenue?" for obscure startups
+  2. Extraction prompts explicitly say "do NOT invent" — reinforced in every prompt
+  3. Cross-field validation catches impossible combinations — a 2-person startup marked "enterprise"
+  4. Confidence cascading — low confidence in Pass 1 → skip Pass 2 → mark lead for manual review
+  5. Reasoning traces — every LLM enrichment includes a "reasoning" field that is stored for audit
+  6. Batch processing with indexing — every input/output pair is tracked by index, preventing misalignment
+
+  Retry Logic Based on Confidence Thresholds
+
+  Confidence >= 0.8  → Accept lead as-is
+  Confidence 0.5-0.8 → Retry enrichment with more specific prompt (1 retry)
+  Confidence 0.3-0.5 → Accept but flag as LOW_CONFIDENCE in data
+  Confidence < 0.3   → Reject from automated pipeline, route to manual review queue
+
+  ---
+  PHASE 3C — DATA ARCHITECTURE & EXCEL INTELLIGENCE SYSTEM
+
+  Design Philosophy
+
+  The Excel file is the final output interface — Ibrahim reviews it manually. But the system needs a structured intermediate store (SQLite or JSON-lines) for operational data. The Excel file is a view on the
+  database, not the database itself.
+
+  Dual-store architecture:
+  - Operational store: leads.db (SQLite) — the source of truth. All dedup, entity resolution, lifecycle tracking happens here.
+  - Intelligence view: ibrahim_guerrilla_targeting_v2.xlsx — generated from SQLite per run. Formatted for human consumption.
+
+  Sheet Architecture
+
+  ┌─────────────────────────────────────────────────────┐
+  │                  EXCEL WORKBOOK                      │
+  ├─────────────────────────────────────────────────────┤
+  │                                                     │
+  │  Sheet 1: 📊 Dashboard                              │
+  │  Sheet 2: 🔥 Hot Leads (A+ Priority)                │
+  │  Sheet 3: 📋 All Leads (Master Registry)            │
+  │  Sheet 4: 👔 LinkedIn Jobs                          │
+  │  Sheet 5: 🎨 ArtStation Jobs                        │
+  │  Sheet 6: 💰 MENA Funding                           │
+  │  Sheet 7: 🔧 Upwork Projects                        │
+  │  Sheet 8: ⚠️ Manual Review Queue                    │
+  │  Sheet 9: 📈 Run History                            │
+  │  Sheet 10: 🎯 Strategy Framework (read-only input)  │
+  │  Sheet 11: 🔎 Query Library (read-only input)       │
+  │  Sheet 12: 🌍 Regional Discovery (read-only input)  │
+  │                                                     │
+  └─────────────────────────────────────────────────────┘
+
+  Sheet 1: Dashboard
+
+  ┌──────────────┬──────────┬───────────────────┐
+  │    Column    │   Type   │    Description    │
+  ├──────────────┼──────────┼───────────────────┤
+  │ Metric       │ string   │ KPI name          │
+  ├──────────────┼──────────┼───────────────────┤
+  │ Value        │ number   │ Current value     │
+  ├──────────────┼──────────┼───────────────────┤
+  │ Trend        │ string   │ ↑/↓/→ vs last run │
+  ├──────────────┼──────────┼───────────────────┤
+  │ Last Updated │ datetime │ ISO 8601          │
+  └──────────────┴──────────┴───────────────────┘
+
+  Rows:
+  - Total Leads in Database
+  - Leads Added This Run
+  - A+ Leads (uncontacted)
+  - A Leads (uncontacted)
+  - Sources Active / Sources Failed
+  - Average Confidence Score
+  - Dedup Collisions This Run
+  - Outreach Pipeline (Researching / Contacted / Responded)
+
+  Sheet 2: Hot Leads (A+ Priority)
+
+  Filtered view of Sheet 3 showing only priority = "A+" and status IN ("new", "researching")
+
+  ┌─────┬───────────────┬─────────────┬───────┬──────────┬──────────────────────────────────────────────────────────────┐
+  │  #  │    Column     │    Type     │ Width │ Required │                         Description                          │
+  ├─────┼───────────────┼─────────────┼───────┼──────────┼──────────────────────────────────────────────────────────────┤
+  │ A   │ lead_id       │ string(PK)  │ 12    │ YES      │ Unique identifier (e.g., LD-00001)                           │
+  ├─────┼───────────────┼─────────────┼───────┼──────────┼──────────────────────────────────────────────────────────────┤
+  │ B   │ company       │ string      │ 25    │ YES      │ Cleaned company name                                         │
+  ├─────┼───────────────┼─────────────┼───────┼──────────┼──────────────────────────────────────────────────────────────┤
+  │ C   │ country       │ string      │ 18    │ YES      │ ISO country name                                             │
+  ├─────┼───────────────┼─────────────┼───────┼──────────┼──────────────────────────────────────────────────────────────┤
+  │ D   │ city          │ string      │ 18    │ NO       │ City name                                                    │
+  ├─────┼───────────────┼─────────────┼───────┼──────────┼──────────────────────────────────────────────────────────────┤
+  │ E   │ demand_signal │ string      │ 45    │ YES      │ Why this is a lead (e.g., "Hiring: 3D Artist")               │
+  ├─────┼───────────────┼─────────────┼───────┼──────────┼──────────────────────────────────────────────────────────────┤
+  │ F   │ service_match │ string      │ 20    │ YES      │ What service they need                                       │
+  ├─────┼───────────────┼─────────────┼───────┼──────────┼──────────────────────────────────────────────────────────────┤
+  │ G   │ urgency       │ string      │ 12    │ YES      │ "immediate" / "short_term"                                   │
+  ├─────┼───────────────┼─────────────┼───────┼──────────┼──────────────────────────────────────────────────────────────┤
+  │ H   │ score         │ float       │ 8     │ YES      │ Numeric priority score                                       │
+  ├─────┼───────────────┼─────────────┼───────┼──────────┼──────────────────────────────────────────────────────────────┤
+  │ I   │ source        │ string      │ 12    │ YES      │ ArtStation / LinkedIn / Wamda / Upwork                       │
+  ├─────┼───────────────┼─────────────┼───────┼──────────┼──────────────────────────────────────────────────────────────┤
+  │ J   │ source_url    │ string(URL) │ 50    │ YES      │ Direct link to listing                                       │
+  ├─────┼───────────────┼─────────────┼───────┼──────────┼──────────────────────────────────────────────────────────────┤
+  │ K   │ contact_name  │ string      │ 20    │ NO       │ Decision maker if found                                      │
+  ├─────┼───────────────┼─────────────┼───────┼──────────┼──────────────────────────────────────────────────────────────┤
+  │ L   │ contact_title │ string      │ 25    │ NO       │ Their role                                                   │
+  ├─────┼───────────────┼─────────────┼───────┼──────────┼──────────────────────────────────────────────────────────────┤
+  │ M   │ website       │ string(URL) │ 40    │ NO       │ Company website                                              │
+  ├─────┼───────────────┼─────────────┼───────┼──────────┼──────────────────────────────────────────────────────────────┤
+  │ N   │ status        │ enum        │ 12    │ YES      │ new → researching → contacted → responded → converted → dead │
+  ├─────┼───────────────┼─────────────┼───────┼──────────┼──────────────────────────────────────────────────────────────┤
+  │ O   │ confidence    │ float       │ 8     │ YES      │ 0.0-1.0 data quality score                                   │
+  ├─────┼───────────────┼─────────────┼───────┼──────────┼──────────────────────────────────────────────────────────────┤
+  │ P   │ first_seen    │ datetime    │ 18    │ YES      │ When lead was first discovered                               │
+  ├─────┼───────────────┼─────────────┼───────┼──────────┼──────────────────────────────────────────────────────────────┤
+  │ Q   │ notes         │ string      │ 50    │ NO       │ Human notes field                                            │
+  └─────┴───────────────┴─────────────┴───────┴──────────┴──────────────────────────────────────────────────────────────┘
+
+  Sheet 3: All Leads (Master Registry)
+
+  Complete lead database — superset of all sources.
+
+  ┌─────┬─────────────────────┬────────────┬───────┬──────────┬────────────────────────────────────────┐
+  │  #  │       Column        │    Type    │ Width │ Required │              Description               │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ A   │ lead_id             │ string(PK) │ 12    │ YES      │ LD-XXXXX                               │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ B   │ company             │ string     │ 25    │ YES      │ Cleaned name                           │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ C   │ company_normalized  │ string     │ 25    │ YES      │ Lowercase, no suffixes — the dedup key │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ D   │ country             │ string     │ 18    │ YES      │                                        │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ E   │ city                │ string     │ 18    │ NO       │                                        │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ F   │ industry            │ string     │ 20    │ NO       │ LLM-enriched sector                    │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ G   │ estimated_size      │ enum       │ 12    │ NO       │ startup / small / medium / enterprise  │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ H   │ demand_signal       │ string     │ 45    │ YES      │                                        │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ I   │ demand_type         │ enum       │ 18    │ YES      │ hiring / funding / project / expansion │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ J   │ service_match       │ string     │ 20    │ YES      │                                        │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ K   │ service_match_score │ float      │ 8     │ YES      │ 0.0-1.0                                │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ L   │ urgency             │ enum       │ 12    │ YES      │                                        │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ M   │ priority            │ enum       │ 4     │ YES      │ A+ / A / B+ / B                        │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ N   │ score_raw           │ float      │ 8     │ YES      │ Numeric score from rubric              │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ O   │ source              │ string     │ 12    │ YES      │                                        │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ P   │ source_url          │ URL        │ 50    │ YES      │                                        │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ Q   │ website             │ URL        │ 40    │ NO       │                                        │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ R   │ contact_name        │ string     │ 20    │ NO       │                                        │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ S   │ contact_title       │ string     │ 25    │ NO       │                                        │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ T   │ budget_min          │ number     │ 10    │ NO       │ For Upwork leads                       │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ U   │ budget_max          │ number     │ 10    │ NO       │                                        │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ V   │ budget_currency     │ string     │ 5     │ NO       │                                        │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ W   │ status              │ enum       │ 12    │ YES      │ Lead lifecycle state                   │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ X   │ confidence          │ float      │ 8     │ YES      │                                        │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ Y   │ validation_issues   │ string     │ 30    │ NO       │ Comma-separated issue codes            │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ Z   │ first_seen          │ datetime   │ 18    │ YES      │                                        │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ AA  │ last_updated        │ datetime   │ 18    │ YES      │                                        │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ AB  │ run_id              │ string     │ 12    │ YES      │ Which scrape run produced this         │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ AC  │ llm_reasoning       │ string     │ 50    │ NO       │ LLM's explanation for enrichment       │
+  ├─────┼─────────────────────┼────────────┼───────┼──────────┼────────────────────────────────────────┤
+  │ AD  │ notes               │ string     │ 50    │ NO       │ Human-editable                         │
+  └─────┴─────────────────────┴────────────┴───────┴──────────┴────────────────────────────────────────┘
+
+  Sheets 4-7: Source-Specific Sheets
+
+  Each mirrors the relevant subset of Sheet 3 columns plus source-specific fields:
+
+  LinkedIn (Sheet 4): Adds job_title, posted_date, region_queried, query_used
+  ArtStation (Sheet 5): Adds job_title, tags, company_profile_url
+  Wamda (Sheet 6): Adds headline, article_date, funding_round, amount_raised
+  Upwork (Sheet 7): Adds job_title, budget, job_type, duration, experience_level, skills, description
+
+  Sheet 8: Manual Review Queue
+
+  Leads with confidence < 0.5 or validation_issues != empty. Columns:
+
+  ┌───────────────┬────────────────────────────────────────────────────────┐
+  │    Column     │                      Description                       │
+  ├───────────────┼────────────────────────────────────────────────────────┤
+  │ lead_id       │ FK to Sheet 3                                          │
+  ├───────────────┼────────────────────────────────────────────────────────┤
+  │ issue_summary │ What went wrong                                        │
+  ├───────────────┼────────────────────────────────────────────────────────┤
+  │ raw_data      │ Original scraped data (JSON string)                    │
+  ├───────────────┼────────────────────────────────────────────────────────┤
+  │ llm_output    │ What the LLM returned                                  │
+  ├───────────────┼────────────────────────────────────────────────────────┤
+  │ action_needed │ "verify_company" / "fix_location" / "assess_relevance" │
+  └───────────────┴────────────────────────────────────────────────────────┘
+
+  Sheet 9: Run History
+
+  ┌─────────────────────┬──────────────────────────┐
+  │       Column        │           Type           │
+  ├─────────────────────┼──────────────────────────┤
+  │ run_id              │ string(PK)               │
+  ├─────────────────────┼──────────────────────────┤
+  │ started_at          │ datetime                 │
+  ├─────────────────────┼──────────────────────────┤
+  │ completed_at        │ datetime                 │
+  ├─────────────────────┼──────────────────────────┤
+  │ duration_seconds    │ number                   │
+  ├─────────────────────┼──────────────────────────┤
+  │ sources_attempted   │ string (comma-separated) │
+  ├─────────────────────┼──────────────────────────┤
+  │ sources_succeeded   │ string                   │
+  ├─────────────────────┼──────────────────────────┤
+  │ sources_failed      │ string                   │
+  ├─────────────────────┼──────────────────────────┤
+  │ total_fetched       │ number                   │
+  ├─────────────────────┼──────────────────────────┤
+  │ total_new           │ number                   │
+  ├─────────────────────┼──────────────────────────┤
+  │ total_deduped       │ number                   │
+  ├─────────────────────┼──────────────────────────┤
+  │ total_enriched      │ number                   │
+  ├─────────────────────┼──────────────────────────┤
+  │ enrichment_failures │ number                   │
+  ├─────────────────────┼──────────────────────────┤
+  │ avg_confidence      │ float                    │
+  ├─────────────────────┼──────────────────────────┤
+  │ circuit_breaks      │ number                   │
+  └─────────────────────┴──────────────────────────┘
+
+  Cross-Sheet Linking
+
+  - lead_id is the global primary key. Present in all sheets.
+  - Source sheets (4-7) contain a subset of Sheet 3 rows where source matches.
+  - Sheet 2 (Hot Leads) is Sheet 3 filtered by priority = "A+" and active status.
+  - Sheet 8 (Manual Review) references Sheet 3 by lead_id.
+  - Sheet 9 (Run History) links to Sheet 3 via run_id.
+
+  Lead Lifecycle States
+
+                   ┌──────────┐
+                   │   new     │ ← Lead just discovered
+                   └─────┬────┘
+                         │ (human reviews)
+                   ┌─────▼────┐
+                   │researching│ ← Investigating the company
+                   └─────┬────┘
+                         │ (outreach sent)
+                   ┌─────▼────┐
+                   │ contacted │ ← Message/email sent
+                   └─────┬────┘
+                      ┌──┴──┐
+                ┌─────▼─┐ ┌─▼─────┐
+                │replied │ │ dead  │ ← No response after 2 follow-ups
+                └───┬───┘ └───────┘
+                    │
+              ┌─────▼─────┐
+              │ converted  │ ← Became a paying client
+              └───────────┘
+
+  Data Integrity Rules
+
+  1. lead_id is auto-generated — never manually assigned, never reused
+  2. company_normalized is computed deterministically: lowercase(strip(remove_suffixes(company)))
+  3. first_seen is immutable — set once on creation, never updated
+  4. last_updated changes on any field modification
+  5. run_id links every lead to the exact scrape run that discovered it
+  6. status can only move forward in the lifecycle (except dead → researching for re-engagement)
+  7. confidence is recomputed when a lead is re-enriched
+
+  ---
+  PHASE 4 — SYSTEM PRINCIPLES
+
+  1. Data Contracts Between Layers
+
+  SCRAPER OUTPUT → RawLead (dataclass)
+      ├── All fields are str | None
+      ├── No LLM-derived fields
+      ├── Must include source + URL
+      └── Validated by is_valid_for_enrichment()
+
+  NORMALIZER OUTPUT → NormalizedLead (dataclass)
+      ├── Dates are ISO 8601
+      ├── Locations are standardized
+      ├── URLs are cleaned
+      └── Empty fields are explicit None
+
+  LLM EXTRACTION OUTPUT → ExtractedLead (dataclass)
+      ├── All fields from NormalizedLead
+      ├── + company_clean, country, city
+      ├── Validated against JSON Schema
+      └── Includes extraction_confidence: float
+
+  LLM ENRICHMENT OUTPUT → EnrichedLead (dataclass)
+      ├── All fields from ExtractedLead
+      ├── + industry, estimated_size, service_match_score, demand_urgency
+      ├── + reasoning: str
+      ├── Validated against JSON Schema
+      └── Includes enrichment_confidence: float
+
+  SCORER OUTPUT → ScoredLead (dataclass)
+      ├── All fields from EnrichedLead
+      ├── + priority, score_raw, score_breakdown
+      ├── Deterministic — no LLM involvement
+      └── Includes overall_confidence: float
+
+  FINAL OUTPUT → Lead (dataclass)
+      ├── All fields from ScoredLead
+      ├── + lead_id, status, first_seen, last_updated, run_id
+      ├── + validation_issues: list[str]
+      └── Ready for storage
+
+  Rule: Each layer accepts ONLY the output of the previous layer's dataclass. No shortcuts. No passing raw dicts between stages.
+
+  2. Deterministic vs Probabilistic Boundaries
+
+  ┌────────────────┬───────────────┬───────────────────────────────────────┐
+  │     Layer      │    Nature     │               Guarantee               │
+  ├────────────────┼───────────────┼───────────────────────────────────────┤
+  │ Scraping       │ Deterministic │ Same URL + same DOM = same output     │
+  ├────────────────┼───────────────┼───────────────────────────────────────┤
+  │ Normalization  │ Deterministic │ Same input = same output, always      │
+  ├────────────────┼───────────────┼───────────────────────────────────────┤
+  │ LLM Extraction │ Probabilistic │ Schema is guaranteed; values may vary │
+  ├────────────────┼───────────────┼───────────────────────────────────────┤
+  │ LLM Enrichment │ Probabilistic │ Schema is guaranteed; values may vary │
+  ├────────────────┼───────────────┼───────────────────────────────────────┤
+  │ Validation     │ Deterministic │ Same input = same pass/fail result    │
+  ├────────────────┼───────────────┼───────────────────────────────────────┤
+  │ Scoring        │ Deterministic │ Same input = same score, always       │
+  ├────────────────┼───────────────┼───────────────────────────────────────┤
+  │ Deduplication  │ Deterministic │ Same entity resolution rules, always  │
+  ├────────────────┼───────────────┼───────────────────────────────────────┤
+  │ Storage        │ Deterministic │ ACID writes to SQLite                 │
+  └────────────────┴───────────────┴───────────────────────────────────────┘
+
+  Rule: Probabilistic layers (LLM) MUST be sandboxed between deterministic validation gates. LLM output never directly enters storage without passing through deterministic validation.
+
+  3. LLM Constraint Rules
+
+  1. No LLM call without a JSON Schema contract — every call specifies the exact output format
+  2. No LLM call for tasks solvable deterministically — date parsing, URL cleaning, string normalization are never sent to LLM
+  3. Maximum 3 retries per LLM call — after 3 failures, the lead is routed to manual review
+  4. Batching is mandatory — minimum 5 leads per LLM call (reduces subprocess overhead by 5x)
+  5. Every LLM response is logged — input prompt + raw output + parsed output + validation result
+  6. 20-second timeout per call, 30-second for enrichment batches
+  7. LLM never makes the final priority decision — it provides inputs; the scoring rubric decides
+
+  4. Logging Standards
+
+  # Every log entry follows this structure
+  {
+      "timestamp": "2026-02-28T14:30:00.000Z",
+      "run_id": "RUN-20260228-143000",
+      "level": "INFO|WARN|ERROR|CRITICAL",
+      "source": "linkedin|artstation|wamda|upwork|llm|dedup|storage",
+      "event": "FETCH_SUCCESS|FETCH_BLOCKED|LLM_CALL|LLM_FAIL|DEDUP_HIT|LEAD_STORED",
+      "data": { ... }  # Event-specific payload
+  }
+
+  Rule: No print() statements in production code. All output goes through the structured logger. A console handler can render it human-readable, but the canonical format is structured JSON (to
+  logs/runs/{run_id}.jsonl).
+
+  5. Schema Immutability Policies
+
+  - SQLite schema changes require migrations — versioned SQL files in migrations/
+  - Excel column order is frozen per version — adding columns appends to the right, never inserts
+  - LLM prompt schemas are versioned — each prompt template has a version number; changing the schema = new version
+  - The scoring rubric is a config file — config/scoring_rubric.yaml — changes are tracked in git
+
+  6. Versioning Strategy
+
+  config/
+    scoring_rubric.v1.yaml
+    source_registry.v1.yaml
+    extraction_contracts.v1.yaml
+  prompts/
+    extraction.v1.txt
+    enrichment.v1.txt
+  migrations/
+    001_initial_schema.sql
+    002_add_confidence_column.sql
+
+  No in-code magic numbers or hardcoded thresholds. Everything that can change goes in versioned config.
+
+  7. Observability Strategy
+
+  Three levels:
+
+  1. Console (real-time during run): Progress bars, source status, lead counts, errors. Human-readable.
+  2. Run log (logs/runs/{run_id}.jsonl): Every event, structured. For debugging specific runs.
+  3. Run report (logs/reports/{run_id}.json): Aggregated metrics per run. For trend analysis.
+
+  Alerting triggers (logged as CRITICAL):
+  - Any source has 0 results when it previously had >10 (likely selector drift)
+  - Average confidence drops below 0.5 (LLM quality degradation)
+  - Circuit breaker activated on any source
+  - Gemini CLI not responding (3 consecutive timeouts)
+
+  ---
+  PHASE 5 — IMPLEMENTATION ROADMAP
+
+  Guiding Principle
+
+  Rebuild from the data model outward. The current system was built top-down (scraper first, storage last). The new system is built bottom-up (storage and contracts first, scraping last). This ensures every
+  component has a clear contract before it's built.
+
+  ---
+  Phase 0: Foundation (Days 1-2)
+
+  Priority: CRITICAL — everything else depends on this
+
+  0.1 Create the project skeleton:
+  leads_engine/
+    __init__.py
+    config/
+      scoring_rubric.yaml
+      source_registry.yaml
+      extraction_contracts.yaml
+      countries.yaml
+    models/
+      __init__.py
+      lead.py          # All dataclasses: RawLead → ... → Lead
+      enums.py         # Priority, Status, Urgency, DemandType
+    db/
+      __init__.py
+      schema.sql       # SQLite schema
+      store.py         # CRUD + dedup + entity resolution
+    prompts/
+      extraction.v1.txt
+      enrichment.v1.txt
+    scrapers/
+      __init__.py
+      base.py          # BaseScraper abstract class
+      fetcher_pool.py  # Session management
+    pipeline/
+      __init__.py
+      normalizer.py
+      extractor.py     # LLM Pass 1
+      enricher.py      # LLM Pass 2
+      validator.py     # Pass 3
+      scorer.py        # Pass 4
+    llm/
+      __init__.py
+      gemini_client.py # Wrapper around gemini CLI
+      contracts.py     # JSON Schema enforcement
+    output/
+      __init__.py
+      excel_writer.py  # SQLite → Excel renderer
+    logging/
+      __init__.py
+      logger.py        # Structured logging
+    main.py            # Orchestrator
+
+  0.2 Define all dataclasses in models/lead.py
+  0.3 Define SQLite schema in db/schema.sql
+  0.4 Implement structured logger
+  0.5 Write the scoring rubric YAML
+
+  Deliverable: Empty but fully contracted skeleton. Every layer knows what it receives and what it produces.
+
+  ---
+  Phase 1: Data Layer (Days 3-4)
+
+  Priority: HIGH — the system's memory
+
+  1.1 Implement db/store.py:
+  - insert_lead() with dedup check
+  - get_existing_leads() for entity resolution
+  - update_lead_status()
+  - get_leads_by_filter() for Excel generation
+  - record_run() for run history
+
+  1.2 Implement entity resolution in db/store.py:
+  - Normalized name matching
+  - Fuzzy matching (using rapidfuzz library — pure Python, no heavy deps)
+  - Domain-based matching
+  - Multi-signal scoring
+
+  1.3 Implement output/excel_writer.py:
+  - Read from SQLite → format all sheets
+  - Conditional formatting (A+ = green, B = grey)
+  - Auto-column widths
+  - Hyperlink formatting for URLs
+
+  1.4 Migrate existing data:
+  - Parse current ibrahim_guerrilla_targeting_v2.xlsx → SQLite
+  - Parse existing JSON files in outputs/json/ → SQLite
+  - Verify migration accuracy
+
+  Deliverable: Working storage layer. Can insert, dedup, resolve entities, and generate Excel output from SQLite.
+
+  ---
+  Phase 2: LLM Pipeline (Days 5-7)
+
+  Priority: HIGH — the system's intelligence
+
+  2.1 Implement llm/gemini_client.py:
+  - Subprocess wrapper with timeout and retry
+  - JSON parsing with markdown-stripping
+  - Batching support (N leads per call)
+  - Structured logging of all calls
+
+  2.2 Implement llm/contracts.py:
+  - JSON Schema definitions for extraction and enrichment
+  - Schema validation function
+  - Error reporting for failed validations
+
+  2.3 Implement pipeline/normalizer.py:
+  - Deterministic pre-LLM transforms
+  - Location lookup table
+  - Date parser
+  - URL cleaner
+
+  2.4 Implement pipeline/extractor.py (Pass 1):
+  - Batch leads for extraction
+  - Call Gemini with extraction prompt
+  - Validate response against schema
+  - Return ExtractedLead objects
+
+  2.5 Implement pipeline/enricher.py (Pass 2):
+  - Batch leads for enrichment
+  - Call Gemini with enrichment prompt
+  - Validate response
+  - Return EnrichedLead objects
+
+  2.6 Implement pipeline/validator.py (Pass 3):
+  - Cross-field checks
+  - Confidence scoring
+  - Route low-confidence leads to manual review
+
+  2.7 Implement pipeline/scorer.py (Pass 4):
+  - Load scoring rubric from YAML
+  - Apply deterministic scoring
+  - Return ScoredLead objects
+
+  Deliverable: Complete enrichment pipeline. Raw text in → scored, validated, confident leads out.
+
+  ---
+  Phase 3: Scraping Layer (Days 8-11)
+
+  Priority: HIGH — the system's eyes
+
+  3.1 Implement scrapers/base.py:
+  - BaseScraper abstract class with scrape() → list[RawLead]
+  - Common retry/backoff logic
+  - Circuit breaker
+  - Debug HTML saving (timestamped)
+
+  3.2 Implement scrapers/fetcher_pool.py:
+  - Source-specific fetcher configuration from source_registry.yaml
+  - Session management
+  - Concurrency control via semaphores
+
+  3.3 Re-implement scrapers/linkedin.py:
+  - Uses ExtractionContract for selectors
+  - Reads queries AND regions from strategy
+  - Respects concurrency limits
+  - Returns list[RawLead]
+
+  3.4 Re-implement scrapers/artstation.py
+  3.5 Re-implement scrapers/wamda.py
+  3.6 Re-implement scrapers/upwork.py
+
+  3.7 Implement new scrapers (prioritized):
+  - scrapers/producthunt.py (B+ priority — launch signals)
+  - scrapers/crunchbase.py (A priority — funding signals, broader than Wamda)
+  - Future: scrapers/archdaily.py, scrapers/clutch.py
+
+  Deliverable: All scrapers producing RawLead objects that flow into the pipeline.
+
+  ---
+  Phase 4: Orchestration (Days 12-13)
+
+  Priority: MEDIUM — ties everything together
+
+  4.1 Implement main.py orchestrator:
+  - Load strategy from Excel
+  - Dispatch scrapers (parallel per source, sequential within source)
+  - Feed results through pipeline
+  - Store in SQLite
+  - Generate Excel output
+  - Produce run report
+
+  4.2 Implement strategy loader v2:
+  - Actually parse all columns from Query Library
+  - Map queries to scrapers dynamically
+  - Support all platforms in the Excel (not just LinkedIn Job + Upwork)
+
+  4.3 CLI interface:
+  - python main.py — full run
+  - python main.py --source linkedin — single source
+  - python main.py --dry-run — scrape but don't store
+  - python main.py --export-only — regenerate Excel from SQLite
+
+  Deliverable: Full working system. One command runs everything.
+
+  ---
+  Phase 5: Hardening (Days 14-15)
+
+  Priority: MEDIUM — production readiness
+
+  5.1 Add run scheduling:
+  - Windows Task Scheduler integration (or cron on WSL)
+  - Incremental runs (only process new leads, don't re-scrape what was scraped today)
+
+  5.2 Add selector health monitoring:
+  - Compare current results against baseline
+  - Alert on zero-result sources
+  - Automated selector drift detection
+
+  5.3 Comprehensive error handling:
+  - Every exception is classified
+  - Graceful degradation (one source failing doesn't kill the run)
+  - Run-level success/failure determination
+
+  5.4 Performance optimization:
+  - Profile Gemini CLI batch sizes for optimal throughput
+  - Tune concurrency per source based on observed rate limits
+  - Minimize Excel generation time (only regenerate changed sheets)
+
+  Deliverable: Production-grade system that can run unattended daily.
+
+  ---
+  Migration Path from Current System
+
+  1. No big bang cutover. The new system generates its own leads_engine.xlsx alongside the existing file.
+  2. Phase 1 includes data migration — all existing leads from the current Excel and JSON files are imported into SQLite.
+  3. The new Excel output preserves all existing columns — Ibrahim's workflow is not disrupted.
+  4. The old system remains runnable until the new system is validated.
+  5. After 1 week of parallel operation, verify: new system finds ≥ everything old system found + more. Then decommission.
+
+  Risk Management
+
+  ┌─────────────────────────────────────────┬───────────────────────────────────────────────────────────────────────┐
+  │                  Risk                   │                              Mitigation                               │
+  ├─────────────────────────────────────────┼───────────────────────────────────────────────────────────────────────┤
+  │ Gemini CLI changes its interface        │ gemini_client.py is a single wrapper — only one file to update        │
+  ├─────────────────────────────────────────┼───────────────────────────────────────────────────────────────────────┤
+  │ Platform DOM changes (selector drift)   │ Extraction contracts are YAML, not hardcoded. Alert on zero results.  │
+  ├─────────────────────────────────────────┼───────────────────────────────────────────────────────────────────────┤
+  │ SQLite concurrent access issues         │ Single-writer architecture. Only one orchestrator runs at a time.     │
+  ├─────────────────────────────────────────┼───────────────────────────────────────────────────────────────────────┤
+  │ Existing Excel data has inconsistencies │ Migration script includes cleanup + dedup pass                        │
+  ├─────────────────────────────────────────┼───────────────────────────────────────────────────────────────────────┤
+  │ LLM enrichment quality varies           │ Confidence scoring ensures bad data is flagged, not silently stored   │
+  ├─────────────────────────────────────────┼───────────────────────────────────────────────────────────────────────┤
+  │ Network instability                     │ Circuit breakers + retry with backoff. Never crash on network errors. │
+  └─────────────────────────────────────────┴───────────────────────────────────────────────────────────────────────┘
+
+  ---
+  Summary
+
+  This system has the strategy of a senior intelligence analyst and the implementation of a weekend prototype. The Strategy Framework Excel sheet is brilliant — it identifies 20+ acquisition channels with
+  expected hit rates and priority tiers. But only 4 channels are automated, the LLM is used as a glorified string cleaner, deduplication is string-match theatre, and Excel is being asked to be a database.
+
+  The redesign centers on three shifts:
+
+  1. SQLite as source of truth, Excel as rendered view. This unlocks real entity resolution, lifecycle tracking, and query capability.
+  2. Multi-pass LLM pipeline with deterministic gates. Extraction, enrichment, validation, and scoring are separate concerns with separate prompts, separate schemas, and separate confidence thresholds.
+  3. Contract-driven architecture. Every layer has typed inputs and outputs. No raw dicts floating between stages. Every LLM call has a JSON Schema. Every scraper has an extraction contract.
+
+  The build sequence is bottom-up: data model → pipeline → scrapers → orchestrator. Estimated timeline: 15 working days for a single developer, with the system operational (4 sources) by day 13 and hardened by
+   day 15.
+
+✻ Sautéed for 8m 24s
+
+> okay did you take in consideration in your plan that we are using
+  Scrapling not using native scraping methoes , i cloned it to use as refernce
+
+● Good catch. Let me audit the cloned Scrapling source to understand its full API surface — what it actually offers vs what I assumed in the redesign.
+
+● Explore(Deep-dive Scrapling API surface)
+  ⎿  Done (29 tool uses · 111.1k tokens · 1m 41s)
+  (ctrl+o to expand)
+
+● This changes things significantly. Scrapling is far more capable than my initial redesign leveraged. Here's what the deep-dive revealed and where my plan was either redundant, wrong, or under-utilizing the
+  library:
+
+  ---
+  What My Redesign Got Wrong / Missed
+
+  1. I proposed building a custom Session Pool Manager — Scrapling already has one
+
+  Scrapling natively provides AsyncStealthySession and AsyncDynamicSession with a max_pages parameter that controls concurrent browser tabs. This IS the concurrency pool:
+
+  async with AsyncStealthySession(max_pages=5) as session:
+      tasks = [session.fetch(url) for url in urls]
+      results = await asyncio.gather(*tasks)
+      stats = session.get_pool_stats()  # {"total_pages": 5, "busy_pages": 3, "max_pages": 5}
+
+  My proposed fetcher_pool.py that manages session lifecycle is redundant. Scrapling's async sessions already do this.
+
+  2. I proposed custom retry/backoff — Scrapling has built-in retries
+
+  Every fetcher accepts retries (default: 3) and retry_delay (default: 1s). The HTTP fetchers also auto-detect proxy errors and retry with the next proxy via ProxyRotator. My custom retry strategy still has
+  value for circuit breaking (which Scrapling doesn't do), but the low-level retry logic should delegate to Scrapling, not reimplement it.
+
+  3. I proposed custom proxy rotation — Scrapling has ProxyRotator
+
+  from scrapling.fetchers import ProxyRotator
+
+  rotator = ProxyRotator(
+      proxies=["http://proxy1:8080", "http://proxy2:8080"],
+      strategy=cyclic_rotation  # or custom function
+  )
+
+  async with AsyncStealthySession(proxy_rotator=rotator) as session:
+      # auto-rotates per request
+
+  My design should use this directly, not wrap it.
+
+  4. I completely missed Adaptive Element Tracking — this solves selector drift
+
+  Scrapling has a built-in system where you can save element identities and relocate them later even if the DOM structure changes. This directly addresses the SELECTOR_DRIFT failure class I flagged:
+
+  # First run: save known elements
+  response = await session.fetch(url)
+  jobs = response.css("div.job-card", identifier="linkedin_job_card", adaptive=True, auto_save=True)
+
+  # Later run: if LinkedIn changes their DOM, Scrapling can relocate the element
+  response = await session.fetch(url)
+  jobs = response.css("div.job-card", identifier="linkedin_job_card", adaptive=True)
+  # Even if the class changed to "div.job-listing", Scrapling tries to find the same elements
+
+  This is stored in a SQLite-backed elements_storage.db. My ExtractionContract with fallback selectors is still useful but should be combined with Scrapling's adaptive tracking as the first line of defense.
+
+  5. I under-utilized the DOM API
+
+  The current codebase only uses .css(). Scrapling also offers:
+  - find_by_text() — find elements by visible text content (partial, case-insensitive)
+  - find_by_regex() — regex match on element text
+  - find_similar() — find structurally similar elements (useful for discovering new card layouts)
+  - get_all_text(separator, strip, ignore_tags) — cleaner text extraction than chaining .text
+
+  6. I proposed generic anti-detection — Scrapling's StealthyFetcher already covers most of it
+
+  StealthyFetcher uses patchright (patched Playwright) with:
+  - Canvas fingerprint noise (hide_canvas=True)
+  - WebRTC leak prevention (block_webrtc=True)
+  - Cloudflare Turnstile auto-solve (solve_cloudflare=True)
+  - Real Chrome binary support (real_chrome=True)
+  - Google Search referer spoofing (google_search=True)
+  - Browser impersonation matching installed Chrome version
+
+  My "Layer 1 — Scrapling-Native" and "Layer 2 — Behavioral" should be collapsed. The behavioral layer (jittered delays, session reuse) is the only part I need to build; the anti-detection is handled.
+
+  ---
+  Corrected Scraping Architecture (Scrapling-Maximized)
+
+  Source Registry (Leverages Scrapling's Native Features)
+
+  SOURCE_REGISTRY = {
+      "linkedin_jobs": {
+          "session_type": "stealthy_async",     # AsyncStealthySession
+          "max_pages": 2,                        # Scrapling's native tab pool
+          "stealthy_opts": {
+              "solve_cloudflare": False,
+              "hide_canvas": True,
+              "block_webrtc": True,
+              "google_search": True,
+              "headless": True,
+              "disable_resources": True,          # Block images/fonts/media
+              "network_idle": True,
+              "timeout": 60000,
+          },
+          "delay_range": (3, 8),                 # Our behavioral layer
+          "max_pages_per_query": 3,
+          "circuit_breaker_threshold": 5,
+          "adaptive_tracking": True,             # Use Scrapling's adaptive elements
+      },
+      "upwork": {
+          "session_type": "stealthy_async",
+          "max_pages": 1,
+          "stealthy_opts": {
+              "solve_cloudflare": True,           # Upwork uses Cloudflare
+              "hide_canvas": True,
+              "block_webrtc": True,
+              "google_search": True,
+              "headless": True,
+              "disable_resources": True,
+              "network_idle": True,
+              "timeout": 60000,
+          },
+          "delay_range": (5, 12),
+          "max_pages_per_query": 2,
+          "circuit_breaker_threshold": 3,
+          "adaptive_tracking": True,
+      },
+      "artstation": {
+          "session_type": "dynamic_async",       # AsyncDynamicSession (less protection needed)
+          "max_pages": 3,
+          "dynamic_opts": {
+              "headless": True,
+              "disable_resources": True,
+              "network_idle": True,
+              "timeout": 30000,
+          },
+          "delay_range": (1, 3),
+          "max_pages_per_query": 5,
+          "circuit_breaker_threshold": 5,
+          "adaptive_tracking": True,
+      },
+      "wamda": {
+          "session_type": "stealthy_async",
+          "max_pages": 2,
+          "stealthy_opts": {
+              "solve_cloudflare": False,
+              "hide_canvas": False,
+              "google_search": True,
+              "headless": True,
+              "disable_resources": True,
+              "network_idle": True,
+              "timeout": 40000,
+          },
+          "delay_range": (2, 5),
+          "max_pages_per_query": 3,
+          "circuit_breaker_threshold": 3,
+          "adaptive_tracking": False,            # Wamda is simpler news site
+      },
+  }
+
+  Session Factory (Thin Wrapper — Scrapling Does the Heavy Lifting)
+
+  from scrapling import AsyncStealthySession, AsyncDynamicSession
+
+  async def create_session(source_config: dict):
+      """Creates the right Scrapling session based on source registry config."""
+      session_type = source_config["session_type"]
+
+      if session_type == "stealthy_async":
+          return AsyncStealthySession(
+              max_pages=source_config["max_pages"],
+              **source_config.get("stealthy_opts", {})
+          )
+      elif session_type == "dynamic_async":
+          return AsyncDynamicSession(
+              max_pages=source_config["max_pages"],
+              **source_config.get("dynamic_opts", {})
+          )
+
+  No custom pool manager. No custom session lifecycle. Scrapling's __aenter__ / __aexit__ handles it all.
+
+  Concurrency Model (Async-Native with Scrapling's Tab Pool)
+
+  import asyncio
+  import random
+
+  async def scrape_source(source_name: str, queries: list[dict], config: dict):
+      """Scrapes one source using Scrapling's native async session with tab pooling."""
+      results = []
+      consecutive_failures = 0
+
+      async with await create_session(config) as session:
+          for query in queries:
+              # Circuit breaker check
+              if consecutive_failures >= config["circuit_breaker_threshold"]:
+                  logger.critical(f"CIRCUIT_BREAK: {source_name} after {consecutive_failures} failures")
+                  break
+
+              # Behavioral delay (the only layer WE manage)
+              delay = random.uniform(*config["delay_range"])
+              await asyncio.sleep(delay)
+
+              try:
+                  for page_num in range(1, config["max_pages_per_query"] + 1):
+                      url = build_url(source_name, query, page_num)
+
+                      # Scrapling handles: anti-detection, retries, proxy rotation, tab management
+                      response = await session.fetch(url)
+
+                      if response.status != 200:
+                          consecutive_failures += 1
+                          logger.warn(f"HTTP {response.status} on {url}")
+                          continue
+
+                      leads = extract_leads(response, source_name, config)
+
+                      if not leads and page_num == 1:
+                          # First page returned 0 results — possible selector drift
+                          save_debug_html(response, source_name, query)
+                          logger.warn(f"SELECTOR_DRIFT_SUSPECT: {source_name}, query={query}")
+                          consecutive_failures += 1
+                          break
+
+                      results.extend(leads)
+                      consecutive_failures = 0  # Reset on success
+
+                      if len(leads) < expected_per_page(source_name):
+                          break  # No more pages
+
+              except Exception as e:
+                  consecutive_failures += 1
+                  logger.error(f"FETCH_ERROR: {source_name}: {e}")
+
+      return results
+
+
+  async def run_all_sources(strategy: dict):
+      """Runs all sources in parallel — Scrapling manages each source's internal concurrency."""
+      tasks = []
+
+      for source_name, config in SOURCE_REGISTRY.items():
+          queries = strategy.get(f"{source_name}_queries", [])
+          if queries:
+              tasks.append(scrape_source(source_name, queries, config))
+
+      # All sources run in parallel. Within each source, Scrapling's max_pages
+      # controls how many tabs are open simultaneously.
+      all_results = await asyncio.gather(*tasks, return_exceptions=True)
+
+      leads = []
+      for result in all_results:
+          if isinstance(result, Exception):
+              logger.error(f"Source failed entirely: {result}")
+          else:
+              leads.extend(result)
+
+      return leads
+
+  Extraction Using Scrapling's Full DOM API
+
+  def extract_leads(response, source_name: str, config: dict) -> list[RawLead]:
+      """Uses Scrapling's rich selector API — not just .css()."""
+      contract = EXTRACTION_CONTRACTS[source_name]
+
+      # Primary: CSS with adaptive tracking (Scrapling relocates if DOM changed)
+      containers = response.css(
+          contract.container_selector,
+          identifier=f"{source_name}_container",
+          adaptive=config.get("adaptive_tracking", False),
+          auto_save=True
+      )
+
+      # Fallback: try alternate selectors
+      if not containers:
+          for fallback in contract.container_fallbacks:
+              containers = response.css(fallback)
+              if containers:
+                  logger.info(f"Used fallback selector for {source_name}: {fallback}")
+                  break
+
+      # Last resort: find by text pattern (Scrapling-native)
+      if not containers and contract.text_pattern:
+          containers = response.find_by_regex(
+              contract.text_pattern,
+              first_match=False
+          )
+
+      leads = []
+      for container in containers:
+          lead_data = {}
+
+          for field in contract.fields:
+              value = None
+
+              for selector in field.selectors:
+                  # Use CSS within the container
+                  elements = container.css(selector)
+                  if elements:
+                      if field.attribute == "text":
+                          value = elements[0].text
+                      elif field.attribute == "href":
+                          value = elements[0].attrib.get("href")
+                          if value:
+                              value = response.urljoin(str(value))  # Scrapling's urljoin
+                      elif field.attribute == "all_text":
+                          value = elements[0].get_all_text(
+                              separator=" ", strip=True,
+                              ignore_tags=("script", "style")
+                          )
+                      break
+
+              if value is None and field.required:
+                  break  # Skip this record — required field missing
+
+              lead_data[field.name] = str(value).strip() if value else None
+          else:
+              # All required fields present
+              leads.append(RawLead(source=source_name, **lead_data))
+
+      return leads
+
+  What I Build vs What Scrapling Provides
+
+  ┌───────────────────────────┬─────────────────────────────────────────────────────────────┬───────────────────────────────────────────┐
+  │          Concern          │                      Scrapling Handles                      │                  I Build                  │
+  ├───────────────────────────┼─────────────────────────────────────────────────────────────┼───────────────────────────────────────────┤
+  │ Browser anti-detection    │ StealthyFetcher (patchright, canvas noise, WebRTC block)    │ Nothing — use as-is                       │
+  ├───────────────────────────┼─────────────────────────────────────────────────────────────┼───────────────────────────────────────────┤
+  │ Cloudflare bypass         │ solve_cloudflare=True                                       │ Nothing — use as-is                       │
+  ├───────────────────────────┼─────────────────────────────────────────────────────────────┼───────────────────────────────────────────┤
+  │ HTTP retries              │ retries=3, retry_delay=1 on all fetchers                    │ Nothing — use as-is                       │
+  ├───────────────────────────┼─────────────────────────────────────────────────────────────┼───────────────────────────────────────────┤
+  │ Proxy rotation            │ ProxyRotator with custom strategies                         │ Nothing — use as-is                       │
+  ├───────────────────────────┼─────────────────────────────────────────────────────────────┼───────────────────────────────────────────┤
+  │ Tab pool / concurrency    │ max_pages on async sessions                                 │ Nothing — use as-is                       │
+  ├───────────────────────────┼─────────────────────────────────────────────────────────────┼───────────────────────────────────────────┤
+  │ Session persistence       │ Async context managers keep browser alive                   │ Nothing — use as-is                       │
+  ├───────────────────────────┼─────────────────────────────────────────────────────────────┼───────────────────────────────────────────┤
+  │ DOM traversal             │ css(), xpath(), find_all(), find_by_text(), find_by_regex() │ Nothing — use full API                    │
+  ├───────────────────────────┼─────────────────────────────────────────────────────────────┼───────────────────────────────────────────┤
+  │ Adaptive element tracking │ adaptive=True, auto_save=True on selectors                  │ Configure per source                      │
+  ├───────────────────────────┼─────────────────────────────────────────────────────────────┼───────────────────────────────────────────┤
+  │ Resource blocking         │ disable_resources=True, blocked_domains=set()               │ Configure per source                      │
+  ├───────────────────────────┼─────────────────────────────────────────────────────────────┼───────────────────────────────────────────┤
+  │ Behavioral delays         │ —                                                           │ Jittered asyncio.sleep() between requests │
+  ├───────────────────────────┼─────────────────────────────────────────────────────────────┼───────────────────────────────────────────┤
+  │ Circuit breaking          │ —                                                           │ Consecutive failure counter per source    │
+  ├───────────────────────────┼─────────────────────────────────────────────────────────────┼───────────────────────────────────────────┤
+  │ Selector drift detection  │ Partially (adaptive tracking)                               │ Alert on zero-result first pages          │
+  ├───────────────────────────┼─────────────────────────────────────────────────────────────┼───────────────────────────────────────────┤
+  │ Debug HTML archival       │ —                                                           │ Timestamped saves of failed pages         │
+  ├───────────────────────────┼─────────────────────────────────────────────────────────────┼───────────────────────────────────────────┤
+  │ Structured logging        │ —                                                           │ Full run reports with classified failures │
+  ├───────────────────────────┼─────────────────────────────────────────────────────────────┼───────────────────────────────────────────┤
+  │ Extraction contracts      │ —                                                           │ Declarative field definitions per source  │
+  └───────────────────────────┴─────────────────────────────────────────────────────────────┴───────────────────────────────────────────┘
+
+  ---
+  Bottom line: My original plan had ~40% redundant infrastructure that Scrapling already provides. The corrected design:
+
+  1. Eliminates fetcher_pool.py entirely — use AsyncStealthySession(max_pages=N) directly
+  2. Eliminates custom retry logic — use Scrapling's retries + retry_delay params
+  3. Eliminates custom proxy rotation — use Scrapling's ProxyRotator
+  4. Adds adaptive element tracking — Scrapling's killer feature that I missed, directly solves selector drift
+  5. Adds full DOM API usage — find_by_text(), find_by_regex(), find_similar(), get_all_text() instead of only .css()
+  6. Keeps circuit breaking, behavioral delays, structured logging, extraction contracts, and the debug HTML archival — these are the only things Scrapling doesn't provide
+
+  The scraping layer shrinks from ~500 lines of custom infrastructure to ~200 lines of Scrapling configuration + the business logic that actually differs per source.
+
+✻ Worked for 3m 17s
+
+> /superpowers:writing-plans write the full revamp plan

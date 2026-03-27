@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-size: 16px;
+  }
+
+  body {
+    @apply bg-gray-950 text-gray-100 antialiased;
+    line-height: 1.6;
+  }
+
+  /* Bigger, clearer form controls globally */
+  input[type="text"],
+  input[type="number"],
+  input[type="url"],
+  input[type="email"],
+  input[type="search"],
+  textarea,
+  select {
+    @apply text-base py-3 px-4 rounded-xl bg-gray-800 border border-gray-700 text-gray-100
+      focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30
+      placeholder:text-gray-500;
+    min-height: 48px;
+  }
+
+  select {
+    @apply cursor-pointer;
+  }
+
+  label {
+    @apply text-sm font-medium text-gray-300 block mb-2;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-900;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-700 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-600;
+  }
+}
