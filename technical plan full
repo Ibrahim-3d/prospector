@@ -1,0 +1,924 @@
+# Freelance Command Center — Full Technical Plan
+
+## Status: Extending existing FastAPI + scraping engine into a full operational platform
+
+-----
+
+## 1. SYSTEM ARCHITECTURE
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                        REACT FRONTEND                            │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐           │
+│  │ Pipeline  │ │ Outreach │ │ Intel    │ │ Revenue  │           │
+│  │ Board    │ │ Center   │ │ Feed     │ │ Tracker  │           │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────┘           │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐           │
+│  │ Scraper  │ │ AI       │ │ Calendar │ │ Analytics│           │
+│  │ Control  │ │ Copilot  │ │ + Tasks  │ │ + Dash   │           │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────┘           │
+└──────────────────────────┬───────────────────────────────────────┘
+                           │ REST + WebSocket
+┌──────────────────────────┴───────────────────────────────────────┐
+│                     FASTAPI BACKEND (existing, extend)           │
+│  ┌────────────┐ ┌──────────────┐ ┌────────────────────────────┐ │
+│  │ Auth       │ │ Lead Engine  │ │ Outreach Engine             │ │
+│  │ (JWT)      │ │ (scrape,     │ │ (templates, sequences,     │ │
+│  │            │ │  enrich,     │ │  scheduling, tracking)     │ │
+│  │            │ │  score,      │ │                            │ │
+│  │            │ │  dedupe)     │ │                            │ │
+│  └────────────┘ └──────────────┘ └────────────────────────────┘ │
+│  ┌────────────┐ ┌──────────────┐ ┌────────────────────────────┐ │
+│  │ AI Layer   │ │ Notification │ │ Analytics Engine            │ │
+│  │ (Claude    │ │ Engine       │ │ (conversion, revenue,      │ │
+│  │  API)      │ │ (WebSocket   │ │  forecasting)              │ │
+│  │            │ │  + push)     │ │                            │ │
+│  └────────────┘ └──────────────┘ └────────────────────────────┘ │
+└──────────────────────────┬───────────────────────────────────────┘
+                           │
+┌──────────────────────────┴───────────────────────────────────────┐
+│                     INFRASTRUCTURE LAYER                         │
+│  ┌────────────┐ ┌──────────────┐ ┌────────────────────────────┐ │
+│  │ PostgreSQL │ │ Redis        │ │ Celery Workers              │ │
+│  │ (primary   │ │ (cache,      │ │ (background scraping,      │ │
+│  │  database) │ │  job queue,  │ │  email scheduling,         │ │
+│  │            │ │  rate limit) │ │  AI enrichment,            │ │
+│  │            │ │              │ │  alert monitoring)         │ │
+│  └────────────┘ └──────────────┘ └────────────────────────────┘ │
+│  ┌────────────┐ ┌──────────────┐ ┌────────────────────────────┐ │
+│  │ MinIO/S3   │ │ Playwright   │ │ SMTP (Resend/SES)          │ │
+│  │ (file      │ │ (headless    │ │ (email delivery +          │ │
+│  │  storage)  │ │  scraping)   │ │  tracking pixels)          │ │
+│  └────────────┘ └──────────────┘ └────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### Tech Stack
+
+|Layer          |Technology                                   |Why                                                      |
+|---------------|---------------------------------------------|---------------------------------------------------------|
+|Backend        |FastAPI (existing)                           |Already built. Async-native, fast.                       |
+|Frontend       |React + Vite + TailwindCSS + shadcn/ui       |Fast dev, good components, dark mode                     |
+|Database       |PostgreSQL + SQLAlchemy + Alembic            |Relational data, migrations, JSONB for flexible fields   |
+|Cache/Queue    |Redis                                        |Job queue, rate limiting, caching, real-time pub/sub     |
+|Background Jobs|Celery + Redis broker                        |Scraping jobs, scheduled emails, AI processing           |
+|AI             |Claude API (claude-sonnet-4-20250514)        |Message personalization, lead scoring, company research  |
+|Email          |Resend API (or Amazon SES)                   |Transactional + outreach emails, open/click tracking     |
+|Scraping       |Playwright (existing) + httpx + BeautifulSoup|Headless browser for JS-heavy sites, lightweight for APIs|
+|File Storage   |Local / MinIO (S3-compatible)                |Attachments, exports, portfolio files                    |
+|Deployment     |Docker Compose → VPS (Hetzner $10/mo)        |Cheap, full control, EU/US options                       |
+|Auth           |JWT + OAuth2 (FastAPI built-in)              |Single user, but future-proof for team                   |
+
+-----
+
+## 2. DATABASE SCHEMA (PostgreSQL)
+
+```sql
+-- CORE ENTITIES
+
+CREATE TABLE companies (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL,
+    website VARCHAR(500),
+    country VARCHAR(100),
+    city VARCHAR(100),
+    category VARCHAR(100),  -- 'agency', 'studio', 'startup', 'brand', 'production_house', 'platform'
+    subcategory VARCHAR(100),  -- '3d_cgi', 'dooh', 'creative_agency', 'real_estate', etc.
+    size_range VARCHAR(50),  -- '1-10', '11-50', '51-200', '200+'
+    founded_year INT,
+    linkedin_url VARCHAR(500),
+    clutch_url VARCHAR(500),
+    industry VARCHAR(200),
+    funding_stage VARCHAR(50),  -- 'bootstrapped', 'seed', 'series_a', etc.
+    funding_amount DECIMAL(12,2),
+    tech_stack TEXT[],  -- array of technologies they use
+    services_offered TEXT[],
+    services_needed TEXT[],  -- what they might outsource
+    source VARCHAR(100),  -- how we found them: 'clutch', 'linkedin', 'google', 'manual'
+    source_url VARCHAR(500),
+    demand_signal VARCHAR(200),  -- 'job_post', 'funding', 'expansion', 'bad_content', etc.
+    demand_signal_date TIMESTAMP,
+    priority CHAR(1) DEFAULT 'C',  -- A, B, C
+    lead_score INT DEFAULT 0,  -- 0-100 AI-calculated
+    tags TEXT[],
+    notes TEXT,
+    is_archived BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE contacts (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    company_id UUID REFERENCES companies(id) ON DELETE CASCADE,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    title VARCHAR(200),
+    email VARCHAR(300),
+    email_verified BOOLEAN DEFAULT FALSE,
+    linkedin_url VARCHAR(500),
+    phone VARCHAR(50),
+    is_decision_maker BOOLEAN DEFAULT FALSE,
+    role_type VARCHAR(50),  -- 'creative_director', 'producer', 'founder', 'marketing_lead'
+    preferred_channel VARCHAR(50),  -- 'email', 'linkedin', 'phone'
+    timezone VARCHAR(50),
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- PIPELINE / CRM
+
+CREATE TABLE pipeline_stages (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    position INT NOT NULL,
+    color VARCHAR(7) DEFAULT '#6C5CE7'
+);
+
+-- Default stages: New Lead → Researched → Contacted → Responded → Meeting → Proposal Sent → Negotiating → Won → Lost → Nurture
+
+CREATE TABLE deals (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    company_id UUID REFERENCES companies(id),
+    contact_id UUID REFERENCES contacts(id),
+    stage_id INT REFERENCES pipeline_stages(id),
+    title VARCHAR(300),
+    service_type VARCHAR(100),  -- '3d_animation', 'dooh', 'product_viz', 'web_dev', etc.
+    estimated_value DECIMAL(10,2),
+    currency VARCHAR(3) DEFAULT 'USD',
+    probability INT DEFAULT 10,  -- 0-100%
+    expected_close_date DATE,
+    actual_close_date DATE,
+    lost_reason TEXT,
+    won_amount DECIMAL(10,2),
+    source_channel VARCHAR(50),  -- 'upwork', 'linkedin_dm', 'cold_email', 'referral', 'inbound'
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- OUTREACH ENGINE
+
+CREATE TABLE outreach_templates (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(200) NOT NULL,
+    channel VARCHAR(50) NOT NULL,  -- 'email', 'linkedin_dm', 'upwork_proposal', 'twitter_dm'
+    category VARCHAR(100),  -- 'cold_studio', 'cold_dooh', 'cold_startup', 'follow_up_1', etc.
+    subject_line TEXT,
+    body TEXT NOT NULL,
+    variables TEXT[],  -- ['{{company_name}}', '{{contact_name}}', '{{specific_project}}', ...]
+    tags TEXT[],
+    usage_count INT DEFAULT 0,
+    response_rate DECIMAL(5,2),  -- calculated: responses / sends
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE outreach_sequences (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(200) NOT NULL,
+    description TEXT,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE sequence_steps (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    sequence_id UUID REFERENCES outreach_sequences(id) ON DELETE CASCADE,
+    step_number INT NOT NULL,
+    template_id UUID REFERENCES outreach_templates(id),
+    delay_days INT NOT NULL,  -- days after previous step
+    channel VARCHAR(50),
+    condition VARCHAR(100),  -- 'no_response', 'opened_not_replied', 'always'
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE outreach_messages (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    deal_id UUID REFERENCES deals(id),
+    contact_id UUID REFERENCES contacts(id),
+    company_id UUID REFERENCES companies(id),
+    template_id UUID REFERENCES outreach_templates(id),
+    sequence_id UUID REFERENCES outreach_sequences(id),
+    step_number INT,
+    channel VARCHAR(50) NOT NULL,
+    subject TEXT,
+    body TEXT NOT NULL,
+    rendered_body TEXT,  -- after variable substitution
+    status VARCHAR(50) DEFAULT 'draft',  -- 'draft', 'scheduled', 'sent', 'delivered', 'opened', 'clicked', 'replied', 'bounced'
+    scheduled_at TIMESTAMP,
+    sent_at TIMESTAMP,
+    opened_at TIMESTAMP,
+    replied_at TIMESTAMP,
+    tracking_id VARCHAR(100),  -- for email open/click tracking
+    ai_personalization_used BOOLEAN DEFAULT FALSE,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- SCRAPING ENGINE (extend existing)
+
+CREATE TABLE scrape_jobs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    query_id UUID,  -- links to saved queries
+    platform VARCHAR(50),  -- 'linkedin', 'google', 'clutch', 'upwork', etc.
+    query_text TEXT,
+    status VARCHAR(50) DEFAULT 'pending',  -- 'pending', 'running', 'completed', 'failed'
+    results_count INT DEFAULT 0,
+    new_companies_found INT DEFAULT 0,
+    error_message TEXT,
+    started_at TIMESTAMP,
+    completed_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE saved_queries (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(200),
+    platform VARCHAR(50),
+    query_text TEXT,
+    query_type VARCHAR(50),  -- 'people', 'companies', 'jobs', 'posts'
+    category VARCHAR(100),
+    frequency VARCHAR(20),  -- 'daily', 'weekly', 'monthly'
+    last_run_at TIMESTAMP,
+    next_run_at TIMESTAMP,
+    is_active BOOLEAN DEFAULT TRUE,
+    auto_run BOOLEAN DEFAULT FALSE,
+    results_count INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- INTELLIGENCE FEED
+
+CREATE TABLE intel_feed (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    source VARCHAR(100),  -- 'google_alert', 'scraper', 'manual', 'rss', 'social_monitor'
+    title VARCHAR(500),
+    content TEXT,
+    url VARCHAR(1000),
+    company_id UUID REFERENCES companies(id),  -- optional link
+    signal_type VARCHAR(100),  -- 'funding', 'hiring', 'expansion', 'new_campaign', 'competitor_move', 'award'
+    relevance_score INT,  -- AI-calculated 0-100
+    is_read BOOLEAN DEFAULT FALSE,
+    is_actionable BOOLEAN DEFAULT FALSE,
+    action_taken TEXT,
+    published_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- FINANCIAL TRACKING
+
+CREATE TABLE invoices (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    deal_id UUID REFERENCES deals(id),
+    company_id UUID REFERENCES companies(id),
+    invoice_number VARCHAR(50) UNIQUE,
+    amount DECIMAL(10,2),
+    currency VARCHAR(3) DEFAULT 'USD',
+    tax_amount DECIMAL(10,2) DEFAULT 0,
+    total_amount DECIMAL(10,2),
+    status VARCHAR(50) DEFAULT 'draft',  -- 'draft', 'sent', 'viewed', 'paid', 'overdue', 'cancelled'
+    issued_date DATE,
+    due_date DATE,
+    paid_date DATE,
+    payment_method VARCHAR(50),  -- 'bank_transfer', 'paypal', 'stripe', 'wise'
+    description TEXT,
+    line_items JSONB,  -- [{description, quantity, rate, amount}]
+    pdf_path VARCHAR(500),
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE expenses (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    category VARCHAR(100),  -- 'software', 'hardware', 'marketing', 'travel', 'education'
+    description TEXT,
+    amount DECIMAL(10,2),
+    currency VARCHAR(3) DEFAULT 'USD',
+    date DATE,
+    is_recurring BOOLEAN DEFAULT FALSE,
+    recurring_frequency VARCHAR(20),
+    receipt_path VARCHAR(500),
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- TASKS / DAILY PLAYBOOK
+
+CREATE TABLE tasks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title VARCHAR(300) NOT NULL,
+    description TEXT,
+    task_type VARCHAR(50),  -- 'outreach', 'follow_up', 'research', 'content', 'admin', 'proposal'
+    related_deal_id UUID REFERENCES deals(id),
+    related_company_id UUID REFERENCES companies(id),
+    related_contact_id UUID REFERENCES contacts(id),
+    priority VARCHAR(10) DEFAULT 'medium',  -- 'critical', 'high', 'medium', 'low'
+    status VARCHAR(50) DEFAULT 'todo',  -- 'todo', 'in_progress', 'done', 'skipped'
+    due_date DATE,
+    due_time TIME,
+    completed_at TIMESTAMP,
+    is_recurring BOOLEAN DEFAULT FALSE,
+    recurrence_rule VARCHAR(100),  -- 'daily', 'weekdays', 'weekly:mon,wed,fri', etc.
+    auto_generated BOOLEAN DEFAULT FALSE,  -- system-created follow-up tasks
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- ACTIVITY LOG (everything that happens)
+
+CREATE TABLE activity_log (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    actor VARCHAR(50) DEFAULT 'user',  -- 'user', 'system', 'ai', 'scraper'
+    action VARCHAR(100) NOT NULL,  -- 'sent_email', 'moved_deal', 'added_company', 'scored_lead', etc.
+    entity_type VARCHAR(50),  -- 'company', 'contact', 'deal', 'message', 'task'
+    entity_id UUID,
+    metadata JSONB,  -- flexible data about the action
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- PORTFOLIO / CASE STUDIES
+
+CREATE TABLE portfolio_items (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title VARCHAR(300),
+    client_name VARCHAR(200),
+    service_type VARCHAR(100),
+    description TEXT,
+    thumbnail_path VARCHAR(500),
+    media_urls TEXT[],  -- links to videos, images
+    tags TEXT[],
+    is_public BOOLEAN DEFAULT TRUE,
+    display_order INT,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- ANALYTICS SNAPSHOTS (pre-computed daily)
+
+CREATE TABLE daily_metrics (
+    id SERIAL PRIMARY KEY,
+    date DATE UNIQUE NOT NULL,
+    new_companies_added INT DEFAULT 0,
+    outreach_sent INT DEFAULT 0,
+    responses_received INT DEFAULT 0,
+    meetings_booked INT DEFAULT 0,
+    proposals_sent INT DEFAULT 0,
+    deals_won INT DEFAULT 0,
+    revenue_closed DECIMAL(10,2) DEFAULT 0,
+    pipeline_value DECIMAL(10,2) DEFAULT 0,
+    response_rate DECIMAL(5,2),
+    tasks_completed INT DEFAULT 0,
+    tasks_total INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+-----
+
+## 3. FEATURE MODULES (Complete Breakdown)
+
+### MODULE 1: LEAD INTELLIGENCE ENGINE (extends existing scraper)
+
+**What exists**: Basic scraping and company finding.
+
+**What to add**:
+
+|Feature                    |Description                                                                                               |Implementation                                                          |
+|---------------------------|----------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------|
+|**Auto-Deduplication**     |When a scraper finds a company, check if it already exists (fuzzy match on name + domain)                 |Levenshtein distance on name + exact match on domain                    |
+|**AI Lead Scoring**        |Score each lead 0-100 based on signals: size, funding, demand signal recency, service match, location     |Claude API with structured JSON output. Batch score nightly.            |
+|**Company Enrichment**     |Given a company name/URL, auto-pull: LinkedIn data, Clutch rating, tech stack, employee count, recent news|Chain: domain → Clearbit-style enrichment + scrape LinkedIn company page|
+|**Demand Signal Detection**|Monitor for: job posts, funding, expansion, key hires, competitor campaigns, bad content                  |Celery periodic tasks running saved queries                             |
+|**Smart Tagging**          |AI auto-tags companies: “high_intent”, “recently_funded”, “unfilled_role”, “competitor_of_X”              |Claude API classifies based on enrichment data                          |
+|**Duplicate Merge UI**     |When duplicates are detected, show merge interface (pick best data from each)                             |React modal with side-by-side comparison                                |
+|**Import/Export**          |Import from CSV/Excel (your existing guerrilla spreadsheet), export filtered lists                        |pandas + openpyxl on backend, drag-drop on frontend                     |
+|**Saved Views**            |Save filtered views: “Hot UAE Leads”, “EU Studios to Contact”, “Unfilled Job Posts”                       |Store filter config in JSONB column                                     |
+
+### MODULE 2: PIPELINE BOARD (Visual CRM)
+
+|Feature                |Description                                                                                                   |
+|-----------------------|--------------------------------------------------------------------------------------------------------------|
+|**Kanban Board**       |Drag-and-drop deal cards across stages. Each card shows: company, contact, value, last activity, days in stage|
+|**Stage Customization**|Add/remove/reorder pipeline stages. Color coding.                                                             |
+|**Deal Detail Panel**  |Slide-out panel: full company info, contact info, all messages sent, activity timeline, notes, files          |
+|**Stale Deal Alerts**  |Highlight deals that haven’t been touched in X days (configurable)                                            |
+|**Revenue Forecasting**|Weighted pipeline: Σ(deal_value × probability). Show monthly/quarterly projections                            |
+|**Win/Loss Analysis**  |Track why deals were won or lost. Show patterns over time.                                                    |
+|**Quick Actions**      |From any deal card: “Send follow-up”, “Schedule task”, “Move stage”, “Log note”                               |
+|**Multiple Pipelines** |Separate pipelines: Freelance Projects, Full-time Opportunities, Partnership Deals                            |
+|**Activity Timeline**  |Per-deal chronological feed of every email, note, stage change, task                                          |
+
+### MODULE 3: OUTREACH COMMAND CENTER
+
+This is the core of daily operations.
+
+|Feature                   |Description                                                                                                                                                                                                        |
+|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|**Template Library**      |All 11+ templates from the spreadsheet, stored with variable placeholders                                                                                                                                          |
+|**Variable System**       |`{{company_name}}`, `{{contact_first_name}}`, `{{specific_project}}`, `{{competitor_name}}`, `{{service_match}}` — auto-filled from company/contact data                                                           |
+|**AI Personalization**    |Button: “Personalize with AI” — sends company data to Claude API, returns a customized version of the template. Rewrites the `{{specific_project}}` and `{{why_target}}` variables based on actual company research|
+|**Multi-Channel Composer**|Tabbed composer: Email / LinkedIn DM / Upwork Proposal / Twitter DM. Each has its own formatting rules and character limits                                                                                        |
+|**One-Click Copy**        |After rendering a message, one click copies to clipboard (for manual paste into LinkedIn/Upwork)                                                                                                                   |
+|**Send via Email**        |For email templates: send directly from the app via SMTP (Resend API). Includes open/click tracking pixel                                                                                                          |
+|**Sequence Builder**      |Visual sequence designer: Step 1 (Cold Email, Day 0) → Step 2 (Follow-up #1, Day 5, if no reply) → Step 3 (LinkedIn DM, Day 10) → Step 4 (Final, Day 21)                                                           |
+|**Sequence Enrollment**   |Enroll a contact in a sequence. System auto-schedules all messages. Pauses if they reply.                                                                                                                          |
+|**Bulk Outreach**         |Select 10-50 contacts from a filtered list → Choose template → AI personalizes each → Review → Schedule send                                                                                                       |
+|**A/B Testing**           |For email: create 2 subject line variants. System splits and tracks which gets more opens/replies                                                                                                                  |
+|**Reply Detection**       |Email: auto-detect replies via webhook. LinkedIn/Upwork: manual “Mark as replied” button                                                                                                                           |
+|**Outreach Inbox**        |Unified view of all conversations across channels. Filter by status: awaiting reply, replied, meeting booked                                                                                                       |
+|**Daily Outreach Queue**  |Auto-generated daily queue based on: scheduled follow-ups, stale deals, high-score leads not yet contacted                                                                                                         |
+|**Snippet Library**       |Reusable text blocks: your bio, client list, service descriptions, portfolio link, pricing info. Insert with `/` shortcut                                                                                          |
+
+### MODULE 4: INTELLIGENCE FEED
+
+A real-time feed of actionable signals, like a Bloomberg terminal for freelance work.
+
+|Feature                      |Description                                                                                          |
+|-----------------------------|-----------------------------------------------------------------------------------------------------|
+|**Unified Feed**             |Chronological feed combining: Google Alerts, scraper results, RSS feeds, social monitoring           |
+|**Google Alerts Integration**|Pull Google Alerts via email → parse → categorize → display in feed                                  |
+|**RSS Monitor**              |Subscribe to: TechCrunch, Wamda, EU-Startups, AdAge — auto-pull new articles mentioning keywords     |
+|**Social Mention Tracker**   |Periodic scrape of X/Reddit/LinkedIn for your tracked keywords (from query library)                  |
+|**AI Relevance Scoring**     |Each feed item scored 0-100 for relevance to your services. Low-relevance items auto-hidden          |
+|**Quick Actions from Feed**  |“Add as lead” → Pre-fills company from article. “Create outreach task” → Schedules research + message|
+|**Competitor Tracker**       |Track specific competitors (Froth & Fur, BCN Visuals, etc.): new projects, new hires, client wins    |
+|**Campaign Tracker**         |Track DOOH/3D campaigns: who made it, for which brand, on which screen. Build market intelligence    |
+|**Weekly Digest**            |Auto-generated weekly email to yourself: top 10 opportunities, pipeline changes, missed follow-ups   |
+
+### MODULE 5: ANALYTICS DASHBOARD
+
+|Feature                 |Description                                                                                                     |
+|------------------------|----------------------------------------------------------------------------------------------------------------|
+|**KPI Cards**           |Top row: Pipeline Value, Win Rate, Response Rate, Revenue (MTD/YTD), Avg Deal Size, Time to Close               |
+|**Outreach Funnel**     |Sent → Opened → Replied → Meeting → Proposal → Won. Conversion rates at each stage. By channel.                 |
+|**Channel Comparison**  |Bar chart: LinkedIn DM vs Cold Email vs Upwork vs Referral — response rate, conversion rate, revenue per channel|
+|**Revenue Tracker**     |Monthly revenue chart. Forecast based on pipeline. Running total vs monthly target.                             |
+|**Activity Heatmap**    |GitHub-style heatmap of daily outreach activity. Shows consistency.                                             |
+|**Regional Breakdown**  |Revenue and pipeline by region: USA, UK, UAE, Kuwait, EU. Where is money actually coming from?                  |
+|**Service Breakdown**   |Revenue by service type: 3D/CGI, DOOH, Product Viz, Web Dev, AI Video. What sells best?                         |
+|**Template Performance**|Which templates get the best response rates? Subject line A/B test results.                                     |
+|**Lead Source ROI**     |Which discovery channels produce the most revenue? Clutch leads vs LinkedIn vs Upwork vs Google Alerts          |
+|**Weekly Scorecard**    |Did you hit targets? 20 DMs, 10 emails, 5 Upwork proposals, 30 follow-ups. Traffic light system.                |
+|**Cash Flow Projection**|Based on pipeline probabilities and expected close dates, project next 3-6 months cash flow                     |
+
+### MODULE 6: FINANCIAL MODULE
+
+|Feature                      |Description                                                                                       |
+|-----------------------------|--------------------------------------------------------------------------------------------------|
+|**Invoice Generator**        |Create professional invoices with your branding. Auto-number. PDF export. Supports USD/AED/EUR/GBP|
+|**Payment Tracking**         |Mark invoices as paid. Track payment method. Auto-calculate outstanding amounts                   |
+|**Recurring Revenue Tracker**|For retainer clients: track MRR, expected vs actual payments                                      |
+|**Expense Tracker**          |Log expenses: software (Midjourney, Render Farm, etc.), hardware, marketing. Monthly P&L          |
+|**Tax Report**               |Export annual income/expense summary for tax filing                                               |
+|**Financial Dashboard**      |Revenue vs expenses chart. Profit margin. Runway calculation based on burn rate                   |
+|**Milestone Payments**       |For projects with 50/50 or milestone-based payments: track deposit received, balance due          |
+|**Currency Conversion**      |Auto-convert all amounts to your base currency (USD) using live rates                             |
+
+### MODULE 7: TASK ENGINE + DAILY PLAYBOOK
+
+|Feature                 |Description                                                                                                            |
+|------------------------|-----------------------------------------------------------------------------------------------------------------------|
+|**Today View**          |Shows: overdue tasks, today’s tasks, today’s scheduled messages, follow-ups due. Single screen for daily execution.    |
+|**Auto-Generated Tasks**|System creates tasks: “Follow up with [Contact] — sent 5 days ago, no reply”, “Research [Company] — added from scraper”|
+|**Recurring Tasks**     |“Post portfolio piece on LinkedIn” every Saturday. “Run Upwork search” every morning.                                  |
+|**Task Templates**      |When a new company is added, auto-create task chain: Research → Find DM → Draft message → Send → Follow up             |
+|**Pomodoro Timer**      |Built-in focus timer for outreach sprints. “Send 10 DMs in 25 minutes.”                                                |
+|**Weekly Review**       |Guided weekly review: What worked? What didn’t? Adjust strategy. Auto-populates with data.                             |
+|**Streak Tracker**      |Gamification: “14-day outreach streak!” Tracks consecutive days of hitting daily targets.                              |
+
+### MODULE 8: AI COPILOT
+
+This is your unfair advantage. Every other freelancer is doing this manually.
+
+|Feature                    |Description                                                                                                                                |
+|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
+|**Research Agent**         |Input: company name → Output: structured research (what they do, recent projects, key people, potential needs, talking points for outreach)|
+|**Message Personalization**|Input: template + company data → Output: personalized message with specific references to their work                                       |
+|**Proposal Generator**     |Input: Upwork job post URL → Output: tailored proposal referencing their brief, matching your experience                                   |
+|**Lead Scoring**           |Input: company enrichment data → Output: 0-100 score with reasoning                                                                        |
+|**Response Advisor**       |Input: client’s reply message → Output: suggested response with negotiation tips                                                           |
+|**Pricing Advisor**        |Input: project scope + client size + region → Output: suggested rate with reasoning                                                        |
+|**Weekly Strategy Memo**   |Auto-generated: “Based on your pipeline and data, here’s what to focus on this week…”                                                      |
+|**Content Generator**      |Input: portfolio item → Output: LinkedIn post, case study, or tweet to share                                                               |
+|**Objection Handler**      |Input: client objection (“too expensive”, “we use in-house”, “not now”) → Output: response strategy                                        |
+
+### MODULE 9: PORTFOLIO & CONTENT HUB
+
+|Feature                      |Description                                                                      |
+|-----------------------------|---------------------------------------------------------------------------------|
+|**Portfolio Manager**        |Upload/organize your work. Tag by service type, client, tools used               |
+|**Case Study Builder**       |Guided form: Challenge → Solution → Results → Visuals. Exports to PDF or web page|
+|**Content Calendar**         |Plan and schedule LinkedIn posts, portfolio showcases, tutorials                 |
+|**Shareable Portfolio Links**|Generate unique links for specific clients showing only relevant work            |
+|**Social Proof Tracker**     |Log testimonials, reviews, ratings from clients. Pull from Upwork reviews        |
+
+### MODULE 10: CHROME EXTENSION (Phase 2)
+
+|Feature                   |Description                                                                                        |
+|--------------------------|---------------------------------------------------------------------------------------------------|
+|**LinkedIn Quick Capture**|While browsing LinkedIn: click extension → captures profile data → adds to your database as contact|
+|**Company Quick Add**     |On any company website: click extension → captures domain, name → creates company record           |
+|**Template Quick-Paste**  |On LinkedIn/Upwork: click extension → shows your templates → click to paste rendered message       |
+|**Demand Signal Flag**    |While browsing: flag a page as a demand signal → adds to intel feed                                |
+
+-----
+
+## 4. API ROUTE STRUCTURE
+
+```
+/api/v1/
+├── /auth
+│   ├── POST   /login
+│   └── POST   /refresh
+│
+├── /companies
+│   ├── GET    /                    # list (filterable, sortable, paginated)
+│   ├── POST   /                    # create
+│   ├── GET    /{id}                # detail
+│   ├── PUT    /{id}                # update
+│   ├── DELETE /{id}                # soft delete
+│   ├── POST   /{id}/enrich         # trigger AI enrichment
+│   ├── POST   /{id}/score          # trigger AI scoring
+│   ├── GET    /{id}/contacts       # list contacts
+│   ├── GET    /{id}/deals          # list deals
+│   ├── GET    /{id}/messages       # list outreach messages
+│   ├── GET    /{id}/activity       # activity timeline
+│   ├── POST   /import              # CSV/Excel import
+│   ├── GET    /export              # CSV/Excel export
+│   ├── POST   /deduplicate         # find and merge duplicates
+│   └── GET    /stats               # count by category, country, etc.
+│
+├── /contacts
+│   ├── GET    /
+│   ├── POST   /
+│   ├── GET    /{id}
+│   ├── PUT    /{id}
+│   ├── DELETE /{id}
+│   └── POST   /{id}/find-email     # email finder integration
+│
+├── /pipeline
+│   ├── GET    /stages               # list stages
+│   ├── POST   /stages               # create stage
+│   ├── PUT    /stages/{id}          # update stage
+│   ├── GET    /deals                # list deals (filterable by stage)
+│   ├── POST   /deals                # create deal
+│   ├── PUT    /deals/{id}           # update deal
+│   ├── PUT    /deals/{id}/stage     # move deal to stage
+│   ├── GET    /deals/{id}/timeline  # full deal timeline
+│   ├── GET    /forecast             # revenue forecast
+│   └── GET    /stats                # pipeline metrics
+│
+├── /outreach
+│   ├── /templates
+│   │   ├── GET    /                 # list templates
+│   │   ├── POST   /                 # create template
+│   │   ├── PUT    /{id}             # update template
+│   │   ├── DELETE /{id}
+│   │   ├── POST   /{id}/render      # render with variables
+│   │   └── GET    /{id}/stats       # template performance
+│   │
+│   ├── /sequences
+│   │   ├── GET    /                 # list sequences
+│   │   ├── POST   /                 # create sequence
+│   │   ├── PUT    /{id}             # update sequence
+│   │   ├── POST   /{id}/enroll      # enroll contacts
+│   │   └── GET    /{id}/stats       # sequence performance
+│   │
+│   ├── /messages
+│   │   ├── GET    /                 # list all messages
+│   │   ├── POST   /                 # create/send message
+│   │   ├── POST   /bulk             # bulk create messages
+│   │   ├── PUT    /{id}/status       # update status (opened, replied)
+│   │   └── GET    /queue            # today's outreach queue
+│   │
+│   ├── /snippets
+│   │   ├── GET    /                 # list snippets
+│   │   ├── POST   /
+│   │   ├── PUT    /{id}
+│   │   └── DELETE /{id}
+│   │
+│   └── POST   /ai-personalize       # AI personalize a message
+│
+├── /scraper
+│   ├── GET    /queries              # list saved queries
+│   ├── POST   /queries              # create saved query
+│   ├── PUT    /queries/{id}         # update
+│   ├── POST   /queries/{id}/run     # execute query now
+│   ├── GET    /jobs                 # list scrape jobs
+│   ├── GET    /jobs/{id}            # job status + results
+│   └── POST   /jobs                 # create ad-hoc scrape job
+│
+├── /intel
+│   ├── GET    /feed                 # intelligence feed
+│   ├── PUT    /{id}/read            # mark as read
+│   ├── PUT    /{id}/action          # mark action taken
+│   ├── POST   /alerts               # create google alert config
+│   ├── GET    /alerts               # list alert configs
+│   └── GET    /digest               # weekly digest data
+│
+├── /analytics
+│   ├── GET    /dashboard            # main dashboard KPIs
+│   ├── GET    /outreach             # outreach funnel data
+│   ├── GET    /channels             # channel comparison
+│   ├── GET    /revenue              # revenue charts
+│   ├── GET    /activity             # activity heatmap data
+│   ├── GET    /regions              # regional breakdown
+│   ├── GET    /services             # service type breakdown
+│   ├── GET    /scorecard            # weekly scorecard
+│   └── GET    /forecast             # cash flow projection
+│
+├── /finance
+│   ├── /invoices
+│   │   ├── GET    /
+│   │   ├── POST   /
+│   │   ├── PUT    /{id}
+│   │   ├── GET    /{id}/pdf          # generate PDF
+│   │   └── PUT    /{id}/status       # mark paid, etc.
+│   │
+│   ├── /expenses
+│   │   ├── GET    /
+│   │   ├── POST   /
+│   │   └── GET    /report            # P&L report
+│   │
+│   └── GET    /overview              # financial dashboard data
+│
+├── /tasks
+│   ├── GET    /today                 # today's tasks
+│   ├── GET    /                      # all tasks
+│   ├── POST   /                      # create task
+│   ├── PUT    /{id}                  # update task
+│   ├── PUT    /{id}/complete         # mark complete
+│   ├── GET    /streaks               # streak data
+│   └── GET    /review                # weekly review data
+│
+├── /portfolio
+│   ├── GET    /
+│   ├── POST   /
+│   ├── PUT    /{id}
+│   ├── DELETE /{id}
+│   └── GET    /share/{token}         # public shareable link
+│
+├── /ai
+│   ├── POST   /research              # company research
+│   ├── POST   /score                 # lead scoring
+│   ├── POST   /personalize           # message personalization
+│   ├── POST   /proposal              # proposal generation
+│   ├── POST   /respond               # response advisor
+│   ├── POST   /pricing               # pricing advisor
+│   ├── POST   /weekly-memo           # weekly strategy memo
+│   └── POST   /content               # content generation
+│
+└── /webhooks
+    ├── POST   /email/open            # email open tracking
+    ├── POST   /email/click           # email click tracking
+    └── POST   /email/reply           # email reply detection
+```
+
+-----
+
+## 5. FRONTEND PAGE MAP
+
+```
+/
+├── /dashboard                    # Analytics overview (default landing)
+├── /pipeline                     # Kanban board
+├── /companies                    # Company list + detail
+│   └── /companies/:id            # Company detail (slide panel or page)
+├── /contacts                     # Contact list
+├── /outreach                     # Outreach command center
+│   ├── /outreach/compose          # Message composer
+│   ├── /outreach/templates        # Template library
+│   ├── /outreach/sequences        # Sequence builder
+│   ├── /outreach/inbox            # Unified outreach inbox
+│   └── /outreach/queue            # Daily outreach queue
+├── /intel                        # Intelligence feed
+├── /scraper                      # Scraper control panel
+│   ├── /scraper/queries           # Saved queries
+│   └── /scraper/jobs              # Job history
+├── /finance                      # Financial module
+│   ├── /finance/invoices          # Invoice list + create
+│   ├── /finance/expenses          # Expense tracker
+│   └── /finance/overview          # Financial dashboard
+├── /tasks                        # Task manager
+│   └── /tasks/today               # Today's playbook
+├── /portfolio                    # Portfolio manager
+├── /ai                           # AI copilot playground
+└── /settings                     # App settings, integrations, profile
+```
+
+-----
+
+## 6. IMPLEMENTATION PHASES
+
+### PHASE 1: FOUNDATION (Week 1-2)
+
+**Goal**: Get the core loop working — find companies, track them, reach out.
+
+- [ ] PostgreSQL schema migration (Alembic)
+- [ ] Extend existing FastAPI with companies/contacts/deals CRUD
+- [ ] React app scaffolding (Vite + Tailwind + shadcn)
+- [ ] Company list page with filters
+- [ ] Basic pipeline Kanban board
+- [ ] Import existing spreadsheet data
+- [ ] Template library with variable rendering
+- [ ] One-click copy to clipboard
+
+### PHASE 2: OUTREACH ENGINE (Week 3-4)
+
+**Goal**: Send and track messages from the app.
+
+- [ ] Message composer with channel tabs
+- [ ] Resend API integration for email sending
+- [ ] Email open/click tracking
+- [ ] Sequence builder UI
+- [ ] Auto-enrollment and scheduling (Celery)
+- [ ] Daily outreach queue
+- [ ] Activity logging
+
+### PHASE 3: AI LAYER (Week 5-6)
+
+**Goal**: AI-powered personalization and scoring.
+
+- [ ] Claude API integration
+- [ ] Company research agent
+- [ ] Message personalization (one-click)
+- [ ] Lead scoring (batch + on-demand)
+- [ ] Proposal generator (paste Upwork URL → get proposal)
+
+### PHASE 4: INTELLIGENCE + ANALYTICS (Week 7-8)
+
+**Goal**: Automated signal detection and performance tracking.
+
+- [ ] Intel feed with Google Alerts parsing
+- [ ] RSS monitor for news sources
+- [ ] Analytics dashboard with all KPIs
+- [ ] Outreach funnel visualization
+- [ ] Channel comparison charts
+- [ ] Weekly scorecard
+
+### PHASE 5: FINANCIAL + TASKS (Week 9-10)
+
+**Goal**: Complete operational platform.
+
+- [ ] Invoice generator with PDF export
+- [ ] Expense tracker
+- [ ] Task engine with auto-generation
+- [ ] Today’s playbook view
+- [ ] Streak tracker
+- [ ] Weekly review flow
+
+### PHASE 6: POLISH + EXTENSION (Week 11-12)
+
+**Goal**: Refinement and optional Chrome extension.
+
+- [ ] Chrome extension MVP
+- [ ] Portfolio manager
+- [ ] Content calendar
+- [ ] Performance optimization
+- [ ] Mobile-responsive refinement
+- [ ] Deploy to production VPS
+
+-----
+
+## 7. DEPLOYMENT
+
+```yaml
+# docker-compose.yml
+services:
+  api:
+    build: ./backend
+    ports: ["8000:8000"]
+    depends_on: [db, redis]
+    env_file: .env
+
+  frontend:
+    build: ./frontend
+    ports: ["3000:3000"]
+
+  db:
+    image: postgres:16
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    env_file: .env
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+
+  celery_worker:
+    build: ./backend
+    command: celery -A app.celery worker -l info
+    depends_on: [redis, db]
+
+  celery_beat:
+    build: ./backend
+    command: celery -A app.celery beat -l info
+    depends_on: [redis]
+
+volumes:
+  pgdata:
+```
+
+**Production**: Hetzner CX31 (4 vCPU, 8GB RAM, 80GB SSD) — €8.39/month. More than enough for single-user app with background workers.
+
+-----
+
+## 8. COST ESTIMATE
+
+|Service       |Monthly Cost |Notes                            |
+|--------------|-------------|---------------------------------|
+|Hetzner VPS   |~$10         |Runs everything                  |
+|Domain + SSL  |$1           |Let’s Encrypt (free SSL)         |
+|Resend (email)|$0-20        |Free tier: 3K emails/mo          |
+|Claude API    |$5-20        |~100-500 personalization calls/mo|
+|**Total**     |**$16-51/mo**|                                 |
+
+-----
+
+## 9. KEY DIFFERENTIATORS vs. EXISTING TOOLS
+
+|Feature                    |HubSpot/Pipedrive     |Your App       |
+|---------------------------|----------------------|---------------|
+|DOOH/3D industry queries   |❌                     |✅ Built-in     |
+|AI message personalization |❌ (or $$$)            |✅ Claude API   |
+|Scraper integration        |❌                     |✅ Native       |
+|Demand signal detection    |❌                     |✅ Automated    |
+|Freelance-specific pipeline|❌ (enterprise-focused)|✅ Built for you|
+|Upwork proposal generator  |❌                     |✅ AI-powered   |
+|Invoice generation         |❌ (or separate tool)  |✅ Built-in     |
+|Cost                       |$45-800/mo            |$16-51/mo      |
+
+-----
+
+## 10. DIRECTORY STRUCTURE
+
+```
+freelance-command-center/
+├── backend/
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── main.py                 # FastAPI app (extend existing)
+│   │   ├── config.py               # Settings
+│   │   ├── database.py             # SQLAlchemy setup
+│   │   ├── celery_app.py           # Celery configuration
+│   │   ├── models/
+│   │   │   ├── company.py
+│   │   │   ├── contact.py
+│   │   │   ├── deal.py
+│   │   │   ├── outreach.py
+│   │   │   ├── scraper.py
+│   │   │   ├── intel.py
+│   │   │   ├── finance.py
+│   │   │   ├── task.py
+│   │   │   └── analytics.py
+│   │   ├── schemas/                 # Pydantic schemas
+│   │   ├── routers/
+│   │   │   ├── companies.py
+│   │   │   ├── contacts.py
+│   │   │   ├── pipeline.py
+│   │   │   ├── outreach.py
+│   │   │   ├── scraper.py
+│   │   │   ├── intel.py
+│   │   │   ├── analytics.py
+│   │   │   ├── finance.py
+│   │   │   ├── tasks.py
+│   │   │   ├── portfolio.py
+│   │   │   └── ai.py
+│   │   ├── services/                # Business logic
+│   │   │   ├── enrichment.py
+│   │   │   ├── scoring.py
+│   │   │   ├── personalization.py
+│   │   │   ├── email_sender.py
+│   │   │   ├── deduplication.py
+│   │   │   └── analytics_engine.py
+│   │   ├── workers/                 # Celery tasks
+│   │   │   ├── scrape_tasks.py
+│   │   │   ├── email_tasks.py
+│   │   │   ├── enrichment_tasks.py
+│   │   │   ├── scoring_tasks.py
+│   │   │   └── digest_tasks.py
+│   │   └── utils/
+│   ├── alembic/                     # Database migrations
+│   ├── tests/
+│   ├── Dockerfile
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── layout/
+│   │   │   ├── pipeline/
+│   │   │   ├── outreach/
+│   │   │   ├── companies/
+│   │   │   ├── analytics/
+│   │   │   ├── finance/
+│   │   │   └── shared/
+│   │   ├── pages/
+│   │   ├── hooks/
+│   │   ├── stores/                  # Zustand state management
+│   │   ├── api/                     # API client
+│   │   └── utils/
+│   ├── Dockerfile
+│   └── package.json
+├── extension/                       # Chrome extension (Phase 6)
+├── docker-compose.yml
+├── .env.example
+└── README.md
+```
